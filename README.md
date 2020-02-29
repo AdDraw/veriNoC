@@ -4,4 +4,4 @@
 
 #### Elka PW Lib Credentials
 **Login**: 308977\
-**Password**: Nostr99adamus
+**Password**: NOSTR99adamus
