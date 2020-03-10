@@ -9,3 +9,5 @@
    - What Structures are they use in Now
    - What are the biggest problems NoC has?
    - 3D NoC, TSVs
+3. **What is the Physical Part of the NoC**?
+4. **What is the Algorithm Dependant part of the NoC**?
