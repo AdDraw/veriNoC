@@ -20,6 +20,13 @@
 * **Virtual Channel(VC)**
 * **Wormhole Routed NoC**
 * **input-buffered**
+* **Protocol Conversion** - i.e., transforming an IP interface protocol, e.g., AXI, to packet protocol and vice-versa
+  - packetization - (from message 2 packet) for transmission
+  - depacketization - (from packet to message) for reception
+  - flitization - (from packet to flit) according to packet/flit size constraints
+  - deflitization - (from flit to packet) according to packet/flit size constraints
+* **Message/packet queueing** i.e., buffering is needed for messages/packets to be sent and received due to temporary unavailability of communication or computation resources
+* **De/Multiplexing** - in the case of parallel organization of multiple queues
 
 #### Traffic Patterns (Synth)
 - **Uniform random** - each node sends packets randomly to other nodes with an equal probability P=1/N (N-number of nodes in the network) [*Eval of Deflection pdf*]
@@ -34,6 +41,10 @@
 
 #### Traffic Generation (maybe it's the same as a Traffic Pattern)
 - **Constant Bit Rate(CBS)**
+
+#### Traffic Regulation
+- **Open Loop**
+- **Closed loop**
 
 #### Metrics
 - **Packet latency** - is the sum of Tnet (network delivery time[hop count]) for the packet being routed(1 hop = 1 router passed) and the Tsrc which is the time that the packet spent in the source queue. T = Tnet + Tsrc [*Eval of Deflection pdf*]
@@ -75,7 +86,10 @@
     - No buffers
     - Deadlock-free - packets never have to wait in the router
     - There is a need to prevent livelock by limiting the number of misrouting, this is done by the age-based prioritization of the packets.
-
+- **Wormhole** -
+  - *Characteristics*:
+    - small buffer size
+    -
 
 #### Routing Protocol
 - **Shortest Path**
@@ -91,3 +105,10 @@
 
 #### Analysis
 - **Zero Load Analysis**
+
+#### Security
+- **Hardware Trojan HT**
+- **DoS**
+- **Malignant nodes**
+- **Benign nodes**
+- **A**
