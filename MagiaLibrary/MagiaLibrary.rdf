@@ -79,7 +79,7 @@
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_334"/>
+        <link:link rdf:resource="#item_433"/>
         <dc:subject>Read</dc:subject>
         <dc:title>A network on chip architecture and design methodology</dc:title>
         <dcterms:abstract>We propose a packet switched platform for single chip systems which scales well to an arbitrary number of processor like resources. The platform, which we call Network-on-Chip (NOC), includes both the architecture and the design methodology.</dcterms:abstract>
@@ -101,9 +101,9 @@ Reporter: Proceedings IEEE Computer Society Annual Symposium on VLSI. New Paradi
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_334">
+    <z:Attachment rdf:about="#item_433">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\268\A_Network_on_chip_Architecture_and_Design_Methodology.pdf"/>
+        <rdf:resource rdf:resource="files/433/A_Network_on_chip_Architecture_and_Design_Methodology.pdf"/>
         <dc:title>A_Network_on_chip_Architecture_and_Design_Methodology.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -149,7 +149,7 @@ Reporter: Proceedings IEEE Computer Society Annual Symposium on VLSI. New Paradi
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_336"/>
+        <link:link rdf:resource="#item_435"/>
         <dc:title>Analysis and Evaluation of Circuit Switched NoC and Packet Switched NoC</dc:title>
         <dcterms:abstract>Circuit switched NoC has, compared to packet switching, a longer setup time, guaranteed throughput and latency, higher clock frequency, lower HW complexity, and higher energy efficiency. Depending on packet size and throughput requirements they exhibit better or worse performance. In this paper we designed a circuit switched NoC and compared that with packet switched NoC. By speculation and analysis, we propose that, as packet size increases, performance decreases for packet switched NoC, while it increases for circuit switched NoC. By close examination on the router architecture, we suggest that circuit switched NoC can operate at a higher clock frequency than packet switched NoC, and thus at zero load above a certain packet size circuit switched NoC could be better than packet switched NoC in packet delay. Experiment results support our intuitions and analysis. We find the cross-over point, above which circuit switching has lower latency, is around 30 flits/packet under low load and 60-70 flits/packet under high network load.</dcterms:abstract>
         <dc:date>09/2013</dc:date>
@@ -170,9 +170,9 @@ Reporter: 2013 Euromicro Conference on Digital System Design</dc:description>
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_336">
+    <z:Attachment rdf:about="#item_435">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\270\Analisys_and_eval_of_circuit_switched_NoC_and_packet_switched_NoC.pdf"/>
+        <rdf:resource rdf:resource="files/435/Analisys_and_eval_of_circuit_switched_NoC_and_packet_switched_NoC.pdf"/>
         <dc:title>Analisys_and_eval_of_circuit_switched_NoC_and_packet_switched_NoC.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -212,7 +212,7 @@ Reporter: 2013 Euromicro Conference on Digital System Design</dc:description>
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_338"/>
+        <link:link rdf:resource="#item_437"/>
         <dc:title>A deadlock-free routing algorithm requiring no virtual channel on 3D-NoCs with partial vertical connections</dc:title>
         <dcterms:abstract>Elevator-first routing algorithm has been introduced for partially connected 3D network-on-chips, as a low-cost, distributed and deadlock-free routing algorithm using two virtual channels. This paper proposes Redelf, a modification of the elevator-first routing algorithm on a 3D mesh topology. The proposed algorithm requires no virtual channel to ensure deadlock-freedom.</dcterms:abstract>
         <dc:date>04/2013</dc:date>
@@ -233,28 +233,28 @@ Reporter: 2013 Seventh IEEE/ACM International Symposium on Networks-on-Chip (NoC
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_338">
+    <z:Attachment rdf:about="#item_437">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\272\DeadLock_Free_Routing_Algorithm_Requiring_No_Virtual_Channel_on_3D_NoCs_with_Partial_Vertical_Connections.pdf"/>
+        <rdf:resource rdf:resource="files/437/DeadLock_Free_Routing_Algorithm_Requiring_No_Virtual_Channel_on_3D_NoCs_with_Partial_Vertical_Connections.pdf"/>
         <dc:title>DeadLock_Free_Routing_Algorithm_Requiring_No_Virtual_Channel_on_3D_NoCs_with_Partial_Vertical_Connections.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
     </z:Attachment>
-    <bib:Article rdf:about="#item_339">
+    <bib:Article rdf:about="#item_438">
         <z:itemType>journalArticle</z:itemType>
         <dcterms:isPartOf>
            <bib:Journal></bib:Journal>
         </dcterms:isPartOf>
-        <link:link rdf:resource="#item_340"/>
+        <link:link rdf:resource="#item_439"/>
         <dc:title>Design and analysis of a mesh-based Adaptive Wireless Network-on Chips Architecture With Irregular Network Routing</dc:title>
         <dcterms:abstract>The metallic interface for between core messages expends wealth influence and lesser throughput which are huge in Network-on Chip (NoC) structures. We proposed a remote Network-on-Chip (NoC) building Wireless Network-on Chip that uses power and imperatives gainful remote handsets to improve higherenergy and throughput by altering channels as indicated by traffic plans. Our proposed computations uses interface use bits of knowledge to redispensreal platforms, and a vitality funds of 29-35%. Wireless channels and a token sharing arrangement to totally use the remote information transmission successfully. Remote/electrical topological with results demonstrates a through-put advancement of 69%, a speedup between 1.7-2.9X on real platform, and an power savings of 25-38%.</dcterms:abstract>
         <z:language>en</z:language>
         <z:libraryCatalog>Zotero</z:libraryCatalog>
         <bib:pages>6</bib:pages>
     </bib:Article>
-    <z:Attachment rdf:about="#item_340">
+    <z:Attachment rdf:about="#item_439">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\274\Design_adn_analisys_of_a_mesh_based_Adaptive_Wireless_Network_on_Chips_Architecture_with_Irregular_Network_Routing.pdf"/>
+        <rdf:resource rdf:resource="files/439/Design_adn_analisys_of_a_mesh_based_Adaptive_Wireless_Network_on_Chips_Architecture_with_Irregular_Network_Routing.pdf"/>
         <dc:title>Design_adn_analisys_of_a_mesh_based_Adaptive_Wireless_Network_on_Chips_Architecture_with_Irregular_Network_Routing.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -330,7 +330,7 @@ Reporter: 2013 Seventh IEEE/ACM International Symposium on Networks-on-Chip (NoC
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_342"/>
+        <link:link rdf:resource="#item_441"/>
         <dc:title>DSENT - A Tool Connecting Emerging Photonics with Electronics for Opto-Electronic Networks-on-Chip Modeling</dc:title>
         <dcterms:abstract>With the rise of many-core chips that require substantial bandwidth from the network on chip (NoC), integrated photonic links have been investigated as a promising alternative to traditional electrical interconnects. While numerous optoelectronic NoCs have been proposed, evaluations of photonic architectures have thus-far had to use a number of simpliﬁcations, reﬂecting the need for a modeling tool that accurately captures the tradeoffs for the emerging technology and its impacts on the overall network. In this paper, we present DSENT, a NoC modeling tool for rapid design space exploration of electrical and opto-electrical networks. We explain our modeling framework and perform an energy-driven case study, focusing on electrical technology scaling, photonic parameters, and thermal tuning. Our results show the implications of different technology scenarios and, in particular, the need to reduce laser and thermal tuning power in a photonic network due to their non-datadependent nature.</dcterms:abstract>
         <dc:date>05/2012</dc:date>
@@ -351,9 +351,9 @@ Reporter: 2012 IEEE/ACM Sixth International Symposium on Networks-on-Chip</dc:de
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_342">
+    <z:Attachment rdf:about="#item_441">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\276\DSENT_a_tool_connecting_Emerging_Photonics_with_Electronics_for_Opto_Electronic_Networks_on_Chip_Modelling.pdf"/>
+        <rdf:resource rdf:resource="files/441/DSENT_a_tool_connecting_Emerging_Photonics_with_Electronics_for_Opto_Electronic_Networks_on_Chip_Modelling.pdf"/>
         <dc:title>DSENT_a_tool_connecting_Emerging_Photonics_with_Electronics_for_Opto_Electronic_Networks_on_Chip_Modelling.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -377,7 +377,7 @@ Reporter: 2012 IEEE/ACM Sixth International Symposium on Networks-on-Chip</dc:de
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_344"/>
+        <link:link rdf:resource="#item_443"/>
         <dc:title>Dynamic Traffic Regulation in NoC-Based Systems</dc:title>
         <dcterms:abstract>In network-on-chip (NoC)-based systems, performance enhancement has primarily focused on the network itself, with little attention paid on controlling trafﬁc injection at the network boundary. This is unsatisfactory because trafﬁc may be over injected, aggravating congestion, and lowering performance. Recently, trafﬁc regulation is proposed as an orthogonal means for performance improvement. Rather than as soon as possible admission, trafﬁc regulation may hold back packet injection by admitting packets into the network only when the accumulated trafﬁc volume at any time interval does not exceed a threshold. These regulation techniques are, however, often static, likely causing overregulation and underregulation. We propose dynamic trafﬁc regulation to improve the system performance for NoC-based multi/many-processor systemson-chip (MPSoC) and chip multi/many-core processor (CMP) designs. It can be applied to MPSoCs for intellectual property integration in an open-loop fashion by injecting trafﬁc according to its run-time proﬁled characteristics. It can also be applied to CMPs in a closed-loop fashion by admitting trafﬁc fully adaptive to the trafﬁc and network states. Through extensive experiments and results, we show that both the open-loop and closed-loop dynamic regulation techniques can signiﬁcantly improve the network and system performance.</dcterms:abstract>
         <dc:date>2/2017</dc:date>
@@ -401,9 +401,9 @@ Reporter: IEEE Transactions on Very Large Scale Integration (VLSI) Systems</dc:d
         <dcterms:alternative>IEEE Trans. VLSI Syst.</dcterms:alternative>
         <dc:identifier>ISSN 1063-8210, 1557-9999</dc:identifier>
     </bib:Journal>
-    <z:Attachment rdf:about="#item_344">
+    <z:Attachment rdf:about="#item_443">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\278\Dynamic_Traffic_Regulation_in_NoC_Based_Systems.pdf"/>
+        <rdf:resource rdf:resource="files/443/Dynamic_Traffic_Regulation_in_NoC_Based_Systems.pdf"/>
         <dc:title>Dynamic_Traffic_Regulation_in_NoC_Based_Systems.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -457,7 +457,7 @@ Reporter: IEEE Transactions on Very Large Scale Integration (VLSI) Systems</dc:d
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_346"/>
+        <link:link rdf:resource="#item_445"/>
         <dc:title>Evaluation of deflection routing on various NoC topologies</dc:title>
         <dcterms:abstract>In this paper, we propose two novel deflection routing algorithms for de Bruijn and Spidergon NoCs and evaluate the performance of the deflection routing on 5 NoC topologies with different synthetic traffic patterns. We also synthesize the routers in various NoC topologies with TSMC 65nm technology. The evaluation results illustrate that the performance of deflection routing is susceptible to the network topology and traffic pattern. The results can also guide the NoC architect to choose the suitable NoC topology for the specific application.</dcterms:abstract>
         <dc:date>10/2011</dc:date>
@@ -478,9 +478,9 @@ Reporter: 2011 9th IEEE International Conference on ASIC</dc:description>
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_346">
+    <z:Attachment rdf:about="#item_445">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\280\Eval_of_Deflection_Routing_on_Various_NoC_Topologies.pdf"/>
+        <rdf:resource rdf:resource="files/445/Eval_of_Deflection_Routing_on_Various_NoC_Topologies.pdf"/>
         <dc:title>Eval_of_Deflection_Routing_on_Various_NoC_Topologies.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -516,7 +516,7 @@ Reporter: 2011 9th IEEE International Conference on ASIC</dc:description>
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_348"/>
+        <link:link rdf:resource="#item_447"/>
         <dc:title>Extending Real-Time Analysis for Wormhole NoCs</dc:title>
         <dcterms:abstract>The delay upper-bound analysis problem is of fundamental importance to real-time applications in Network-on-Chips (NoCs). In the paper, we revisit two state-of-the-art analysis models for real-time communication in wormhole NoCs with priority-based preemptive arbitration and show that the models only support speciﬁc router architectures with large buffer sizes. We then propose an extended analysis model to estimate delay upper-bounds for all router architectures and buffer sizes by identifying and analyzing the differences between upstream and downstream indirect interferences according to the relative positions of trafﬁc ﬂows and taking the buffer inﬂuence into consideration. Simulated evaluations show that our model supports one more router architecture and applies to small buffer sizes compared to the previous models.</dcterms:abstract>
         <dc:date>2017-9-1</dc:date>
@@ -540,9 +540,9 @@ Reporter: IEEE Transactions on Computers</dc:description>
         <dcterms:alternative>IEEE Trans. Comput.</dcterms:alternative>
         <dc:identifier>ISSN 0018-9340</dc:identifier>
     </bib:Journal>
-    <z:Attachment rdf:about="#item_348">
+    <z:Attachment rdf:about="#item_447">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\282\Extending_Real_time_Analsys_for_Wormhole_NoCs.pdf"/>
+        <rdf:resource rdf:resource="files/447/Extending_Real_time_Analsys_for_Wormhole_NoCs.pdf"/>
         <dc:title>Extending_Real_time_Analsys_for_Wormhole_NoCs.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -600,7 +600,7 @@ Reporter: IEEE Transactions on Computers</dc:description>
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_350"/>
+        <link:link rdf:resource="#item_449"/>
         <dc:title>Multi-bit transient fault control for NoC links using 2D fault coding method</dc:title>
         <dc:date>9/2016</dc:date>
         <z:language>en</z:language>
@@ -620,9 +620,9 @@ Reporter: 2016 Tenth IEEE/ACM International Symposium on Networks-on-Chip (NOCS)
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_350">
+    <z:Attachment rdf:about="#item_449">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\284\Multibit_Transient_Fault_Control_for_NoC_Links_Using_2D_Fault_Coding_Method.pdf"/>
+        <rdf:resource rdf:resource="files/449/Multibit_Transient_Fault_Control_for_NoC_Links_Using_2D_Fault_Coding_Method.pdf"/>
         <dc:title>Multibit_Transient_Fault_Control_for_NoC_Links_Using_2D_Fault_Coding_Method.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -664,7 +664,7 @@ Reporter: 2016 Tenth IEEE/ACM International Symposium on Networks-on-Chip (NOCS)
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_352"/>
+        <link:link rdf:resource="#item_451"/>
         <dc:subject>Read 50%</dc:subject>
         <dc:title>Outstanding Research Problems in NoC Design: System, Microarchitecture, and Circuit Perspectives</dc:title>
         <dcterms:abstract>To alleviate the complex communication problems that arise as the number of on-chip components increases, network-on-chip (NoC) architectures have been recently proposed to replace global interconnects. In this paper, we ﬁrst provide a general description of NoC architectures and applications. Then, we enumerate several related research problems organized under ﬁve main categories: Application characterization, communication paradigm, communication infrastructure, analysis, and solution evaluation. Motivation, problem description, proposed approaches, and open issues are discussed for each problem from system, microarchitecture, and circuit perspectives. Finally, we address the interactions among these research problems and put the NoC design process into perspective.</dcterms:abstract>
@@ -690,9 +690,9 @@ Reporter: IEEE Transactions on Computer-Aided Design of Integrated Circuits and 
         <dcterms:alternative>IEEE Trans. Comput.-Aided Des. Integr. Circuits Syst.</dcterms:alternative>
         <dc:identifier>ISSN 0278-0070</dc:identifier>
     </bib:Journal>
-    <z:Attachment rdf:about="#item_352">
+    <z:Attachment rdf:about="#item_451">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\286\Oustanding_Research_Problems_in_NoC_Design_System_Microarchitecture_and_Circuit_Perspectives.pdf"/>
+        <rdf:resource rdf:resource="files/451/Oustanding_Research_Problems_in_NoC_Design_System_Microarchitecture_and_Circuit_Perspectives.pdf"/>
         <dc:title>Oustanding_Research_Problems_in_NoC_Design_System_Microarchitecture_and_Circuit_Perspectives.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -743,7 +743,7 @@ Reporter: IEEE Transactions on Computer-Aided Design of Integrated Circuits and 
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_354"/>
+        <link:link rdf:resource="#item_453"/>
         <dc:subject>Read</dc:subject>
         <dc:title>Performance Evaluation and Design Trade-Offs for Network-on-Chip Interconnect Architectures</dc:title>
         <dcterms:abstract>Multiprocessor system-on-chip (MP-SoC) platforms are emerging as an important trend for SoC design. Power and wire design constraints are forcing the adoption of new design methodologies for system-on-chip (SoC), namely, those that incorporate modularity and explicit parallelism. To enable these MP-SoC platforms, researchers have recently pursued scaleable communicationcentric interconnect fabrics, such as networks-on-chip (NoC), which possess many features that are particularly attractive for these. These communication-centric interconnect fabrics are characterized by different trade-offs with regard to latency, throughput, energy dissipation, and silicon area requirements. In this paper, we develop a consistent and meaningful evaluation methodology to compare the performance and characteristics of a variety of NoC architectures. We also explore design trade-offs that characterize the NoC approach and obtain comparative results for a number of common NoC topologies. To the best of our knowledge, this is the first effort in characterizing different NoC architectures with respect to their performance and design trade-offs. To further illustrate our evaluation methodology, we map a typical multiprocessing platform to different NoC interconnect architectures and show how the system performance is affected by these design trade-offs.</dcterms:abstract>
@@ -760,9 +760,9 @@ Reporter: IEEE Transactions on Computer-Aided Design of Integrated Circuits and 
 Reporter: IEEE Transactions on Computers</dc:description>
         <bib:pages>1025-1040</bib:pages>
     </bib:Article>
-    <z:Attachment rdf:about="#item_354">
+    <z:Attachment rdf:about="#item_453">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\288\Performance Evaluation and Design TradeOffs for Network on Chip interconnect Architectures.pdf"/>
+        <rdf:resource rdf:resource="files/453/Performance Evaluation and Design TradeOffs for Network on Chip interconnect Architectures.pdf"/>
         <dc:title>Performance Evaluation and Design TradeOffs for Network on Chip interconnect Architectures.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -814,7 +814,7 @@ Reporter: IEEE Transactions on Computers</dc:description>
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_356"/>
+        <link:link rdf:resource="#item_455"/>
         <dc:title>Performance assessment of different Network-on-Chip topologies</dc:title>
         <dc:date>3/2014</dc:date>
         <z:language>en</z:language>
@@ -834,9 +834,9 @@ Reporter: 2014 2nd International Conference on Devices, Circuits and Systems (IC
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_356">
+    <z:Attachment rdf:about="#item_455">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\290\Performance_Assesment_of_different_Network_on_Chip_topologies.pdf"/>
+        <rdf:resource rdf:resource="files/455/Performance_Assesment_of_different_Network_on_Chip_topologies.pdf"/>
         <dc:title>Performance_Assesment_of_different_Network_on_Chip_topologies.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -870,7 +870,7 @@ Reporter: 2014 2nd International Conference on Devices, Circuits and Systems (IC
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_358"/>
+        <link:link rdf:resource="#item_457"/>
         <dc:title>Secure Network-on-Chip Architectures for MPSoC: Overview and Challenges</dc:title>
         <dcterms:abstract>Network-on-Chip (NOC) is the heart of data communication between processing cores in Multiprocessor-based Systems on Chip (MPSoC). Packets transferred via the NoC are exposed to snooping, which makes NoC-based systems vulnerable to security attacks. Additionally, Hardware Trojans (HTs) can be deployed in some of the NoC nodes to apply security threats of extracting sensitive information or degrading the system performance. In this paper, an overview of some security attacks in NoC-based systems and the countermeasure techniques giving prominence on malicious nodes are discussed. Work in progress for secure routing algorithms is also presented.</dcterms:abstract>
         <dc:date>8/2018</dc:date>
@@ -892,9 +892,9 @@ Reporter: 2018 IEEE 61st International Midwest Symposium on Circuits and Systems
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_358">
+    <z:Attachment rdf:about="#item_457">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\292\Secure_Network_on_Chip_Architectures_for_MPSoC_Overview_and_Challenges.pdf"/>
+        <rdf:resource rdf:resource="files/457/Secure_Network_on_Chip_Architectures_for_MPSoC_Overview_and_Challenges.pdf"/>
         <dc:title>Secure_Network_on_Chip_Architectures_for_MPSoC_Overview_and_Challenges.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -946,7 +946,7 @@ Reporter: 2018 IEEE 61st International Midwest Symposium on Circuits and Systems
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_360"/>
+        <link:link rdf:resource="#item_459"/>
         <dc:title>A topology for network-on-chip</dc:title>
         <dcterms:abstract>Network on chip is an advanced version of System on chip which gives both scalabilities and flexible communication inside the chip. In this paper we proposed a new topology by keeping in mind the factors like minimum chip area, high throughput and minimum latency with path diversity. We compared our proposed topology with some existing topologies like fat tree and Multipath Topology in terms of latency, throughput, hop count, the hardware used and the number of events to be carried out the simulation. The proposed topology provides us with minimum latency, less hardware used, high throughput better than the existing topologies that we compared. We used an adaptive routing algorithm which is a deadlock and live lock free algorithm, provides path diversity along with a proper load balance and maximum channel utilization in our proposed topology. The required simulation is done using with an open source simulator named OMNET++.</dcterms:abstract>
         <dc:date>2/2016</dc:date>
@@ -967,23 +967,23 @@ Reporter: 2016 International Conference on Information Communication and Embedde
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_360">
+    <z:Attachment rdf:about="#item_459">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\294\Topology_for_Network_on_Chip.pdf"/>
+        <rdf:resource rdf:resource="files/459/Topology_for_Network_on_Chip.pdf"/>
         <dc:title>Topology_for_Network_on_Chip.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
     </z:Attachment>
-    <z:Attachment rdf:about="#item_361">
+    <z:Attachment rdf:about="#item_460">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\295\Performance_Analysis_of_NxN_2D_mesh_topologies_for_NoC.pdf"/>
+        <rdf:resource rdf:resource="files/460/Performance_Analysis_of_NxN_2D_mesh_topologies_for_NoC.pdf"/>
         <dc:title>Performance_Analysis_of_NxN_2D_mesh_topologies_for_NoC.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
     </z:Attachment>
-    <z:Attachment rdf:about="#item_362">
+    <z:Attachment rdf:about="#item_461">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\296\PerformanceAnalysis_of_NoC_Structure_based_on_StarMesh_Topology.pdf"/>
+        <rdf:resource rdf:resource="files/461/PerformanceAnalysis_of_NoC_Structure_based_on_StarMesh_Topology.pdf"/>
         <dc:title>PerformanceAnalysis_of_NoC_Structure_based_on_StarMesh_Topology.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1041,7 +1041,7 @@ Reporter: 2016 International Conference on Information Communication and Embedde
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_364"/>
+        <link:link rdf:resource="#item_463"/>
         <dc:title>A case study of application specific NoC design</dc:title>
         <dcterms:abstract>Network-on-chip (NoC) is emerging as an effective architecture which address the shortcomings of traditional busbased System-on-chip (SoC). NoC has been under investigation for several years and many different architecture and various protocols have been proposed. However, compared to the general -purpose NoC, the methodology to design application specific NoC provides greater practical insight. In this paper, we present the design process of application specific NoC. According to this design flow, we design a 4h4 2D mesh platform and give the result of the specific NoC mapped with a OFDM receiver application.</dcterms:abstract>
         <dc:date>04/2012</dc:date>
@@ -1062,9 +1062,9 @@ Reporter: 2012 2nd International Conference on Consumer Electronics, Communicati
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_364">
+    <z:Attachment rdf:about="#item_463">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\298\A_case_study_of_application_specific_NoC_design.pdf"/>
+        <rdf:resource rdf:resource="files/463/A_case_study_of_application_specific_NoC_design.pdf"/>
         <dc:title>A_case_study_of_application_specific_NoC_design.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1116,8 +1116,8 @@ Reporter: 2012 2nd International Conference on Consumer Electronics, Communicati
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <dcterms:isReferencedBy rdf:resource="#item_366"/>
-        <link:link rdf:resource="#item_367"/>
+        <dcterms:isReferencedBy rdf:resource="#item_465"/>
+        <link:link rdf:resource="#item_466"/>
         <dc:subject>Read, SKimmed</dc:subject>
         <dc:title>Analytical computation of packet latency in a 2D-mesh NoC</dc:title>
         <dcterms:abstract>In order to avoid time-consuming iterations in the design flow of system-on-chip communication, it is required to make early decisions based on the performance estimations of the system. To fulfill such requirements, analytical techniques are fast and reliable alternatives for long and non-exhaustive traditional simulation-based methods. This paper presents a case-study of using an analytical method, based on Markov chain stochastic processes, for latency evaluation of a Network-on-Chip arranged in a two dimensional Mesh topology, with an x-first routing algorithm and an uniform traffic pattern. Results obtained by the analytical method are compared with the results of a SystemC simulation platform.</dcterms:abstract>
@@ -1139,12 +1139,12 @@ Reporter: 2009 Joint IEEE North-East Workshop on Circuits and Systems and TAISA 
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <bib:Memo rdf:about="#item_366">
+    <bib:Memo rdf:about="#item_465">
         <rdf:value>&lt;p&gt;Seems like it has potential but is mostly about a way to analitycaly computate the mean packet latency based on Markov Chain Models.&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;Look up when it would be nice to computate the latency in the python NoC simulator.&lt;/p&gt;</rdf:value>
     </bib:Memo>
-    <z:Attachment rdf:about="#item_367">
+    <z:Attachment rdf:about="#item_466">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\301\Analitycal_compuatation_of_packet_latency_in_2D_mesh_NOC.pdf"/>
+        <rdf:resource rdf:resource="files/466/Analitycal_compuatation_of_packet_latency_in_2D_mesh_NOC.pdf"/>
         <dc:title>Analitycal_compuatation_of_packet_latency_in_2D_mesh_NOC.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1184,7 +1184,7 @@ Reporter: 2009 Joint IEEE North-East Workshop on Circuits and Systems and TAISA 
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_369"/>
+        <link:link rdf:resource="#item_468"/>
         <dc:title>Architecture and performances comparison of Network on chip router for hierarchical mesh topology</dc:title>
         <dcterms:abstract>Recently, Network on chip (NoC) has emerged as a good solution for future complex System on Chip (SoC). As opposed to bus technology, NoC allows the communication of hundreds or thousands of cores (processors, memories…) on a single chip. This work aims at providing comparison and performance analysis of three regular NoC topologies. We present the different pipeline stages of the proposed router which is the backbone of the NoC. The proposal supports the hierarchical mesh topology and uses a minimal routing algorithm to avoid deadlocks and a priority based arbiter to satisfy the quality (QoS) of service expected by the NoC. Results are presented and compared with other works in terms of maximal clock frequency, area, power consumption and peak performance.</dcterms:abstract>
         <dc:date>5/2017</dc:date>
@@ -1205,9 +1205,9 @@ Reporter: 2017 International Conference on Engineering &amp; MIS (ICEMIS)</dc:de
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_369">
+    <z:Attachment rdf:about="#item_468">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\303\Architecture_and_Performances_comparison_of_NOC_router_for_hierarchical_Mesh_Topology.pdf"/>
+        <rdf:resource rdf:resource="files/468/Architecture_and_Performances_comparison_of_NOC_router_for_hierarchical_Mesh_Topology.pdf"/>
         <dc:title>Architecture_and_Performances_comparison_of_NOC_router_for_hierarchical_Mesh_Topology.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1259,10 +1259,10 @@ Reporter: 2017 International Conference on Engineering &amp; MIS (ICEMIS)</dc:de
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <dcterms:isReferencedBy rdf:resource="#item_371"/>
-        <link:link rdf:resource="#item_372"/>
-        <dc:subject>meshTopology</dc:subject>
+        <dcterms:isReferencedBy rdf:resource="#item_470"/>
+        <link:link rdf:resource="#item_471"/>
         <dc:subject>Read</dc:subject>
+        <dc:subject>meshTopology</dc:subject>
         <dc:title>BusMesh NoC: A novel NoC architecture comprised of bus-based connection and global mesh routers</dc:title>
         <dcterms:abstract>Network-on-chip (NoC) architectures are emerged as a promising solution to the lack of scalability in multi-processor systems-on-chips (MPSoCs). In this paper, A busmesh network­ on-chip (BMNoC) architecture is proposed, together with simulation results. It is comprised of bus-based connection and global mesh routers to enhance the performance of on-chip communication. Furthermore, MPEG-4, H.264 and a hybrid application mixed MPEG-4 and H.264 on our architecture illustrates the better performance than earlier studies and feasibility of BMNoC.</dcterms:abstract>
         <dc:date>12/2010</dc:date>
@@ -1284,15 +1284,15 @@ Reporter: 2010 IEEE Asia Pacific Conference on Circuits and Systems</dc:descript
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <bib:Memo rdf:about="#item_371">
+    <bib:Memo rdf:about="#item_470">
         <rdf:value>&lt;p&gt;Takes the aproach to the Mesh Topology that would be expected and nowadays i don't think could be relevant for most NoC aplications.&lt;/p&gt;
 &lt;p&gt;Each IP could have it's own node/router/IIP but then we have a huge area overhead because even the smallest module has it.&lt;/p&gt;
 &lt;p&gt;To lower the area they gave an idea: Why give up on SoC's + Buses entirely ? Let's still use buses for clusters of IPs that tightly work together.&lt;/p&gt;
 &lt;p&gt;Basically it could have been called: SocMesh NoC. &lt;br /&gt;I don't know how big the clusters are in their version. What if there is a contraint on the volume.&lt;/p&gt;</rdf:value>
     </bib:Memo>
-    <z:Attachment rdf:about="#item_372">
+    <z:Attachment rdf:about="#item_471">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\306\BusMeshNoc.pdf"/>
+        <rdf:resource rdf:resource="files/471/BusMeshNoc.pdf"/>
         <dc:title>BusMeshNoc.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1334,72 +1334,7 @@ Reporter: 2010 IEEE Asia Pacific Conference on Circuits and Systems</dc:descript
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_374"/>
-        <dc:title>Comparison of 2D MESH routing algorithm in NOC</dc:title>
-        <dcterms:abstract>The purpose of NOC is to solve the choke point in communication and the clock problem from architecture. Each route in NOC includes some routers, and it takes a few clock periods by passing a router. When the network is in congestion , the package transmission will produce much more time delay. So adopting a appropriate routing algorithm to get the balance between the time delay and throughput rate becomes the key problem. In this paper, we have done some research on XY and OE algorithms based on the 4x4 mesh topology by using NIRGAM emulator. The result shows that the ratio of throughput rate and package time delay is 2.5358 in OE routing algorithm, which is larger than 2. 1126 in XY routing algorithm, and it proves that the OE routing algorithm is better to Mesh topology than OE routing algorithm.</dcterms:abstract>
-        <dc:date>10/2011</dc:date>
-        <z:language>en</z:language>
-        <z:libraryCatalog>DOI.org (Crossref)</z:libraryCatalog>
-        <dc:identifier>
-            <dcterms:URI>
-               <rdf:value>http://ieeexplore.ieee.org/document/6157324/</rdf:value>
-            </dcterms:URI>
-        </dc:identifier>
-        <dcterms:dateSubmitted>2020-03-17 19:41:43</dcterms:dateSubmitted>
-        <dc:description>Meeting Name: 2011 IEEE 9th International Conference on ASIC (ASICON 2011)
-Reporter: 2011 9th IEEE International Conference on ASIC</dc:description>
-        <bib:pages>791-795</bib:pages>
-        <bib:presentedAt>
-            <bib:Conference>
-                <dc:title>2011 IEEE 9th International Conference on ASIC (ASICON 2011)</dc:title>
-            </bib:Conference>
-        </bib:presentedAt>
-    </rdf:Description>
-    <z:Attachment rdf:about="#item_374">
-        <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\308\Comparison_of_2D_Mesh_Routing_Algorithm_in_NOC.pdf"/>
-        <dc:title>Comparison_of_2D_Mesh_Routing_Algorithm_in_NOC.pdf</dc:title>
-        <z:linkMode>2</z:linkMode>
-        <link:type>application/pdf</link:type>
-    </z:Attachment>
-    <rdf:Description rdf:about="#item_375">
-        <z:itemType>conferencePaper</z:itemType>
-        <dcterms:isPartOf>
-            <bib:Journal>
-                <dc:identifier>ISBN 978-1-61284-193-9 978-1-61284-192-2 978-1-61284-191-5</dc:identifier>
-                <dc:title>2011 9th IEEE International Conference on ASIC</dc:title>
-                <dc:identifier>DOI 10.1109/ASICON.2011.6157324</dc:identifier>
-            </bib:Journal>
-        </dcterms:isPartOf>
-        <dc:publisher>
-            <foaf:Organization>
-                <vcard:adr>
-                    <vcard:Address>
-                       <vcard:locality>Xiamen, China</vcard:locality>
-                    </vcard:Address>
-                </vcard:adr>
-                <foaf:name>IEEE</foaf:name>
-            </foaf:Organization>
-        </dc:publisher>
-        <bib:authors>
-            <rdf:Seq>
-                <rdf:li>
-                   <foaf:Person><foaf:surname>Pan Hao</foaf:surname></foaf:Person>
-                </rdf:li>
-                <rdf:li>
-                   <foaf:Person><foaf:surname>Hong Qi</foaf:surname></foaf:Person>
-                </rdf:li>
-                <rdf:li>
-                    <foaf:Person>
-                       <foaf:surname>Du Jiaqin</foaf:surname>
-                    </foaf:Person>
-                </rdf:li>
-                <rdf:li>
-                   <foaf:Person><foaf:surname>Pan Pan</foaf:surname></foaf:Person>
-                </rdf:li>
-            </rdf:Seq>
-        </bib:authors>
-        <link:link rdf:resource="#item_376"/>
+        <link:link rdf:resource="#item_475"/>
         <dc:subject>meshTopology</dc:subject>
         <dc:title>Comparison of 2D MESH routing algorithm in NOC</dc:title>
         <dcterms:abstract>The purpose of NOC is to solve the choke point in communication and the clock problem from architecture. Each route in NOC includes some routers, and it takes a few clock periods by passing a router. When the network is in congestion , the package transmission will produce much more time delay. So adopting a appropriate routing algorithm to get the balance between the time delay and throughput rate becomes the key problem. In this paper, we have done some research on XY and OE algorithms based on the 4x4 mesh topology by using NIRGAM emulator. The result shows that the ratio of throughput rate and package time delay is 2.5358 in OE routing algorithm, which is larger than 2. 1126 in XY routing algorithm, and it proves that the OE routing algorithm is better to Mesh topology than OE routing algorithm.</dcterms:abstract>
@@ -1421,9 +1356,9 @@ Reporter: 2011 9th IEEE International Conference on ASIC</dc:description>
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_376">
+    <z:Attachment rdf:about="#item_475">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\310\Comparison_of_MeshAlg_for_routing_in_NoC.pdf"/>
+        <rdf:resource rdf:resource="files/475/Comparison_of_MeshAlg_for_routing_in_NoC.pdf"/>
         <dc:title>Comparison_of_MeshAlg_for_routing_in_NoC.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1447,7 +1382,7 @@ Reporter: 2011 9th IEEE International Conference on ASIC</dc:description>
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_378"/>
+        <link:link rdf:resource="#item_477"/>
         <dc:title>Deflection Routing in Hierarchical Mesh NoCs</dc:title>
         <dcterms:abstract>Deﬂection routing has beneﬁts that may make it attractive especially when inexpensive network-on-chip (NoC) implementations are considered. In this letter, we present a proposal of deﬂection routing in hierarchical mesh NoCs. An evaluation of performance and power, obtained with a cycle accurate simulator and using both synthetic and application benchmarks, is reported. We introduce interleaving and shifting, two techniques that reduce the number of routers with a high radix crossbar without reducing network performance.</dcterms:abstract>
         <dc:date>6/2016</dc:date>
@@ -1471,9 +1406,9 @@ Reporter: IEEE Embedded Systems Letters</dc:description>
         <dcterms:alternative>IEEE Embedded Syst. Lett.</dcterms:alternative>
         <dc:identifier>ISSN 1943-0663, 1943-0671</dc:identifier>
     </bib:Journal>
-    <z:Attachment rdf:about="#item_378">
+    <z:Attachment rdf:about="#item_477">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\312\DeflectionRouting_in_Hierarchical_Mesh_NOC.pdf"/>
+        <rdf:resource rdf:resource="files/477/DeflectionRouting_in_Hierarchical_Mesh_NOC.pdf"/>
         <dc:title>DeflectionRouting_in_Hierarchical_Mesh_NOC.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1525,7 +1460,7 @@ Reporter: IEEE Embedded Systems Letters</dc:description>
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_380"/>
+        <link:link rdf:resource="#item_479"/>
         <dc:title>Design trade-offs in energy efficient NoC architectures</dc:title>
         <dcterms:abstract>This paper studies design trade-offs in energy efﬁcient Networks-on-Chip by evaluating every network architecture that derives when we apply all possible variations of design-conﬁguration parameters on a baseline 2D mesh. Network separation (P), concentration (C), express channels (X), ﬂit widths (W), and virtual channels (V). Our comperative analysis selects the network architecture conﬁguration that gives the best energy delay product (EDP) while allowing a maximum area margin of 15% over the most energy efﬁcient conﬁguration of the baseline.</dcterms:abstract>
         <dc:date>9/2014</dc:date>
@@ -1546,9 +1481,9 @@ Reporter: 2014 Eighth IEEE/ACM International Symposium on Networks-on-Chip (NoCS
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_380">
+    <z:Attachment rdf:about="#item_479">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\314\Design_Tradeoffs_in_Energy_Efficient_NOC_Architectures.pdf"/>
+        <rdf:resource rdf:resource="files/479/Design_Tradeoffs_in_Energy_Efficient_NOC_Architectures.pdf"/>
         <dc:title>Design_Tradeoffs_in_Energy_Efficient_NOC_Architectures.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1600,7 +1535,7 @@ Reporter: 2014 Eighth IEEE/ACM International Symposium on Networks-on-Chip (NoCS
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_382"/>
+        <link:link rdf:resource="#item_481"/>
         <dc:title>A dynamic and mixed routing algorithm for 2D mesh NoC</dc:title>
         <dcterms:abstract>To solve the congestion of NoC caused by overload such as injection rate increase, this paper proposes a novel routing algorithm, that is Dynamic and Mixed Routing(MIXROUT) which is based on XY Routing(XY) and Multiple and LoadBalance Path Routing(MULTI).Although MULTI is an adaptive routing that can relieve traffic congestion state, it has a higher operating power and temperature than other routing mechanism. So a dynamic routing strategy is proposed on the status of the network. It works as follows: MULTI is selected as the routing algorithm when NoC is in heavy load state, otherwise XY is chosen for a lower operating power and temperature. Experimental results show that under the condition of 4*4 topology sizes, MIXROUT is better than XY and MULTI used singly in term of thermal gradient, with a value 1.882°C, 4.116°C and 4.542°C respectively.</dcterms:abstract>
         <dc:date>10/2013</dc:date>
@@ -1621,9 +1556,9 @@ Reporter: 2013 International Conference on Anti-Counterfeiting, Security and Ide
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_382">
+    <z:Attachment rdf:about="#item_481">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\316\Dynamic_and_Mixed_Routing_Algorithm_for_2D_Mesh_NoC.pdf"/>
+        <rdf:resource rdf:resource="files/481/Dynamic_and_Mixed_Routing_Algorithm_for_2D_Mesh_NoC.pdf"/>
         <dc:title>Dynamic_and_Mixed_Routing_Algorithm_for_2D_Mesh_NoC.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1669,7 +1604,7 @@ Reporter: 2013 International Conference on Anti-Counterfeiting, Security and Ide
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_384"/>
+        <link:link rdf:resource="#item_483"/>
         <dc:title>Impact of 3D IC on NoC Topologies: A Wire Delay Consideration</dc:title>
         <dcterms:abstract>In this paper, we perform an exploration of 3D NoC architectures through physical design implementation based on two tiers Tezzaron 3D technology. The 3D NoC partitioning is done by dividing the NoC’s datapath component into two blocks placed in the two tiers. Two Stacked NoC architectures namely Stacked 3D-Mesh NoC and Stacked 2D-Hexagonal NoC developed based on this partitioning strategy are analyzed by comparing their performances with Stacked 2D-Mesh NoC and classical 2DMesh and 3D-Mesh NoC. In order to measure the impact of wire delay on performance, two technology libraries (130 nm and 45 nm) representing old and advanced technologies have been used for the performance analysis. Results from physical implementations show that in advanced technologies such as 45 nm and below, the performance of Stacked 2D NoC topologies with datapath partitioning method have better performances compared with traditional 2D/3D Mesh topologies and Stacked 3D Mesh topology. We advocate here that with stacking there is no need for 3D NoC topologies for advanced 2-tier 3D IC and this is also confirmed for multistage networks like butterfly.</dcterms:abstract>
         <dc:date>09/2013</dc:date>
@@ -1691,9 +1626,9 @@ Reporter: 2013 Euromicro Conference on Digital System Design</dc:description>
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_384">
+    <z:Attachment rdf:about="#item_483">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\318\Impact_od_3D_IC_NoC_Topologies_Wire_Delay_Consideration.pdf"/>
+        <rdf:resource rdf:resource="files/483/Impact_od_3D_IC_NoC_Topologies_Wire_Delay_Consideration.pdf"/>
         <dc:title>Impact_od_3D_IC_NoC_Topologies_Wire_Delay_Consideration.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1733,7 +1668,7 @@ Reporter: 2013 Euromicro Conference on Digital System Design</dc:description>
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_386"/>
+        <link:link rdf:resource="#item_485"/>
         <dc:title>An Improved Mesh Topology and Its Routing Algorithm for NoC</dc:title>
         <dcterms:abstract>Network on chip (NoC) is an effective solution to complex on-chip communication problem. The mesh topology is one of the most popular NoC. It has completely regular topology which can be implemented easily, but the communication delay between remote nodes is large. In this paper, we propose an improved topology called Tmesh, which is based on the standard mesh network by inserting four long links. We also present a deadlock-free routing algorithm for Tmesh named TXY algorithm. Indeed, our experimental results demonstrate a certain reduction in the average packet delay and routing hops.</dcterms:abstract>
         <dc:date>12/2010</dc:date>
@@ -1754,9 +1689,9 @@ Reporter: 2010 International Conference on Computational Intelligence and Softwa
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_386">
+    <z:Attachment rdf:about="#item_485">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\320\Improved_Mesh_Topology_and_its_Routing_Algorithm_for_NoC.pdf"/>
+        <rdf:resource rdf:resource="files/485/Improved_Mesh_Topology_and_its_Routing_Algorithm_for_NoC.pdf"/>
         <dc:title>Improved_Mesh_Topology_and_its_Routing_Algorithm_for_NoC.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1795,7 +1730,7 @@ Reporter: 2010 International Conference on Computational Intelligence and Softwa
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_388"/>
+        <link:link rdf:resource="#item_487"/>
         <dc:subject>Read</dc:subject>
         <dc:title>Mesh-star Hybrid NoC architecture with CDMA switch</dc:title>
         <dcterms:abstract>The Network-on-Chip (NoC) concept has been proposed to replace conventional bus-based system architectures to create scalable and flexible future SoC designs. A 2D-mesh topology is one of the most frequently mentioned topologies for an NoC design due to its natural layout mapping onto an SoC. However, the 2D-mesh topology NoC has a hot-spot problem at the center of the network and presents difficulties in multicasting. In this paper, we propose a novel multicastable CDMA switch and an efficient mesh-star hybrid topology. This approach leads to reduced traffic at the center of the network and better performance with multicasting. Our switch has been synthesized using a 0.13μm CMOS technology library.</dcterms:abstract>
@@ -1817,9 +1752,9 @@ Reporter: 2009 IEEE International Symposium on Circuits and Systems</dc:descript
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_388">
+    <z:Attachment rdf:about="#item_487">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\322\Mesh_Star_Hybrid_NOC_Architecture_with_CDMA_Switch.pdf"/>
+        <rdf:resource rdf:resource="files/487/Mesh_Star_Hybrid_NOC_Architecture_with_CDMA_Switch.pdf"/>
         <dc:title>Mesh_Star_Hybrid_NOC_Architecture_with_CDMA_Switch.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1871,7 +1806,7 @@ Reporter: 2009 IEEE International Symposium on Circuits and Systems</dc:descript
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_390"/>
+        <link:link rdf:resource="#item_489"/>
         <dc:subject>Read</dc:subject>
         <dc:title>A new routing algorithm for irregular mesh NoCs</dc:title>
         <dcterms:abstract>Network-on-Chips (NoCs) usually use regular mesh-based topologies. Regular mesh topologies are not always efficient because of power and area constraints which should be considered in designing system-on-chips. To overcome this problem, irregular mesh NoCs are used for which the design of routing algorithms is an important issue. This paper presents a novel routing algorithm for irregular mesh-based NoCs called &quot;i-route&quot;. In contrast to other routing algorithms, this algorithm can be implemented on any arbitrary irregular mesh NoC without any change in the place of IPs. In this algorithm, messages are routed using only 2 classes of virtual channels. Simulation results show that using only 2 virtual channels, “iroute” exhibits a better performance compared to other algorithms already proposed in the same context.</dcterms:abstract>
@@ -1893,9 +1828,9 @@ Reporter: 2008 International SoC Design Conference</dc:description>
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_390">
+    <z:Attachment rdf:about="#item_489">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\324\New_Roouting_Alg_irregular_mesh_noc.pdf"/>
+        <rdf:resource rdf:resource="files/489/New_Roouting_Alg_irregular_mesh_noc.pdf"/>
         <dc:title>New_Roouting_Alg_irregular_mesh_noc.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1935,7 +1870,7 @@ Reporter: 2008 International SoC Design Conference</dc:description>
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_392"/>
+        <link:link rdf:resource="#item_491"/>
         <dc:title>A new NoC architecture based on partial interconnection of mesh networks</dc:title>
         <dcterms:abstract>A new network on chip (NoC) topology called partially interconnected mesh network is proposed and a routing algorithm supporting the proposed architecture is also developed. The proposed architecture is based on standard mesh networks, here four extra bidirectional channels are added which remove the congestion and hotspots compare to standard mesh networks with fewer channels. The proposed architecture and routing algorithm are compared to measure performance benefits over standard mesh network in terms of delay and throughput. Significant improvement in delay (60% reduction) and throughput (60% increased) were observed when using the proposed network. An increase in number of channels makes the switches expensive and could increase the area and power consumption. However, the proposed network can be useful in high speed applications with some compromise in area and power.</dcterms:abstract>
         <dc:date>03/2011</dc:date>
@@ -1956,9 +1891,9 @@ Reporter: 2011 IEEE Symposium on Computers &amp; Informatics</dc:description>
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_392">
+    <z:Attachment rdf:about="#item_491">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\326\NewNoC_Archi_Based_on_Partial_Interconnect_of_mesh_Networks.pdf"/>
+        <rdf:resource rdf:resource="files/491/NewNoC_Archi_Based_on_Partial_Interconnect_of_mesh_Networks.pdf"/>
         <dc:title>NewNoC_Archi_Based_on_Partial_Interconnect_of_mesh_Networks.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -1998,7 +1933,7 @@ Reporter: 2011 IEEE Symposium on Computers &amp; Informatics</dc:description>
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_394"/>
+        <link:link rdf:resource="#item_493"/>
         <dc:title>Performability Analysis of Mesh-Based NoCs Using Markov Reward Model</dc:title>
         <dcterms:abstract>Technology scaling makes it possible to implement systems with hundreds of processing cores, and thousands in the future. The communication in such systems is enabled by Networks-on-Chips (NoCs). A downside of technology scaling is the increased susceptibility to failures in NoC resources. Ensuring reliable operation despite such failures degrades NoC performance and may even invalidate the performance beneﬁts expected from scaling. Thus, it is not enough to analyze performance and reliability in isolation, as usually done. Instead, we suggest treating both aspects together using the concept of performability and its analysis with Markov reward models. Our methodology is exempliﬁed for mesh NoCs and transient faults but can be transferred to other topologies and fault models. We investigate how performability develops with scaling towards larger NoCs and explore the limits of scaling by determining the break-even failure rates under which scaling can achieve net performance increase.</dcterms:abstract>
         <dc:date>3/2018</dc:date>
@@ -2019,9 +1954,9 @@ Reporter: 2018 26th Euromicro International Conference on Parallel, Distributed 
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_394">
+    <z:Attachment rdf:about="#item_493">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\328\Performability_Analisys_of_Meshbased_Nocs_using_Markov_Reward_Model.pdf"/>
+        <rdf:resource rdf:resource="files/493/Performability_Analisys_of_Meshbased_Nocs_using_Markov_Reward_Model.pdf"/>
         <dc:title>Performability_Analisys_of_Meshbased_Nocs_using_Markov_Reward_Model.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -2067,7 +2002,7 @@ Reporter: 2018 26th Euromicro International Conference on Parallel, Distributed 
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_396"/>
+        <link:link rdf:resource="#item_495"/>
         <dc:title>Performance Degradation by Deactivated Cores in 2-D Mesh NoCs</dc:title>
         <dcterms:abstract>Chip MultiProcessors (CMPs) will have darksilicon or frequently deactivated areas in a chip, as technology continues to scale down, due to power dissipation. In this work we estimate the inﬂuences of deactivated cores on performance of networkon-chips (NoCs). Even when a chip has a two-dimensional mesh topology, a deactivated core that includes an on-chip router makes topology irregular. We thus assume that a topologyagnostic deadlock-free routing is used with a moderate number of virtual channels in such CMPs. Thorough cycle-accurate network simulations of a 2-D mesh NoC, we found that (1) indeed a deactivated core degrades the performance to some extent in terms of throughput, but (2) latency is not increased or even reduced when a deactivated core is located in the corner of a mesh. Hence, we recommend choosing a corner core for deactivation to maintain the performance of NoCs.</dcterms:abstract>
         <dc:date>09/2013</dc:date>
@@ -2088,9 +2023,9 @@ Reporter: 2013 IEEE 7th International Symposium on Embedded Multicore Socs</dc:d
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_396">
+    <z:Attachment rdf:about="#item_495">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\330\Performance_Degradation_by_Deactivated_Cores_in_2d_mesh_Nocs.pdf"/>
+        <rdf:resource rdf:resource="files/495/Performance_Degradation_by_Deactivated_Cores_in_2d_mesh_Nocs.pdf"/>
         <dc:title>Performance_Degradation_by_Deactivated_Cores_in_2d_mesh_Nocs.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
@@ -2148,7 +2083,7 @@ Reporter: 2013 IEEE 7th International Symposium on Embedded Multicore Socs</dc:d
                 </rdf:li>
             </rdf:Seq>
         </bib:authors>
-        <link:link rdf:resource="#item_398"/>
+        <link:link rdf:resource="#item_497"/>
         <dc:subject>Read</dc:subject>
         <dc:title>Star-Mesh NoC based multi-channel H.264 decoder design</dc:title>
         <dcterms:abstract>In this paper we described the architectural exploration of Star-Mesh NoC based multi-channel H.264 decoder. The Star-Mesh NoC is comprised of local star switch and global mesh switch. By analyzing data transfers among the processors, IPs, and memories, we partitioned IPs into clusters to map then to Star-Mesh NoC architecture. In order to enhance data parallelism and NoC utilization, H.264 decoder IPs with much data traffic are mapped to star switch and shared memory is connected to mesh switch where star switch connected to mesh switch with 1-hop. We explored several mapping architecture to achieve improvement of the system throughput.</dcterms:abstract>
@@ -2170,46 +2105,11 @@ Reporter: 2008 International SoC Design Conference</dc:description>
             </bib:Conference>
         </bib:presentedAt>
     </rdf:Description>
-    <z:Attachment rdf:about="#item_398">
+    <z:Attachment rdf:about="#item_497">
         <z:itemType>attachment</z:itemType>
-        <rdf:resource rdf:resource="C:\Users\Adam\Desktop\magiament\MagiaLib\files\332\StarMesh_NoC_based_multichannel_h264_decoder_design.pdf"/>
+        <rdf:resource rdf:resource="files/497/StarMesh_NoC_based_multichannel_h264_decoder_design.pdf"/>
         <dc:title>StarMesh_NoC_based_multichannel_h264_decoder_design.pdf</dc:title>
         <z:linkMode>2</z:linkMode>
         <link:type>application/pdf</link:type>
     </z:Attachment>
-    <z:Collection rdf:about="#collection_4">
-        <dc:title>Magiament</dc:title>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-0-7695-1486-4"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4799-2978-8"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4673-6493-5%20978-1-4673-6491-1%20978-1-4673-6492-8"/>
-        <dcterms:hasPart rdf:resource="#item_339"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4673-0973-8%20978-0-7695-4677-3"/>
-        <dcterms:hasPart rdf:resource="https://ieeexplore.ieee.org/document/7522073/"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-61284-193-9%20978-1-61284-192-2%20978-1-61284-191-5"/>
-        <dcterms:hasPart rdf:resource="http://ieeexplore.ieee.org/document/7884964/"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4673-9030-9"/>
-        <dcterms:hasPart rdf:resource="http://ieeexplore.ieee.org/document/4723644/"/>
-        <dcterms:hasPart rdf:resource="http://ieeexplore.ieee.org/document/1453503/"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4799-1356-5%20978-1-4799-1355-8"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-5386-7392-8"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-5090-2552-7"/>
-        <dcterms:hasPart rdf:resource="#item_361"/>
-        <dcterms:hasPart rdf:resource="#item_362"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4577-1415-3%20978-1-4577-1414-6%20978-1-4577-1413-9"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4244-4573-8"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-5090-6778-7"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4244-7454-7"/>
-        <dcterms:hasPart rdf:resource="#item_375"/>
-        <dcterms:hasPart rdf:resource="http://ieeexplore.ieee.org/document/7457620/"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4799-5347-9"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4799-1111-0"/>
-        <dcterms:hasPart rdf:resource="http://ieeexplore.ieee.org/document/6628261/"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4244-5391-7"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4244-3827-3"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-4244-2598-3"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-61284-689-7"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-1-5386-4975-6"/>
-        <dcterms:hasPart rdf:resource="urn:isbn:978-0-7695-5086-2"/>
-        <dcterms:hasPart rdf:resource="http://ieeexplore.ieee.org/document/4815711/"/>
-    </z:Collection>
 </rdf:RDF>
