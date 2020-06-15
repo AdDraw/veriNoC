@@ -60,7 +60,7 @@ async def test(dut, log_lvl=INFO, cycles=4010):
 
     for i in range(cycles-10):
         await RisingEdge(dut.clk_i)
-        dut.dir_i <= 1
+        dut.dir_i <= randbits(1)
         await ReadOnly()
         counter_res = dut.counter_o.value.integer
         almost_full = dut.almost_full_o.value.integer
