@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module counter_nbit
   #(
     parameter CNT_BITWIDTH = 8,
