@@ -108,7 +108,7 @@
   - *Characteristics*:
     - small buffer size
 - **Elevator** - algorithm that can be used for connecting 2D NoCs using different deadlock-free algorithms by implementing elevators(vertical channels)!
-- **Elevator-first** - some algorithm in elevator-first routing
+- **Elevator-first** - elevator algorithm that prioritizes elevators when traversing the NOC.
 ---
 #### Routing Protocol
 - **Shortest Path**
@@ -120,7 +120,7 @@
 - **Static**
 ---
 #### Transmission Protocol
-- **UDP** - User Datagram Protocol,
+- **UDP** - User Datagram Protocol, the user defines the protocol by himself.
 ---
 #### Analysis
 - **Zero Load Analysis**
