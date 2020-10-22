@@ -14,10 +14,10 @@ SIM ?= verilator
 
 # Depending on the Simulator we want to choose different sets of arguments to pass
 
-DATA_WIDTH		= "8"
-FIFO_DEPTH_WIDTH 	= "2"
-ALMOST_EMPTY_LEVEL	= "$(FIFO_DEPTH_WIDTH)'d2"
-ALMOST_FULL_LEVEL 	= "$(FIFO_DEPTH_WIDTH)'d8"
+export DATA_WIDTH			?= "8"
+export FIFO_DEPTH_WIDTH 	?= "4"
+export ALMOST_EMPTY_LEVEL	?= "$(FIFO_DEPTH_WIDTH)'d2"
+export ALMOST_FULL_LEVEL 	?= "$(FIFO_DEPTH_WIDTH)'d8"
 
 
 ifeq ($(SIM), verilator)
@@ -34,7 +34,7 @@ endif
 
 ifeq ($(SIM), icarus)
 		EXTRA_ARGS += -PDATA_WIDTH=$(DATA_WIDTH)
-		EXTRA_ARGS += -PFIFO_DEPTH=$(FIFO_DEPTH)
+		EXTRA_ARGS += -PFIFO_DEPTH_WIDTH=$(FIFO_DEPTH_WIDTH)
 # 		EXTRA_ARGS += -PALMOST_FULL_LEVEL=$(ALMOST_FULL_LEVEL)
 # 		EXTRA_ARGS += -PALMOST_EMPTY_LEVEL=$(ALMOST_EMPTY_LEVEL)
 endif

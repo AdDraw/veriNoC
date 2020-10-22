@@ -1,7 +1,5 @@
 import os
-from math import log
 import subprocess
-import datetime
 
 # Simulation Parameters
 PROF = 0
@@ -11,7 +9,7 @@ os.environ["HDL_LANG"] = "verilog"
 os.environ["SIM"] = "verilator"
 
 DATA_WIDTH = 8
-FIFO_DEPTH_WIDTH = 2
+FIFO_DEPTH_WIDTH = 8
 ALMOST_EMPTY_LEVEL = 2
 ALMOST_FULL_LEVEL = 8
 
@@ -27,10 +25,6 @@ if PROF == 1:
 if CLEAN == 1:
     subprocess.call(["make", "clean"])
     subprocess.call(["make"])
-    # subprocess.call(["gtkwave dump.vcd -S gtkwave_tcl.tcl"])
 
 else:
     subprocess.call(["make"])
-    # subprocess.call(["pwd"])
-    # subprocess.call(["ls"])
-    # subprocess.call(["gtkwave dump.vcd -S gtkwave_tcl.tcl"])
