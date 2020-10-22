@@ -11,7 +11,7 @@ lappend def "top.fifo.overflow_o"
 lappend def "top.fifo.wr_ptr_v"
 lappend def "top.fifo.rd_ptr_v"
 lappend def "top.fifo.data_o"
-for {set i 0} {$i < 10} {incr i} {
+for {set i 0} {$i < 16} {incr i} {
 
    puts "$i"
    lappend def "top.fifo.fifo_v($i)"

@@ -2,7 +2,7 @@
   Circular FIFO made with ZipCPU FIFO Guide
 */
 `timescale 1ns / 1ps
-`define ALMOST_THRESHOLD
+// `define ALMOST_THRESHOLD
 
 module fifo
   #(
@@ -31,6 +31,11 @@ module fifo
     );
     localparam FIFO_DEPTH = 2**FIFO_DEPTH_WIDTH;
 
+	initial begin
+		$display("Verilog: FIFO_DEPTH_WIDTH%d",FIFO_DEPTH_WIDTH);
+		$display("Verilog: DATA_WIDTH\t%d", DATA_WIDTH);
+	end
+    
     // Registers
     reg [DATA_WIDTH-1 : 0] data_v;
     reg [DATA_WIDTH-1 : 0] fifo_v [FIFO_DEPTH-1 : 0];
@@ -52,10 +57,10 @@ module fifo
 
 
     // FIFO WRITE
-    always @ ( posedge clk_i ) begin
-      if (~rst_ni) begin
+    always @ ( posedge clk_i or negedge rst_ni ) begin
+      if (!rst_ni) begin
         for (int i=0; i < FIFO_DEPTH; i=i+1) begin
-          fifo_v[i] <= 0;
+          fifo_v[i] = 0;
         end
         overflow_v  <= 1'b0;
         wr_ptr_v    <= 0;
@@ -76,7 +81,7 @@ module fifo
     end
 
     //FIFO READ
-    always @ ( posedge clk_i ) begin
+    always @ ( posedge clk_i or negedge rst_ni ) begin
       if (!rst_ni) begin
         data_v      <= 0;
         underflow_v <= 1'b0;
@@ -104,7 +109,7 @@ module fifo
     assign underflow_o  = underflow_v;
     assign overflow_o   = overflow_v;
 
-    `ifdef
+    `ifdef ALMOST_THRESHOLD
     assign almost_empty_o = almost_empty_w;
     assign almmost_full_o = almmost_full_w;
     `endif
