@@ -29,6 +29,8 @@
   - files from different projects in the same directory
 - **sim** for simulation files
   - each design with it's own subdir
+- **synth** for synthesis scripts and results
+  - each synth script with it's own directory
 
 ## Verilog codestyle
 The Codestyle that will be used is straight from Freescale's Verilog Codestyle.
