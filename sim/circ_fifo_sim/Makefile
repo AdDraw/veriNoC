@@ -2,7 +2,7 @@ export PYTHON_BIN=/usr/bin/python3
 export SHELL=/bin/bash
 
 export TOPLEVEL_LANG ?= verilog
-VER_DIR=$(shell pwd)/../../srcs/switch/simple_mesh_xy
+VER_DIR=$(shell pwd)/../../srcs/resource
 
 # files
 VERILOG_SOURCES= $(VER_DIR)/fifo.v
