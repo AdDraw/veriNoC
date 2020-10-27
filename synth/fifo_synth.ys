@@ -1,0 +1,7 @@
+read_verilog ../srcs/resource/fifo.v
+proc; fsm; opt; memory; opt
+techmap; opt
+check
+# cover -o cvrg.rpt
+show;
+write_verilog ../srcs/resource/ff_synth.v
