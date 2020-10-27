@@ -1,5 +1,5 @@
-sim_build*
+sim_build
+__pycache__
 dump.vcd
-__pycache__/
 results.xml
 .idea/
