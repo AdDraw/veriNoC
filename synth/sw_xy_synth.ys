@@ -1,0 +1,7 @@
+read_verilog ../srcs/switch/simple_mesh_xy/xy_switch.v
+proc; fsm; opt; memory; opt
+techmap; opt
+check
+# cover -o cvrg.rpt
+show;
+write_verilog ../srcs/switch/simple_mesh_xy/xy_synth.v
