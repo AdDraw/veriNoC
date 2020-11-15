@@ -35,7 +35,7 @@ module fifo
 		$display("Verilog: FIFO_DEPTH_WIDTH %d",FIFO_DEPTH_WIDTH);
 		$display("Verilog: DATA_WIDTH\t%d", DATA_WIDTH);
 	end
-    
+
     // Registers
     integer i;
     reg [DATA_WIDTH-1 : 0] data_v;

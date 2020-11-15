@@ -1,6 +1,6 @@
 /*
   Author: Adam Drawc
-  Module Name: Switch usng XY algorithm for packet routing in a MESH NoC
+  Module Name: Switch using XY algorithm for packet routing in a MESH NoC
 
   Description:
    - NoC Structure: MESH
@@ -27,16 +27,20 @@
   3. MerryGoRound - you take from 1 input and then look at the input to the right(if the data is available)
 */
 
+`include "crossbar.v"
+`include "router_xy.v"
+`include "control_unit.v"
+`include "../../components/fifo.v"
+`include "packet_arbiter.v"
+
+
 `define PACKET_ADDR_X_W 4
 `define PACKET_ADDR_Y_W 4
 `define PACKET_DATA_W 8
 `define PACKET_HOP_CNT_W 4
 `define PACKET_W (`PACKET_ADDR_X_W + `PACKET_ADDR_Y_W + `PACKET_DATA_W)
 
-`define LEFT 0
-`define TOP 1
-`define RIGHT 2
-`define BOT 3
+`define INPUT_FIFO_DEPTH_WIDTH 3
 
 /*
   PACKET
@@ -47,148 +51,143 @@ module xy_switch
 # (
     parameter X_CORD = 0,
     parameter Y_CORD = 0,
-    parameter NEIGHBOURS_N = 4
+    parameter NEIGHBOURS_N = 5 // 1 is minimum cause RESOURCE
     )
   (
     // GLOBAL
     input clk_i,
     input rst_ni,
 
-    output busy_o,
-
     // SWITCH INPUTS
-    input [NEIGHBOURS_N-1 : 0] pckt_vld_sw_i,
-    input [`PACKET_W * NEIGHBOURS_N - 1 : 0] pckt_sw_i,
+    input   [NEIGHBOURS_N - 1 : 0] wr_en_sw_i,
+    input   [`PACKET_W * NEIGHBOURS_N - 1 : 0] pckt_sw_i,
+    output  [NEIGHBOURS_N - 1 : 0] in_fifo_full_o,
+    output  [NEIGHBOURS_N - 1 : 0] in_fifo_overflow_o,
+
     // SWITCH OUTPUTS
-    output [NEIGHBOURS_N-1 : 0] pckt_rd_sw_o,
-    output [NEIGHBOURS_N-1 : 0] pckt_vld_sw_o,
-    output [`PACKET_W * NEIGHBOURS_N - 1 : 0] pckt_sw_o,
-
-    // RESOURCE INPUT
-    input pckt_vld_r_i,
-    input [`PACKET_W - 1 : 0] pckt_r_i,
-    output pckt_rd_r_o,
-    // RESOURCE OUTPUT
-
-    output pckt_vld_r_o,
-    output [`PACKET_W - 1 : 0] pckt_r_o
+    input   [NEIGHBOURS_N - 1 : 0] nxt_fifo_full_i,
+    input   [NEIGHBOURS_N - 1 : 0] nxt_fifo_overflow_i,
+    output  [NEIGHBOURS_N - 1 : 0] wr_en_sw_o,
+    output  [`PACKET_W * NEIGHBOURS_N - 1 : 0] pckt_sw_o
     );
 
     // Wires
-    wire busy_w = (|{pckt_vld_sw_i, pckt_vld_r_i} == 1'b1) ? 1'b1 : 1'b0;
-    reg [`PACKET_W - 1 : 0] tmp_pckt_w;
-    wire [`PACKET_ADDR_X_W - 1 : 0] x_addr = tmp_pckt_w[`PACKET_W-1 : `PACKET_W - `PACKET_ADDR_X_W];
-    wire [`PACKET_ADDR_Y_W - 1 : 0] y_addr = tmp_pckt_w[`PACKET_W - `PACKET_ADDR_X_W - 1 : `PACKET_DATA_W];
+    wire [$clog2(NEIGHBOURS_N) - 1 : 0] mux_in_sel_w;
+    wire [$clog2(NEIGHBOURS_N) - 1 : 0] mux_out_sel_w;
+    wire [NEIGHBOURS_N -1 : 0]          vld_output_w;
+    wire [NEIGHBOURS_N -1 : 0]          vld_input_w;
+    wire [`PACKET_W * NEIGHBOURS_N - 1 : 0] data_out_w;
 
-    wire [`PACKET_W -1 : 0 ] pckt_sw_i_w [NEIGHBOURS_N - 1 : 0];
+    // Module Instantatiation
+    // Input BUFFERS
     genvar i;
     generate
-      for (i=0; i < NEIGHBOURS_N; i = i + 1) begin
-        assign pckt_sw_i_w[i] = pckt_sw_i[(i+1)*`PACKET_W -1 : i*`PACKET_W ];
+      // INTERNAL Signals
+      wire [`PACKET_W * NEIGHBOURS_N - 1 : 0] fifo_data_out_w;
+      wire [NEIGHBOURS_N - 1 : 0] rd_en_w;
+      wire [NEIGHBOURS_N - 1 : 0] empty_w;
+      wire [NEIGHBOURS_N - 1 : 0] underflow_w;
+      wire [`PACKET_W-1 : 0] pckt_in_chosen_w;
+      wire [NEIGHBOURS_N - 1 : 0] vld_input_w;
+      wire [`PACKET_ADDR_X_W - 1 : 0] x_addr_w = pckt_in_chosen_w[ `PACKET_W - 1 : `PACKET_DATA_W + `PACKET_ADDR_Y_W ];
+      wire [`PACKET_ADDR_Y_W - 1 : 0] y_addr_w = pckt_in_chosen_w[ `PACKET_W - `PACKET_ADDR_X_W - 1 : `PACKET_DATA_W ];
+
+      for (i=0; i < NEIGHBOURS_N; i = i + 1)
+      begin
+        wire [`PACKET_W -1 : 0] x_pckt_in_w = pckt_sw_i[(i+1)*`PACKET_W -1 : i*`PACKET_W ];
+        wire [`PACKET_W -1 : 0] x_pckt_out_w  ;
+
+        fifo
+          #(
+            .DATA_WIDTH(`PACKET_W),
+            .FIFO_DEPTH_WIDTH(`INPUT_FIFO_DEPTH_WIDTH)
+            )
+          x_input_fifo (
+            .clk_i( clk_i ),
+            .rst_ni( rst_ni ),
+            .wr_en_i( wr_en_sw_i[i] ),
+            .rd_en_i( rd_en_w[i] ),
+            .data_i( x_pckt_in_w ),
+            .data_o( x_pckt_out_w ),
+            .full_o( in_fifo_full_o[i] ),
+            .empty_o( empty_w[i] ),
+            .overflow_o( in_fifo_overflow_o[i] ),
+            .underflow_o( underflow_w[i] )
+            );
+
+        assign fifo_data_out_w [(i+1)*`PACKET_W -1 : i*`PACKET_W]  = x_pckt_out_w;
       end
     endgenerate
 
+    // ARBITER - chooses input port
+    arbiter
+    # (
+        .INPUT_N(NEIGHBOURS_N)
+        )
+    arb (
+        .vld_input_i(vld_input_w),
+        .mux_in_sel_o(mux_in_sel_w)
+        );
 
-    // Registers
-    reg [`PACKET_W - 1 : 0] pckt_r_v;
-    reg pckt_vld_r_v;
-    reg [`PACKET_W - 1 : 0] pckt_sw_v [NEIGHBOURS_N - 1 : 0] ;
-    reg [NEIGHBOURS_N-1 : 0] pckt_vld_sw_v;
+    // ROUTER - chooses output port
+    xy_router
+    # (
+        .X_CORD(X_CORD),
+        .Y_CORD(Y_CORD),
+        .PACKET_ADDR_X_W(`PACKET_ADDR_X_W),
+        .PACKET_ADDR_Y_W(`PACKET_ADDR_Y_W),
+        .OUTPUT_N_W($clog2(NEIGHBOURS_N))
+        )
+    router
+      (
+        .x_addr(x_addr_w),
+        .y_addr(y_addr_w),
+        .mux_out_sel_o(mux_out_sel_w)
+        );
+
+    // CONTROL UNIT
+    control_unit
+    # (
+        .INPUT_N(NEIGHBOURS_N)
+        )
+    control_u
+      (
+        .clk_i(clk_i),
+        .rst_ni(rst_ni),
+        .full_i(nxt_fifo_full_i),
+        .empty_i(empty_w),
+        .mux_in_sel_i(mux_in_sel_w),
+        .mux_out_sel_i(mux_out_sel_w),
+        .rd_en_o(rd_en_w),
+        .wr_en_o(wr_en_sw_o),
+        .vld_output_o(vld_output_w),
+        .vld_input_o(vld_input_w)
+        );
+
+    // CROSSBAR
+    n_to_n_crossbar
+    # (
+        .DATA_WIDTH(`PACKET_W),
+        .PORT_N(NEIGHBOURS_N)
+        )
+    crossbar
+      (
+        .clk_i(clk_i),
+        .rst_ni(rst_ni),
+        .data_i(fifo_data_out_w),
+        .mux_in_sel_i(mux_in_sel_w),
+        .vld_output_i(vld_output_w),
+        .mux_out_sel_i(mux_out_sel_w),
+        .data_o(data_out_w),
+        .pckt_in_chosen_o(pckt_in_chosen_w)
+        );
 
     // Vars
     integer iter;
-
-    // Input Data Arbiter
-    /*
-      Chooses which packet should be routed
-
-      v0.5 - simple and with/ justice
-       - LEFT has most priority
-       - after that TOP
-       - after that RIGHT
-       - after that BOTTOm
-       - after that RESOURCE
-
-      v1.0 - RoundRobin + hopcounts (not yet done)
-
-    */
-    always @(*) begin
-      if (|{pckt_vld_sw_i, pckt_vld_r_i}) begin
-        casez ({pckt_vld_sw_i[3:0], pckt_vld_r_i})
-          5'b1????: tmp_pckt_w = pckt_sw_i_w[0]; // LEFT always has priority
-          5'b01???: tmp_pckt_w = pckt_sw_i_w[1];
-          5'b001??: tmp_pckt_w = pckt_sw_i_w[2];
-          5'b0001?: tmp_pckt_w = pckt_sw_i_w[3];
-          5'b00001: tmp_pckt_w = pckt_r_i;
-          default : tmp_pckt_w = 'h0;
-        endcase
-      end
-      else begin
-        tmp_pckt_w = 'h0;
-      end
-    end
-
-    // XY algorithm
-    /*
-      first X movement (at X = X_addr move in Y axis)
-      next Y movement (stop at Y=Y_addr)
-
-    */
-    always @(posedge clk_i or negedge rst_ni) begin
-
-      if (!rst_ni) begin
-        pckt_r_v <= 'b0;
-        pckt_vld_r_v <= 1'b0;
-
-        for (iter=0; iter < NEIGHBOURS_N; iter = iter + 1) begin
-          pckt_sw_v[iter] <= 'b0;
-          pckt_vld_sw_v[iter] <= 'b0 ;
-        end
-      end
-      else begin
-        if (x_addr == X_CORD ) begin
-          // X movement Finished, start ELEVATION or DEELEVATION
-          // NEIGHBOUR 0 - left
-          // NEIGHBOUR 1 - top
-          // NEIGHBOUR 2 - right
-          // NEIGHBOUR 3 - bottom
-          if (y_addr == Y_CORD) begin
-          // Y movement Finished, route to Resource
-            pckt_r_v <= tmp_pckt_w;
-            pckt_vld_r_v <= 1'b1;
-          end
-          else if (y_addr > Y_CORD) begin
-            //Y movement not finished
-            pckt_sw_v[`BOT] <= tmp_pckt_w;
-            pckt_vld_sw_v[`BOT] <= 1'b1;
-          end
-          else begin
-            pckt_sw_v[`TOP] <= tmp_pckt_w;
-            pckt_vld_sw_v[`TOP] <= 1'b1;
-          end
-        end
-        else begin
-          if (x_addr > X_CORD) begin
-            //Y movement not finished
-            pckt_sw_v[`RIGHT] <= tmp_pckt_w;
-            pckt_vld_sw_v[`RIGHT] <= 1'b1;
-          end
-          else begin
-            pckt_sw_v[`LEFT] <= tmp_pckt_w;
-            pckt_vld_sw_v[`LEFT] <= 1'b1;
-          end
-        end
-      end
-
-    end
-
     generate
       for (i=0; i < NEIGHBOURS_N; i = i + 1) begin
-        assign pckt_sw_o[(i+1)*`PACKET_W -1 : i*`PACKET_W ] = pckt_sw_v[i];
+        assign pckt_sw_o[(i+1)*`PACKET_W -1 : i*`PACKET_W ] = data_out_w[(i+1)*`PACKET_W -1 : i*`PACKET_W ];
       end
     endgenerate
-
-    assign pckt_vld_sw_o = pckt_vld_sw_v;
-    assign busy_o = busy_w;
 
 endmodule
