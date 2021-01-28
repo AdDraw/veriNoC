@@ -5,33 +5,33 @@
 
 module control_unit
 # (
-    parameter INPUT_N = 4
+    parameter PORT_N = 5
     )
   (
     input clk_i,
     input rst_ni,
     // Processing Input Requests
     // If there are packets ready choose the one to read
-    input  [INPUT_N - 1 : 0] empty_i,
-    output [INPUT_N - 1 : 0] rd_en_o,
-    output [INPUT_N - 1 : 0] vld_input_o,
+    input  [PORT_N - 1 : 0] empty_i,
+    output [PORT_N - 1 : 0] rd_en_o,
+    output [PORT_N - 1 : 0] vld_input_o,
 
     // Processing output
-    input  [INPUT_N - 1 : 0] full_i,
-    output [INPUT_N - 1 : 0] wr_en_o,
-    output [INPUT_N -1  : 0] vld_output_o,
+    input  [PORT_N - 1 : 0] full_i,
+    output [PORT_N - 1 : 0] wr_en_o,
+    output [PORT_N -1  : 0] vld_output_o,
 
     // Router Input
-    input [$clog2(INPUT_N)-1 : 0] mux_in_sel_i,
-    input [$clog2(INPUT_N)-1 : 0] mux_out_sel_i
+    input [$clog2(PORT_N)-1 : 0] mux_in_sel_i,
+    input [$clog2(PORT_N)-1 : 0] mux_out_sel_i
 
     );
 
-    reg [INPUT_N-1 : 0] vld_input_v;
-    reg [INPUT_N-1 : 0] vld_output_v;
+    reg [PORT_N-1 : 0] vld_input_v;
+    reg [PORT_N-1 : 0] vld_output_v;
 
-    wire [INPUT_N-1 : 0] rd_en_w = ~( empty_i | vld_input_v );
-    wire [INPUT_N - 1 : 0] wr_en_w = vld_output_v & ~(full_i);
+    wire [PORT_N-1 : 0] rd_en_w = ~( empty_i | vld_input_v );
+    wire [PORT_N - 1 : 0] wr_en_w = vld_output_v & ~(full_i);
 
     // Read while HOT
     // rd_en control

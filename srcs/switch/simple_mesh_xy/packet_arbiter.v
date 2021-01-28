@@ -1,22 +1,21 @@
-`define N_WIDTH $clog2(INPUT_N)
-
 module arbiter
 # (
-    parameter INPUT_N = 5
+    parameter PORT_N = 5
     )
   (
-    input [INPUT_N - 1 : 0]         vld_input_i,
-    output [$clog2(INPUT_N)-1 : 0]  mux_in_sel_o
+    input [PORT_N - 1 : 0]         vld_input_i,
+    output [$clog2(PORT_N)-1 : 0]  mux_in_sel_o
     );
+
     localparam RESOURCE = 0;
     localparam WEST     = 1;
     localparam EAST     = 2;
     localparam NORTH    = 3;
     localparam SOUTH    = 4;
 
-
-    reg [$clog2(INPUT_N)-1 : 0]  mux_in_sel_w;
+    reg [$clog2(PORT_N)-1 : 0]  mux_in_sel_w;
     // Vertical priority
+    // N > S > E > W > R
     always @(*)
     begin
       if (|vld_input_i)
@@ -54,6 +53,7 @@ module arbiter
 
       end
     end
+
     assign mux_in_sel_o = mux_in_sel_w;
 
 endmodule
