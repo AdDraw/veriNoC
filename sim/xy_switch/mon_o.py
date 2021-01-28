@@ -30,12 +30,12 @@ class SWOMon(BusMonitor):
             await clkedg
             await ro
             bus_values = self.bus.capture()
-            data_o = bus_values["data_o"].value
-            empty_o = bus_values["empty_o"].value
-            full_o = bus_values["full_o"].value
-            underflow_o = bus_values["underflow_o"].value
-            overflow_o = bus_values["overflow_o"].value
+            busy_o = bus_values["busy_o"].value
+            pckt_sw_o = bus_values["pckt_sw_o"].value
+            pckt_r_o = bus_values["pckt_r_o"].value
+            pckt_vld_r_o = bus_values["pckt_vld_r_o"].value
+            pckt_rd_sw_o = bus_values["pckt_rd_sw_o"].value
 
-            cycle_results = [data_o, empty_o, full_o, underflow_o, overflow_o]
+            cycle_results = [busy_o, pckt_sw_o, pckt_r_o, pckt_vld_r_o, pckt_rd_sw_o]
             self.log.debug(f'T_o: {cycle_results}')
             self._recv(cycle_results)

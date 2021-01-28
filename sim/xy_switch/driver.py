@@ -10,8 +10,9 @@ import os
 
 # TODO: Test if it works
 
+
 class SWPacketDriver(BusDriver):
-    _signals = ["pckt_sw_i", "pckt_vld_sw_i", "rst_ni"]
+    _signals = ["pckt_sw_i", "wr_en_i", "rst_ni"]
 
     def __init__(self, entity, name, clock, log_lvl=INFO):
         self.entity = entity
@@ -36,7 +37,7 @@ class SWPacketDriver(BusDriver):
         for i in range(n):
             await RisingEdge(self.clock)
             self.bus.pckt_sw_i <= getrandbits(self.packet_width * self.neighbours_n)
-            self.bus.pckt_vld_sw_i <= 1
+            self.bus.pckt_vld_sw_i <= getrandbits(self.neighbours_n)
 
     async def write_to_single_input(self, input_id, val, x, y):
         if 0 > input_id > 2**self.neighbours_n:
