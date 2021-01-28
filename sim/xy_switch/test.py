@@ -14,21 +14,36 @@ CLOCK_PERIOD_NS = 10
 
 
 class SWTB:
+    """
+        TB suite for a singular XY Switch
+        inputs should be driven by FIFO drivers ( multiple or one )
+        Monitors should look at the outputs
+
+        XY Switch has:
+        - input buffers done as circular FIFOs
+        - XY routing
+        - Static priority based input chooser (arbiter)
+        - output registers hold intermediate values
+
+        Communication with other swiches or resources is done through FIFO handshaking
+
+        Data from within the resource comes at the lowest priority.
+    """
     def __init__(self, dut, log_lvl=INFO):
         self.dut = dut
+        self.expected_out = []
         self.sw_drv = SWPacketDriver(dut, "", dut.clk_i, log_lvl)
         self.sw_i_mon = SWIMon(dut, "", dut.clk_i, log_lvl, callback=self.mon_callback)
         self.sw_o_mon = SWOMon(dut, "", dut.clk_i, log_lvl)
-        self.expected = []
-        self.sb = Scoreboard(dut, fail_immediately=True)
-        self.sb.add_interface(self.sw_o_mon, self.expected)
+        self.sb = Scoreboard(dut, fail_immediately=False)
+        self.sb.add_interface(self.sw_o_mon, self.expected_out)
 
     def setup_dut(self, cycle_n):
         cocotb.fork(self.sw_drv.reset_sw())
         cocotb.fork(Clock(self.dut.clk_i, CLOCK_PERIOD_NS).start(cycles=cycle_n))
 
     def mon_callback(self, t):
-        self.expected.append(t)
+        self.expected_out.append(t)
 
 
 @cocotb.test()

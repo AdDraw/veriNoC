@@ -4,9 +4,9 @@
 
   Description:
    - NoC Structure: MESH
-   - Sides: 2, 3, 4 (Depends on the placement of the switch in the mesh)
-   - Resource and SW clocked with the same speed(for now)
-   - 1->1, no broadcasting (1->N)
+   - Sides: 2, 3, 4 (Depends on the placement of the switch in the mesh) -- not done yet
+   - Resource and SW clocked with the same speed(for now) -- done
+   - 1->1, no broadcasting (1->N) -- done
 
   Should be able to route packets from 1 input to 1 of the outputs.
   Using a simple XY algorithm based on the address.
@@ -21,88 +21,92 @@
   2. Have an XY address and the data
 
   Priorities:
-  1. Hop count - in the packet there will be bits for this priority indicator
-  2. We can have a stack with priority
+  1. Hop count - in the packet there will be bits for this priority indicator -- not used
+  2. We can have a stack with priority -- not used
      - When a packet is available it's ID is put on the stack
   3. MerryGoRound - you take from 1 input and then look at the input to the right(if the data is available)
+  4. Set priority
+     - first Vertical then Horizontal packet movement
+
+
+   PACKET :
+   |  X_Addr | [`PCKT_DATA_W + `PCKT_YADDR_W + `PCKT_XADDR_W - 1 : `PCKT_DATA_W + `PCKT_YADDR_W ]
+   |  Y_addr | [`PCKT_DATA_W + `PCKT_YADDR_W - 1 : `PCKT_DATA_W ]
+   |  DATA   | [`PCKT_DATA_W - 1 : 0 ]
+
 */
 
-`include "crossbar.v"
-`include "router_xy.v"
-`include "control_unit.v"
-`include "../../components/fifo.v"
-`include "packet_arbiter.v"
-
-
-`define PACKET_ADDR_X_W 4
-`define PACKET_ADDR_Y_W 4
-`define PACKET_DATA_W 8
-`define PACKET_HOP_CNT_W 4
-`define PACKET_W (`PACKET_ADDR_X_W + `PACKET_ADDR_Y_W + `PACKET_DATA_W)
-
-`define INPUT_FIFO_DEPTH_WIDTH 3
-
-/*
-  PACKET
-  |  X_Addr  |  Y_addr  |   DATA   |
-*/
+// Includes
+// `include "crossbar.v"
+// `include "router_xy.v"
+// `include "control_unit.v"
+// `include "../../components/fifo.v"
+// `include "packet_arbiter.v"
 
 module xy_switch
 # (
     parameter X_CORD = 0,
     parameter Y_CORD = 0,
-    parameter NEIGHBOURS_N = 5 // 1 is minimum cause RESOURCE
+    parameter PORT_N = 5, // 1 is minimum cause RESOURCE,
+    parameter IN_FIFO_DEPTH_W = 3,
+    parameter PCKT_XADDR_W = 4,
+    parameter PCKT_YADDR_W = 4,
+    parameter PCKT_DATA_W = 8,
+    parameter PCKT_W = PCKT_XADDR_W + PCKT_YADDR_W + PCKT_DATA_W
     )
   (
+
     // GLOBAL
     input clk_i,
     input rst_ni,
 
-    // SWITCH INPUTS
-    input   [NEIGHBOURS_N - 1 : 0] wr_en_sw_i,
-    input   [`PACKET_W * NEIGHBOURS_N - 1 : 0] pckt_sw_i,
-    output  [NEIGHBOURS_N - 1 : 0] in_fifo_full_o,
-    output  [NEIGHBOURS_N - 1 : 0] in_fifo_overflow_o,
+    // SWITCH INPUT BUFFER ports
+    input   [PORT_N - 1 : 0]            wr_en_sw_i,
+    input   [PCKT_W * PORT_N - 1 : 0]  pckt_sw_i,
+    output  [PORT_N - 1 : 0]            in_fifo_full_o,
+    output  [PORT_N - 1 : 0]            in_fifo_overflow_o,
 
-    // SWITCH OUTPUTS
-    input   [NEIGHBOURS_N - 1 : 0] nxt_fifo_full_i,
-    input   [NEIGHBOURS_N - 1 : 0] nxt_fifo_overflow_i,
-    output  [NEIGHBOURS_N - 1 : 0] wr_en_sw_o,
-    output  [`PACKET_W * NEIGHBOURS_N - 1 : 0] pckt_sw_o
+    // SWITCH OUTPUT BUFFER ports
+    input   [PORT_N - 1 : 0]            nxt_fifo_full_i,
+    input   [PORT_N - 1 : 0]            nxt_fifo_overflow_i,
+    output  [PORT_N - 1 : 0]            wr_en_sw_o,
+    output  [PCKT_W * PORT_N - 1 : 0]   pckt_sw_o
     );
 
     // Wires
-    wire [$clog2(NEIGHBOURS_N) - 1 : 0] mux_in_sel_w;
-    wire [$clog2(NEIGHBOURS_N) - 1 : 0] mux_out_sel_w;
-    wire [NEIGHBOURS_N -1 : 0]          vld_output_w;
-    wire [NEIGHBOURS_N -1 : 0]          vld_input_w;
-    wire [`PACKET_W * NEIGHBOURS_N - 1 : 0] data_out_w;
+    wire [PORT_N -1 : 0]            vld_input_w;
+    wire [PORT_N -1 : 0]            vld_output_w;
+    wire [$clog2(PORT_N) - 1 : 0]   mux_in_sel_w;
+    wire [$clog2(PORT_N) - 1 : 0]   mux_out_sel_w;
+    wire [PCKT_W * PORT_N - 1 : 0]  data_out_w;
+    wire [PCKT_W - 1 : 0]           pckt_in_chosen_w;
+
+    // Wires assignments
+    wire [PCKT_XADDR_W - 1 : 0] x_addr_w = pckt_in_chosen_w[ PCKT_W - 1 : PCKT_DATA_W + PCKT_YADDR_W ];
+    wire [PCKT_YADDR_W - 1 : 0] y_addr_w = pckt_in_chosen_w[ PCKT_W - PCKT_XADDR_W - 1 : PCKT_DATA_W ];
 
     // Module Instantatiation
     // Input BUFFERS
     genvar i;
     generate
       // INTERNAL Signals
-      wire [`PACKET_W * NEIGHBOURS_N - 1 : 0] fifo_data_out_w;
-      wire [NEIGHBOURS_N - 1 : 0] rd_en_w;
-      wire [NEIGHBOURS_N - 1 : 0] empty_w;
-      wire [NEIGHBOURS_N - 1 : 0] underflow_w;
-      wire [`PACKET_W-1 : 0] pckt_in_chosen_w;
-      wire [NEIGHBOURS_N - 1 : 0] vld_input_w;
-      wire [`PACKET_ADDR_X_W - 1 : 0] x_addr_w = pckt_in_chosen_w[ `PACKET_W - 1 : `PACKET_DATA_W + `PACKET_ADDR_Y_W ];
-      wire [`PACKET_ADDR_Y_W - 1 : 0] y_addr_w = pckt_in_chosen_w[ `PACKET_W - `PACKET_ADDR_X_W - 1 : `PACKET_DATA_W ];
+      wire [PCKT_W * PORT_N - 1 : 0]  fifo_data_out_w;
+      wire [PORT_N - 1 : 0]           rd_en_w;
+      wire [PORT_N - 1 : 0]           empty_w;
+      wire [PORT_N - 1 : 0]           underflow_w;
 
-      for (i=0; i < NEIGHBOURS_N; i = i + 1)
+      for (i=0; i < PORT_N; i = i + 1)
       begin
-        wire [`PACKET_W -1 : 0] x_pckt_in_w = pckt_sw_i[(i+1)*`PACKET_W -1 : i*`PACKET_W ];
-        wire [`PACKET_W -1 : 0] x_pckt_out_w  ;
+        wire [PCKT_W -1 : 0] x_pckt_in_w = pckt_sw_i[PCKT_W * ( i + 1 ) - 1 : PCKT_W * i];
+        wire [PCKT_W -1 : 0] x_pckt_out_w;
 
         fifo
           #(
-            .DATA_WIDTH(`PACKET_W),
-            .FIFO_DEPTH_WIDTH(`INPUT_FIFO_DEPTH_WIDTH)
+            .DATA_WIDTH(PCKT_W),
+            .FIFO_DEPTH_WIDTH(IN_FIFO_DEPTH_W)
             )
-          x_input_fifo (
+        x_input_fifo
+          (
             .clk_i( clk_i ),
             .rst_ni( rst_ni ),
             .wr_en_i( wr_en_sw_i[i] ),
@@ -115,16 +119,17 @@ module xy_switch
             .underflow_o( underflow_w[i] )
             );
 
-        assign fifo_data_out_w [(i+1)*`PACKET_W -1 : i*`PACKET_W]  = x_pckt_out_w;
+        assign fifo_data_out_w [PCKT_W * ( i + 1 ) - 1 : PCKT_W * i]  = x_pckt_out_w;
       end
     endgenerate
 
     // ARBITER - chooses input port
     arbiter
     # (
-        .INPUT_N(NEIGHBOURS_N)
+        .PORT_N(PORT_N)
         )
-    arb (
+    arb
+      (
         .vld_input_i(vld_input_w),
         .mux_in_sel_o(mux_in_sel_w)
         );
@@ -134,9 +139,9 @@ module xy_switch
     # (
         .X_CORD(X_CORD),
         .Y_CORD(Y_CORD),
-        .PACKET_ADDR_X_W(`PACKET_ADDR_X_W),
-        .PACKET_ADDR_Y_W(`PACKET_ADDR_Y_W),
-        .OUTPUT_N_W($clog2(NEIGHBOURS_N))
+        .PACKET_ADDR_X_W(PCKT_XADDR_W),
+        .PACKET_ADDR_Y_W(PCKT_YADDR_W),
+        .OUTPUT_N_W($clog2(PORT_N))
         )
     router
       (
@@ -148,7 +153,7 @@ module xy_switch
     // CONTROL UNIT
     control_unit
     # (
-        .INPUT_N(NEIGHBOURS_N)
+        .PORT_N(PORT_N)
         )
     control_u
       (
@@ -167,8 +172,8 @@ module xy_switch
     // CROSSBAR
     n_to_n_crossbar
     # (
-        .DATA_WIDTH(`PACKET_W),
-        .PORT_N(NEIGHBOURS_N)
+        .DATA_WIDTH(PCKT_W),
+        .PORT_N(PORT_N)
         )
     crossbar
       (
@@ -182,12 +187,12 @@ module xy_switch
         .pckt_in_chosen_o(pckt_in_chosen_w)
         );
 
-    // Vars
-    integer iter;
-    generate
-      for (i=0; i < NEIGHBOURS_N; i = i + 1) begin
-        assign pckt_sw_o[(i+1)*`PACKET_W -1 : i*`PACKET_W ] = data_out_w[(i+1)*`PACKET_W -1 : i*`PACKET_W ];
-      end
-    endgenerate
+    // generate
+    //   for (i = 0; i < PORT_N; i = i + 1) begin
+    //     assign pckt_sw_o[(i + 1) * PCKT_W - 1 : i * PCKT_W ] = data_out_w[(i + 1) * PCKT_W - 1 : i * PCKT_W ];
+    //   end
+    // endgenerate
+
+    assign pckt_sw_o = data_out_w;
 
 endmodule
