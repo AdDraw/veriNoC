@@ -6,8 +6,10 @@ from logging import INFO, DEBUG
 
 # TODO: Make a working version
 
+# Output monitor that collects the data from the output signals of the module property
+# Used to compare with the input monitor in the ScoreBoard object
 class SWOMon(BusMonitor):
-    _signals = ["busy_o", "pckt_sw_o", "pckt_r_o", "pckt_vld_r_o", "pckt_rd_sw_o"]
+    _signals = [ "in_fifo_full_o", "in_fifo_overflow_o", "wr_en_sw_o", "pckt_sw_o"]
 
     def __init__(self, entity, name, clock, log_lvl=INFO, callback=None):
         self.entity = entity
@@ -30,12 +32,11 @@ class SWOMon(BusMonitor):
             await clkedg
             await ro
             bus_values = self.bus.capture()
-            busy_o = bus_values["busy_o"].value
+            in_fifo_full_o = bus_values["in_fifo_full_o"].value
+            in_fifo_overflow_o = bus_values["in_fifo_overflow_o"].value
+            wr_en_sw_o = bus_values["wr_en_sw_o"].value
             pckt_sw_o = bus_values["pckt_sw_o"].value
-            pckt_r_o = bus_values["pckt_r_o"].value
-            pckt_vld_r_o = bus_values["pckt_vld_r_o"].value
-            pckt_rd_sw_o = bus_values["pckt_rd_sw_o"].value
 
-            cycle_results = [busy_o, pckt_sw_o, pckt_r_o, pckt_vld_r_o, pckt_rd_sw_o]
+            cycle_results = [in_fifo_full_o, in_fifo_overflow_o, wr_en_sw_o, pckt_sw_o]
             self.log.debug(f'T_o: {cycle_results}')
             self._recv(cycle_results)

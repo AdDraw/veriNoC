@@ -22,12 +22,10 @@ module n_to_n_crossbar
     input   rst_ni,
 
     input   [(PORT_N * DATA_WIDTH) - 1 : 0] data_i,
-    input   [$clog2(PORT_N) - 1 : 0] mux_in_sel_i,
+    input   [$clog2(PORT_N) - 1 : 0]        mux_in_sel_i,
+    input   [$clog2(PORT_N) - 1 : 0]        mux_out_sel_i,
 
-    input   [PORT_N - 1 : 0] vld_output_i,
-    input   [$clog2(PORT_N) - 1 : 0] mux_out_sel_i,
-
-    output  [DATA_WIDTH - 1 : 0] pckt_in_chosen_o,
+    output  [DATA_WIDTH - 1 : 0]            pckt_in_chosen_o,
     output  [(PORT_N * DATA_WIDTH) - 1 : 0] data_o
     );
 
@@ -40,7 +38,7 @@ module n_to_n_crossbar
       // Input data unroll
       for( i = 0; i < PORT_N; i = i + 1)
       begin
-        assign data_o[DATA_WIDTH*(i+1) - 1 : DATA_WIDTH*i] = mux_out_data_v[i];
+        assign mux_in[i] = data_i[DATA_WIDTH*(i+1) - 1 : DATA_WIDTH*i];
       end
       // INPUT MUX
       wire [DATA_WIDTH - 1 : 0] mux_in_data_chosen_w = mux_in[mux_in_sel_i];
@@ -48,26 +46,12 @@ module n_to_n_crossbar
     endgenerate
 
     // OUTPUT MUX, with registers
-    always @(posedge clk_i or negedge rst_ni)
+    always @(*)
     begin
-      if (!rst_ni)
+      mux_out_data_v[mux_out_sel_i] = mux_in_data_chosen_w;
+      for (i = 0; i < PORT_N; i = i + 1)
       begin
-          for (i = 0; i < PORT_N; i = i + 1)
-          begin
-            mux_out_data_v[i] <= 0;
-          end
-      end
-      else
-      begin
-        for (i = 0; i < PORT_N; i = i + 1)
-        begin
-          mux_out_data_v[i] <= mux_out_data_v[i];
-        end
-
-        if (!vld_output_i[mux_out_sel_i]) // if the specified output is not vld then it's ok to write data to it :) if not then wait
-        begin
-            mux_out_data_v[mux_out_sel_i] <= mux_in_data_chosen_w;
-        end
+        mux_out_data_v[i] = mux_out_data_v[i];
       end
     end
 

@@ -9,11 +9,11 @@ import os
 
 import numpy as np
 
-# TODO: Make a working version
-
+# Input monitor logs the values that appear at the input signals of the module
+# Based on the internal mock imitation of the module provides calculated output values
 
 class SWIMon(BusMonitor):
-    _signals = ["pckt_sw_i", "pckt_vld_sw_i", "pckt_r_i", "pckt_vld_r_i", "rst_ni"]
+    _signals = ["pckt_sw_i", "wr_en_sw_i", "rst_ni"]
 
     def __init__(self, entity, name, clock, log_lvl=INFO, callback=None):
         self.entity = entity
@@ -21,11 +21,12 @@ class SWIMon(BusMonitor):
         self.clock = clock
         self.trans_recv = []
 
+        # Parameters
         self.packet_x_addr_width = int(os.environ["PACKET_X_ADDR_W"])
         self.packet_y_addr_width = int(os.environ["PACKET_Y_ADDR_W"])
         self.packet_data_width = int(os.environ["PACKET_DATA_W"])
         self.packet_width = int(os.environ["PACKET_W"])
-        self.neighbours_n = int(os.environ["NEIGHBOURS_N"])
+        self.neighbours_n = int(os.environ["PORT_N"])
 
         BusMonitor.__init__(self, entity, name, clock, callback=callback)
         if log_lvl == DEBUG:
@@ -48,8 +49,8 @@ class SWIMon(BusMonitor):
         # Output Regs
         pckt_sw_o = np.zeros(4)
         pckt_sw_nxt = np.zeros(4)
-        pckt_vld_sw_o = np.zeros(4)
-        pckt_vld_sw_nxt = np.zeros(4)
+        # pckt_vld_sw_o = np.zeros(4)
+        # pckt_vld_sw_nxt = np.zeros(4)
         pckt_rd_sw_o = np.zeros(4)
         pckt_rd_sw_nxt = np.zeros(4)
 
@@ -77,11 +78,11 @@ class SWIMon(BusMonitor):
             await ro
 
             bus_values = self.bus.capture()
-            pckt_sw_i = bus_values["pckt_sw_i"].value
-            pckt_vld_sw_i = bus_values["pckt_vld_sw_i"].value
-            pckt_r_i = bus_values["pckt_r_i"].value
-            pckt_vld_r_i = bus_values["pckt_vld_r_i"].value
-            rst_ni = bus_values["rst_ni"].value
+            # pckt_sw_i = bus_values["pckt_sw_i"].value
+            # pckt_vld_sw_i = bus_values["pckt_vld_sw_i"].value
+            # pckt_r_i = bus_values["pckt_r_i"].value
+            # pckt_vld_r_i = bus_values["pckt_vld_r_i"].value
+            # rst_ni = bus_values["rst_ni"].value
 
             self.log.debug(f"\nIn Bus {bus_values}")
 
