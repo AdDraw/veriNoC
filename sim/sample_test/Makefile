@@ -23,7 +23,6 @@ ENABLE_HIGH_SAT 		= "1'b1"
 ifeq ($(SIM), verilator)
 		COCOTB_HDL_TIMEUNIT = 1ns
 		COCOTB_HDL_TIMEPRECISION = 1ps
-		export VERILATOR_TRACE = 1
 		COMPILE_ARGS += -O3
 		EXTRA_ARGS += -GCNT_BITWIDTH=$(CNT_BITWIDTH)
 		EXTRA_ARGS += -GALMOST_FULL_LEVEL=$(ALMOST_FULL_LEVEL)
@@ -45,5 +44,4 @@ ifeq ($(PROF), 1)
     export COCOTB_ENABLE_PROFILING=1
 endif
 
-include $(shell cocotb-config --makefiles)/Makefile.inc
 include $(shell cocotb-config --makefiles)/Makefile.sim

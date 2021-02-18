@@ -1,0 +1,158 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Tue Feb 16 22:24:19 2021
+[*]
+[dumpfile] "/home/adam/studia/magiament/sim/xy_switch/dump.vcd"
+[dumpfile_mtime] "Tue Feb 16 22:23:40 2021"
+[dumpfile_size] 18600
+[savefile] "/home/adam/studia/magiament/sim/xy_switch/gtkwave_template.sav"
+[timestart] 110
+[size] 2364 1754
+[pos] 691 96
+*-4.452138 163 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.xy_switch.
+[treeopen] top.xy_switch.crossbar.
+[treeopen] top.xy_switch.genblk1(0).
+[treeopen] top.xy_switch.genblk1(1).
+[treeopen] top.xy_switch.genblk1(2).
+[treeopen] top.xy_switch.genblk1(3).
+[treeopen] top.xy_switch.genblk1(4).
+[sst_width] 279
+[signals_width] 538
+[sst_expanded] 1
+[sst_vpaned_height] 545
+@800200
+-Parameters
+@24
+top.xy_switch.crossbar.DATA_WIDTH[31:0]
+top.xy_switch.crossbar.PORT_N[31:0]
+top.xy_switch.router.RESOURCE[31:0]
+top.xy_switch.router.WEST[31:0]
+top.xy_switch.router.EAST[31:0]
+top.xy_switch.router.NORTH[31:0]
+top.xy_switch.router.SOUTH[31:0]
+top.xy_switch.router.OUTPUT_N_W[31:0]
+top.xy_switch.router.PACKET_ADDR_X_W[31:0]
+top.xy_switch.router.PACKET_ADDR_Y_W[31:0]
+top.xy_switch.router.X_CORD[31:0]
+top.xy_switch.router.Y_CORD[31:0]
+@1000200
+-Parameters
+@28
+[color] 2
+top.xy_switch.control_u.clk_i
+[color] 2
+top.xy_switch.control_u.rst_ni
+@800200
+-TOP
+@22
+top.in_fifo_overflow_o[4:0]
+top.in_fifo_full_o[4:0]
+top.nxt_fifo_full_i[4:0]
+top.pckt_sw_i[79:0]
+top.pckt_sw_o[79:0]
+top.nxt_fifo_overflow_i[4:0]
+@28
+top.wr_en_sw_i[4:0]
+top.wr_en_sw_o[4:0]
+@1000200
+-TOP
+@c00200
+-arbiter_unit
+@28
+top.xy_switch.arb.mux_in_sel_o[2:0]
+top.xy_switch.arb.mux_in_sel_w[2:0]
+@22
+top.xy_switch.arb.vld_input_i[4:0]
+@1401200
+-arbiter_unit
+@800200
+-control_unit
+@28
+top.xy_switch.control_u.full_i[4:0]
+top.xy_switch.control_u.empty_i[4:0]
+top.xy_switch.control_u.mux_in_sel_i[2:0]
+top.xy_switch.control_u.mux_out_sel_i[2:0]
+top.xy_switch.control_u.rd_en_o[4:0]
+top.xy_switch.control_u.rd_en_w[4:0]
+top.xy_switch.control_u.vld_input_o[4:0]
+top.xy_switch.control_u.vld_output_o[4:0]
+top.xy_switch.control_u.vld_input_v[4:0]
+top.xy_switch.control_u.vld_output_v[4:0]
+top.xy_switch.control_u.wr_en_o[4:0]
+top.xy_switch.control_u.wr_en_w[4:0]
+@1000200
+-control_unit
+@800200
+-crossbar_unit
+@22
+top.xy_switch.crossbar.data_i[79:0]
+top.xy_switch.crossbar.data_o[79:0]
+top.xy_switch.crossbar.mux_in(0)[15:0]
+top.xy_switch.crossbar.mux_in(1)[15:0]
+top.xy_switch.crossbar.mux_in(3)[15:0]
+top.xy_switch.crossbar.mux_in(2)[15:0]
+top.xy_switch.crossbar.mux_in(4)[15:0]
+top.xy_switch.crossbar.mux_in_data_chosen_w[15:0]
+@28
+top.xy_switch.crossbar.mux_in_sel_i[2:0]
+@22
+top.xy_switch.crossbar.mux_out_data_v(0)[15:0]
+top.xy_switch.crossbar.mux_out_data_v(1)[15:0]
+top.xy_switch.crossbar.mux_out_data_v(2)[15:0]
+top.xy_switch.crossbar.mux_out_data_v(3)[15:0]
+top.xy_switch.crossbar.mux_out_data_v(4)[15:0]
+@28
+top.xy_switch.crossbar.mux_out_sel_i[2:0]
+@22
+top.xy_switch.crossbar.pckt_in_chosen_o[15:0]
+@29
+top.xy_switch.crossbar.vld_output_i[4:0]
+@1000200
+-crossbar_unit
+@c00200
+-router_unit
+@22
+top.xy_switch.router.y_addr[3:0]
+top.xy_switch.router.x_addr[3:0]
+@28
+top.xy_switch.router.mux_out_sel_o[2:0]
+top.xy_switch.router.mux_out_sel_w[2:0]
+@1401200
+-router_unit
+@800200
+-xy_switch
+@28
+top.xy_switch.clk_i
+top.xy_switch.rst_ni
+@22
+top.xy_switch.data_out_w[79:0]
+top.xy_switch.fifo_data_out_w[79:0]
+@28
+top.xy_switch.empty_w[4:0]
+@22
+top.xy_switch.in_fifo_overflow_o[4:0]
+@28
+top.xy_switch.mux_in_sel_w[2:0]
+@22
+top.xy_switch.in_fifo_full_o[4:0]
+top.xy_switch.nxt_fifo_full_i[4:0]
+@28
+top.xy_switch.mux_out_sel_w[2:0]
+@22
+top.xy_switch.nxt_fifo_overflow_i[4:0]
+top.xy_switch.pckt_sw_i[79:0]
+top.xy_switch.pckt_in_chosen_w[15:0]
+top.xy_switch.rd_en_w[4:0]
+top.xy_switch.y_addr_w[3:0]
+top.xy_switch.vld_output_w[4:0]
+top.xy_switch.x_addr_w[3:0]
+top.xy_switch.wr_en_sw_o[4:0]
+top.xy_switch.vld_input_w[4:0]
+top.xy_switch.wr_en_sw_i[4:0]
+top.xy_switch.underflow_w[4:0]
+@1000200
+-xy_switch
+[pattern_trace] 1
+[pattern_trace] 0

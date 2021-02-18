@@ -11,7 +11,8 @@ module fifo
     parameter ALMOST_FULL_LEVEL = 10,
     `endif
     parameter DATA_WIDTH = 8,
-    parameter FIFO_DEPTH_WIDTH = 2
+    parameter FIFO_DEPTH_WIDTH = 2,
+    parameter ID=0
     )
   (
     input clk_i,
@@ -32,8 +33,8 @@ module fifo
     localparam FIFO_DEPTH = 2**FIFO_DEPTH_WIDTH;
 
 	initial begin
-		$display("Verilog: FIFO_DEPTH_WIDTH %d",FIFO_DEPTH_WIDTH);
-		$display("Verilog: DATA_WIDTH\t%d", DATA_WIDTH);
+		$display("Verilog: FIFO%d -FIFO_DEPTH_WIDTH %d",ID, FIFO_DEPTH_WIDTH);
+		$display("Verilog: FIFO%d -DATA_WIDTH\t%d",ID, DATA_WIDTH);
 	end
 
     // Registers
@@ -60,9 +61,9 @@ module fifo
     // FIFO WRITE
     always @ ( posedge clk_i or negedge rst_ni ) begin
       if (!rst_ni) begin
-		for (i=0; i < FIFO_DEPTH; i=i+1) begin
-			fifo_v[i] <= 0;
-		end
+    		for (i=0; i < FIFO_DEPTH; i=i+1) begin
+    			fifo_v[i] = 0;
+    		end
         overflow_v  <= 1'b0;
         wr_ptr_v    <= 0;
       end

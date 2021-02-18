@@ -55,4 +55,6 @@ module xy_router
         /* verilator lint_on WIDTH */
     end
 
+    assign mux_out_sel_o = mux_out_sel_w;
+
 endmodule
