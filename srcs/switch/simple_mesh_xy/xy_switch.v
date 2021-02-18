@@ -35,14 +35,6 @@
    |  DATA   | [`PCKT_DATA_W - 1 : 0 ]
 
 */
-
-// Includes
-// `include "crossbar.v"
-// `include "router_xy.v"
-// `include "control_unit.v"
-// `include "../../components/fifo.v"
-// `include "packet_arbiter.v"
-
 module xy_switch
 # (
     parameter X_CORD = 0,
@@ -62,7 +54,7 @@ module xy_switch
 
     // SWITCH INPUT BUFFER ports
     input   [PORT_N - 1 : 0]            wr_en_sw_i,
-    input   [PCKT_W * PORT_N - 1 : 0]  pckt_sw_i,
+    input   [PCKT_W * PORT_N - 1 : 0]   pckt_sw_i,
     output  [PORT_N - 1 : 0]            in_fifo_full_o,
     output  [PORT_N - 1 : 0]            in_fifo_overflow_o,
 
@@ -75,7 +67,6 @@ module xy_switch
 
     // Wires
     wire [PORT_N -1 : 0]            vld_input_w;
-    wire [PORT_N -1 : 0]            vld_output_w;
     wire [$clog2(PORT_N) - 1 : 0]   mux_in_sel_w;
     wire [$clog2(PORT_N) - 1 : 0]   mux_out_sel_w;
     wire [PCKT_W * PORT_N - 1 : 0]  data_out_w;
@@ -103,20 +94,21 @@ module xy_switch
         fifo
           #(
             .DATA_WIDTH(PCKT_W),
-            .FIFO_DEPTH_WIDTH(IN_FIFO_DEPTH_W)
+            .FIFO_DEPTH_WIDTH(IN_FIFO_DEPTH_W),
+            .ID(i)
             )
         x_input_fifo
           (
             .clk_i( clk_i ),
             .rst_ni( rst_ni ),
-            .wr_en_i( wr_en_sw_i[i] ),
-            .rd_en_i( rd_en_w[i] ),
-            .data_i( x_pckt_in_w ),
-            .data_o( x_pckt_out_w ),
-            .full_o( in_fifo_full_o[i] ),
-            .empty_o( empty_w[i] ),
-            .overflow_o( in_fifo_overflow_o[i] ),
-            .underflow_o( underflow_w[i] )
+            .wr_en_i( wr_en_sw_i[i] ),            //comes from the outside if this fifo is not full
+            .rd_en_i( rd_en_w[i] ),               // comes fro mthe indside when we want to route the packet inside this FIFO
+            .data_i( x_pckt_in_w ),               // data to go into FIFO
+            .data_o( x_pckt_out_w ),              //data to go out of FIFO
+            .full_o( in_fifo_full_o[i] ),         //if this fifo is full, pass it on to the Switch connected to you
+            .empty_o( empty_w[i] ),               // empty is used internally and indicates data to be routed
+            .overflow_o( in_fifo_overflow_o[i] ), //OVRFLW ???
+            .underflow_o( underflow_w[i] )        //UNDERFLOW ???
             );
 
         assign fifo_data_out_w [PCKT_W * ( i + 1 ) - 1 : PCKT_W * i]  = x_pckt_out_w;
@@ -159,13 +151,12 @@ module xy_switch
       (
         .clk_i(clk_i),
         .rst_ni(rst_ni),
-        .full_i(nxt_fifo_full_i),
-        .empty_i(empty_w),
-        .mux_in_sel_i(mux_in_sel_w),
+        .full_i(nxt_fifo_full_i), // do we have FIFOs that will be full? IF yes this channel is blocked and we cant route the data to it
+        .empty_i(empty_w), // look at the input FIFOs and check if any has data to be routed
+        .mux_in_sel_i(mux_in_sel_w), // if there is data, pass the correct MUXINSEL value to the input MUX of the crossbar
         .mux_out_sel_i(mux_out_sel_w),
         .rd_en_o(rd_en_w),
         .wr_en_o(wr_en_sw_o),
-        .vld_output_o(vld_output_w),
         .vld_input_o(vld_input_w)
         );
 
@@ -181,7 +172,6 @@ module xy_switch
         .rst_ni(rst_ni),
         .data_i(fifo_data_out_w),
         .mux_in_sel_i(mux_in_sel_w),
-        .vld_output_i(vld_output_w),
         .mux_out_sel_i(mux_out_sel_w),
         .data_o(data_out_w),
         .pckt_in_chosen_o(pckt_in_chosen_w)

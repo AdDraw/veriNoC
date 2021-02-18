@@ -19,7 +19,6 @@ module control_unit
     // Processing output
     input  [PORT_N - 1 : 0] full_i,
     output [PORT_N - 1 : 0] wr_en_o,
-    output [PORT_N -1  : 0] vld_output_o,
 
     // Router Input
     input [$clog2(PORT_N)-1 : 0] mux_in_sel_i,
@@ -27,11 +26,10 @@ module control_unit
 
     );
 
-    reg [PORT_N-1 : 0] vld_input_v;
-    reg [PORT_N-1 : 0] vld_output_v;
+    reg   [PORT_N-1 : 0]    vld_input_v;
 
-    wire [PORT_N-1 : 0] rd_en_w = ~( empty_i | vld_input_v );
-    wire [PORT_N - 1 : 0] wr_en_w = vld_output_v & ~(full_i);
+    wire  [PORT_N-1 : 0]    rd_en_w = ~( empty_i | vld_input_v );
+    wire  [PORT_N - 1 : 0]  wr_en_w = (|vld_input_v) ? (1 << mux_out_sel_i) & (~full_i) : 0;
 
     // Read while HOT
     // rd_en control
@@ -46,29 +44,20 @@ module control_unit
       begin
         // if one is not empty and at least 1 is not vld
         vld_input_v <= (rd_en_w | vld_input_v);
-        if (vld_output_v[mux_out_sel_i] == 0)
+        if (wr_en_w[mux_out_sel_i])
         begin
           vld_input_v[mux_in_sel_i] <= 1'b0;
         end
       end
     end
 
-    // vld_output_o control
-    always @(posedge clk_i or posedge rst_ni)
-    begin
-      if (!rst_ni)
-      begin
-        vld_output_v <= 0;
-      end
-      else
-      begin
-        vld_output_v[mux_out_sel_i] <= 1'b1;
-        vld_output_v <= wr_en_w ^ vld_output_v;
-      end
-    end
+
+    // when to update the output regs
+
+
 
     assign rd_en_o      = rd_en_w;
     assign vld_input_o  = vld_input_v;
-    assign vld_output_o = vld_output_v;
+    assign wr_en_o      = wr_en_w;
 
 endmodule
