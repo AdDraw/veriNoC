@@ -13,11 +13,11 @@ MODULE   := test
 SIM ?= verilator
 
 # Depending on the Simulator we want to choose different sets of arguments to pass
-CNT_BITWIDTH 				= "8"
-ALMOST_EMPTY_LEVEL	= "$(CNT_BITWIDTH)'d25"
-ALMOST_FULL_LEVEL 	= "$(CNT_BITWIDTH)'d225"
-ENABLE_LOW_SAT  		= "1'b1"
-ENABLE_HIGH_SAT 		= "1'b1"
+CNT_BITWIDTH 				= 8
+ALMOST_EMPTY_LEVEL	= $(CNT_BITWIDTH)'d25
+ALMOST_FULL_LEVEL 	= $(CNT_BITWIDTH)'d225
+ENABLE_LOW_SAT  		= 1
+ENABLE_HIGH_SAT 		= 1
 
 
 ifeq ($(SIM), verilator)

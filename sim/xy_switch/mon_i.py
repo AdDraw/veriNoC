@@ -2,31 +2,41 @@ import cocotb
 from cocotb.monitors import BusMonitor
 from cocotb.triggers import RisingEdge, ReadOnly
 from cocotb.binary import BinaryValue
-
-
 from logging import INFO, DEBUG
-import os
-
+import cocotb.handle
 import numpy as np
+from fifo_imon import FifoIMon
 
-# Input monitor logs the values that appear at the input signals of the module
-# Based on the internal mock imitation of the module provides calculated output values
 
 class SWIMon(BusMonitor):
-    _signals = ["pckt_sw_i", "wr_en_sw_i", "rst_ni"]
+    """
+        Input monitor logs the values that appear at the input signals of the module
+        Based on the internal mock imitation of the module provides calculated output values
+    """
 
-    def __init__(self, entity, name, clock, log_lvl=INFO, callback=None):
+    _signals = ["pckt_sw_i", "wr_en_sw_i", "rst_ni", "nxt_fifo_full_i", "nxt_fifo_overflow_i"]
+
+    _default_config = {
+        "packet_x_addr_w": 2,
+        "packet_y_addr_w": 2,
+        "packet_data_w": 8,
+        "packet_w": 12,
+        "neighbours_n": 5,
+        "fifo_depth_w": 2,
+        "x_cord": 0,
+        "y_cord": 0
+    }
+
+    def __init__(self, entity, name, clock, config=None, log_lvl=INFO, callback=None):
         self.entity = entity
         self.name = name
         self.clock = clock
         self.trans_recv = []
 
-        # Parameters
-        self.packet_x_addr_width = int(os.environ["PACKET_X_ADDR_W"])
-        self.packet_y_addr_width = int(os.environ["PACKET_Y_ADDR_W"])
-        self.packet_data_width = int(os.environ["PACKET_DATA_W"])
-        self.packet_width = int(os.environ["PACKET_W"])
-        self.neighbours_n = int(os.environ["PORT_N"])
+        if config is None:
+            self.config = self._default_config
+        else:
+            self.config = config
 
         BusMonitor.__init__(self, entity, name, clock, callback=callback)
         if log_lvl == DEBUG:
@@ -34,43 +44,39 @@ class SWIMon(BusMonitor):
         else:
             self.log.setLevel(INFO)
 
+        self.log.info(f"\nSwitch IMON Setup: {self.config}")
+
+        # initialize INPUT FIFO cycle accurate tested models
+        self.input_fifos = []
+        for number in range(self.config["neighbours_n"]):
+            self.fifo_config = {"fifo_depth_w": self.config["fifo_depth_w"],
+                                "fifo_data_w": self.config["packet_w"],
+                                "fifo_id": number}
+
+            self.input_fifos.append(FifoIMon(self.entity.genfifo[number].x_input_fifo, "", self.entity.clk_i,
+                                             config=self.fifo_config, log_lvl=INFO))
+
     @cocotb.coroutine
     async def _monitor_recv(self):
         # Monitor Init
         clkedg = RisingEdge(self.clock)
         ro = ReadOnly()
 
-        # Wires
-        tmp_pckt = 0
-
-        # Output Wires
-        busy_o = 0
-
         # Output Regs
-        pckt_sw_o = np.zeros(4)
-        pckt_sw_nxt = np.zeros(4)
-        # pckt_vld_sw_o = np.zeros(4)
-        # pckt_vld_sw_nxt = np.zeros(4)
-        pckt_rd_sw_o = np.zeros(4)
-        pckt_rd_sw_nxt = np.zeros(4)
+        pckt_sw_o = np.zeros(self.config["neighbours_n"])
+        wr_en_sw_o = np.zeros(self.config["neighbours_n"])
+        in_fifo_full_o = np.zeros(self.config["neighbours_n"])
+        in_fifo_overflow_o = np.zeros(self.config["neighbours_n"])
 
-        pckt_r_o = 0
-        pckt_r_nxt = 0
-        pckt_vld_r_o = 0
-        pckt_vld_r_nxt = 0
-        pckt_rd_r_o = 0
-        pckt_rd_r_nxt = 0
+        pckt_sw_nxt = np.zeros(self.config["neighbours_n"])
+        wr_en_sw_nxt = np.zeros(self.config["neighbours_n"])
+        in_fifo_full_nxt = np.zeros(self.config["neighbours_n"])
+        in_fifo_overflow_nxt = np.zeros(self.config["neighbours_n"])
 
-        # for number in range(self.neighbours_n):
-        #     pckt_sw_o.append(0)
-        #     pckt_sw_nxt.append(0)
-        #     pckt_vld_sw_o.append(0)
-        #     pckt_vld_sw_nxt.append(0)
-        #
-        #     pckt_r_o.append(0)
-        #     pckt_r_nxt.append(0)
-        #     pckt_vld_r_o.append(0)
-        #     pckt_vld_r_nxt.append(0)
+        pckt_in = np.zeros(self.config["neighbours_n"])
+        wr_en_in = np.zeros(self.config["neighbours_n"])
+        nxt_fifo_full_in = np.zeros(self.config["neighbours_n"])
+        nxt_fifo_ovrflw_in = np.zeros(self.config["neighbours_n"])
 
         while True:
             # Capture the input data
@@ -78,79 +84,33 @@ class SWIMon(BusMonitor):
             await ro
 
             bus_values = self.bus.capture()
-            # pckt_sw_i = bus_values["pckt_sw_i"].value
-            # pckt_vld_sw_i = bus_values["pckt_vld_sw_i"].value
-            # pckt_r_i = bus_values["pckt_r_i"].value
-            # pckt_vld_r_i = bus_values["pckt_vld_r_i"].value
-            # rst_ni = bus_values["rst_ni"].value
+            pckt_sw_i = bus_values["pckt_sw_i"].value
+            wr_en_sw_i = bus_values["wr_en_sw_i"].value
+            nxt_fifo_overflow_i = bus_values["nxt_fifo_overflow_i"].value
+            nxt_fifo_full_i = bus_values["nxt_fifo_full_i"].value
+            rst_ni = bus_values["rst_ni"].value
 
             self.log.debug(f"\nIn Bus {bus_values}")
 
-            # if rst_ni == 0:
-            #     # Wires
-            #     tmp_pckt = 0
-            #
-            #     # Output Wires
-            #     busy_o = 0
-            #
-            #     # Output Regs
-            #     pckt_sw_o = np.zeros(4)
-            #     pckt_sw_nxt = np.zeros(4)
-            #     pckt_vld_sw_o = np.zeros(4)
-            #     pckt_vld_sw_nxt = np.zeros(4)
-            #     pckt_rd_sw_o = np.zeros(4)
-            #     pckt_rd_sw_nxt = np.zeros(4)
-            #
-            #     pckt_r_o = 0
-            #     pckt_r_nxt = 0
-            #     pckt_vld_r_o = 0
-            #     pckt_vld_r_nxt = 0
-            #     pckt_rd_r_o = 0
-            #     pckt_rd_r_nxt = 0
-            #
-            # else:
-            #     pckt_r_o = pckt_r_nxt
-            #     pckt_rd_r_o = pckt_rd_r_nxt
-            #     pckt_vld_r_o = pckt_vld_r_nxt
-            #
-            #     pckt_sw_o = pckt_sw_nxt
-            #     pckt_vld_sw_o = pckt_vld_sw_nxt
-            #     pckt_rd_sw_o = pckt_rd_sw_nxt
-            #
-            #     # tmp packet assingment
-            #     if ()
-            #
-            #
-            #     # FIFO write
-            #     if wr_en_i:
-            #         if full == 0 or rd_en_i:
-            #             fifo[wr_ptr] = data_i
-            #             wr_ptr_nxt += 1
-            #             overflow_nxt = 0
-            #         else:
-            #             overflow_nxt = 1
-            #
-            #     # FIFO read
-            #     if rd_en_i:
-            #         if empty == 0:
-            #             data_nxt = fifo[rd_ptr]
-            #             rd_ptr_nxt += 1
-            #             underflow_nxt = 0
-            #         else:
-            #             underflow_nxt = 1
-            #
-            #     if wr_ptr_nxt == 2**self.fifo_depth_width:
-            #         wr_ptr_nxt = 0
-            #         wr_ptr_plus_one = 1
-            #     elif wr_ptr_nxt == 2**self.fifo_depth_width - 1:
-            #         wr_ptr_plus_one = 0
-            #     else:
-            #         wr_ptr_plus_one = wr_ptr_nxt + 1
-            #
-            #     if rd_ptr_nxt == 2**self.fifo_depth_width:
-            #         rd_ptr_nxt = 0
-            #
-            # cycle_results = [pckt_rd_sw_o, pckt_sw_o, pckt_vld_sw_o, pckt_r_o, pckt_vld_r_o, pckt_rd_r_o, busy_o]
-            # self.log.debug(f"T_i: {cycle_results}")
-            # self._recv(cycle_results)
+            if rst_ni == 0:
+                # Output Regs
+                pckt_sw_o = np.zeros(self.config["neighbours_n"])
+                wr_en_sw_o = np.zeros(self.config["neighbours_n"])
+                in_fifo_full = np.zeros(self.config["neighbours_n"])
+                in_fifo_overflow = np.zeros(self.config["neighbours_n"])
+            else:
+                pckt_sw_o = pckt_sw_nxt
+                wr_en_sw_o = wr_en_sw_nxt
+                in_fifo_full_o = in_fifo_full_nxt
+                in_fifo_overflow_o = in_fifo_overflow_nxt
+
+                # Calculate NEXT VALUES
+
+                # what happens when wr_en_sw_i is high (any) ?
+                # FIFO_HAPPENS
+                # how do i make FIFO work in this case
+
+            cycle_results = [pckt_sw_o, wr_en_sw_o, in_fifo_full_o, in_fifo_overflow_o]
+            self.log.debug(f"T_i: {cycle_results}")
+            self._recv(cycle_results)
             self._recv([0])

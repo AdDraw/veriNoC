@@ -2,7 +2,7 @@ export PYTHON_BIN=/usr/bin/python3
 export SHELL=/bin/bash
 
 export TOPLEVEL_LANG ?= verilog
-VER_DIR=$(shell pwd)/../../srcs/resource
+VER_DIR=$(shell pwd)/../../srcs/components
 
 # files
 VERILOG_SOURCES= $(VER_DIR)/fifo.v
@@ -14,11 +14,8 @@ SIM ?= verilator
 
 # Depending on the Simulator we want to choose different sets of arguments to pass
 
-export DATA_WIDTH			?= "8"
-export FIFO_DEPTH_WIDTH 	?= "4"
-export ALMOST_EMPTY_LEVEL	?= "$(FIFO_DEPTH_WIDTH)'d2"
-export ALMOST_FULL_LEVEL 	?= "$(FIFO_DEPTH_WIDTH)'d8"
-
+export FIFO_DEPTH_WIDTH 	= 4
+export DATA_WIDTH			    = 8
 
 ifeq ($(SIM), verilator)
 		COCOTB_HDL_TIMEUNIT = 1ns
@@ -38,10 +35,5 @@ ifeq ($(SIM), icarus)
 # 		EXTRA_ARGS += -PALMOST_FULL_LEVEL=$(ALMOST_FULL_LEVEL)
 # 		EXTRA_ARGS += -PALMOST_EMPTY_LEVEL=$(ALMOST_EMPTY_LEVEL)
 endif
-
-
-# ifeq ($(PROF), 1)
-#     export COCOTB_ENABLE_PROFILING=1
-# endif
 
 include $(shell cocotb-config --makefiles)/Makefile.sim

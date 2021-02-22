@@ -87,7 +87,7 @@ module xy_switch
       wire [PORT_N - 1 : 0]           underflow_w;
 
       for (i=0; i < PORT_N; i = i + 1)
-      begin
+      begin : genfifo
         wire [PCKT_W -1 : 0] x_pckt_in_w = pckt_sw_i[PCKT_W * ( i + 1 ) - 1 : PCKT_W * i];
         wire [PCKT_W -1 : 0] x_pckt_out_w;
 
