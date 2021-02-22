@@ -28,7 +28,7 @@ jobs:
         pip install cocotb
         pip install numpy
         
-        apt install iverilog
+        sudo apt install iverilog
         
     - name: Lint with flake8
       run: |
