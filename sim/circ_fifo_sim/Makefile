@@ -14,8 +14,8 @@ SIM ?= verilator
 
 # Depending on the Simulator we want to choose different sets of arguments to pass
 
-export FIFO_DEPTH_WIDTH 	= 4
-export DATA_WIDTH			    = 8
+export FIFO_DEPTH_WIDTH = 4
+export DATA_WIDTH = 8
 
 ifeq ($(SIM), verilator)
 		COCOTB_HDL_TIMEUNIT = 1ns
@@ -25,15 +25,11 @@ ifeq ($(SIM), verilator)
 		COMPILE_ARGS += -O3
 		EXTRA_ARGS += -GDATA_WIDTH=$(DATA_WIDTH)
 		EXTRA_ARGS += -GFIFO_DEPTH_WIDTH=$(FIFO_DEPTH_WIDTH)
-# 		EXTRA_ARGS += -GALMOST_FULL_LEVEL=$(ALMOST_FULL_LEVEL)
-# 		EXTRA_ARGS += -GALMOST_EMPTY_LEVEL=$(ALMOST_EMPTY_LEVEL)
 endif
 
 ifeq ($(SIM), icarus)
-		EXTRA_ARGS += -PDATA_WIDTH=$(DATA_WIDTH)
-		EXTRA_ARGS += -PFIFO_DEPTH_WIDTH=$(FIFO_DEPTH_WIDTH)
-# 		EXTRA_ARGS += -PALMOST_FULL_LEVEL=$(ALMOST_FULL_LEVEL)
-# 		EXTRA_ARGS += -PALMOST_EMPTY_LEVEL=$(ALMOST_EMPTY_LEVEL)
+		COMPILE_ARGS += -P fifo.DATA_WIDTH=$(DATA_WIDTH)
+		COMPILE_ARGS += -P fifo.FIFO_DEPTH_WIDTH=$(FIFO_DEPTH_WIDTH)
 endif
 
 include $(shell cocotb-config --makefiles)/Makefile.sim
