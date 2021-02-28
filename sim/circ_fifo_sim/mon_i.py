@@ -127,6 +127,12 @@ class FifoIMon(BusMonitor):
                 if rd_ptr_nxt == 2**self.fifo_depth_width:
                     rd_ptr_nxt = 0
 
-            cycle_results = [data_o, empty, full, underflow, overflow]
+                if full == 0:
+                    overflow = 0
+
+                if empty == 0:
+                    underflow = 0
+
+            cycle_results = {"data": data_o, "empty": empty, "full": full, "underflow": underflow, "overflow": overflow}
             self.log.debug(f"T_i: {cycle_results}")
             self._recv(cycle_results)

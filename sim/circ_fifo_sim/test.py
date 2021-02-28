@@ -61,7 +61,7 @@ async def overflow_underflow_test(dut, log_lvl=INFO, cycles=10000):
 
 
 @cocotb.test()
-async def rand_access_test(dut, log_lvl=INFO, cycles=1000):
+async def rand_access_test(dut, log_lvl=INFO, cycles=20000):
     cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
 
     fftb = FifoTB(dut, log_lvl)
