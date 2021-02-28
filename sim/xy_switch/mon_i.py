@@ -1,4 +1,3 @@
-import cocotb
 from cocotb.monitors import BusMonitor
 from cocotb.triggers import RisingEdge, ReadOnly
 from cocotb.binary import BinaryValue
@@ -6,6 +5,12 @@ from logging import INFO, DEBUG
 import cocotb.handle
 import numpy as np
 from fifo_imon import FifoIMon
+
+resource = 0
+west = 1
+east = 2
+north = 3
+south = 4
 
 
 class SWIMon(BusMonitor):
@@ -31,20 +36,14 @@ class SWIMon(BusMonitor):
         self.entity = entity
         self.name = name
         self.clock = clock
-        self.trans_recv = []
+
+        self.acc_packets = []
+        self.loss_packets = []
 
         if config is None:
             self.config = self._default_config
         else:
             self.config = config
-
-        BusMonitor.__init__(self, entity, name, clock, callback=callback)
-        if log_lvl == DEBUG:
-            self.log.setLevel(DEBUG)
-        else:
-            self.log.setLevel(INFO)
-
-        self.log.info(f"\nSwitch IMON Setup: {self.config}")
 
         # initialize INPUT FIFO cycle accurate tested models
         self.input_fifos = []
@@ -56,61 +55,87 @@ class SWIMon(BusMonitor):
             self.input_fifos.append(FifoIMon(self.entity.genfifo[number].x_input_fifo, "", self.entity.clk_i,
                                              config=self.fifo_config, log_lvl=INFO))
 
+        BusMonitor.__init__(self, entity, name, clock, callback=callback)
+        if log_lvl == DEBUG:
+            self.log.setLevel(DEBUG)
+        else:
+            self.log.setLevel(INFO)
+
+        self.log.info(f"\nSwitch IMON Setup: {self.config}")
+
     @cocotb.coroutine
     async def _monitor_recv(self):
         # Monitor Init
         clkedg = RisingEdge(self.clock)
         ro = ReadOnly()
 
-        # Output Regs
-        pckt_sw_o = np.zeros(self.config["neighbours_n"])
-        wr_en_sw_o = np.zeros(self.config["neighbours_n"])
-        in_fifo_full_o = np.zeros(self.config["neighbours_n"])
-        in_fifo_overflow_o = np.zeros(self.config["neighbours_n"])
-
-        pckt_sw_nxt = np.zeros(self.config["neighbours_n"])
-        wr_en_sw_nxt = np.zeros(self.config["neighbours_n"])
-        in_fifo_full_nxt = np.zeros(self.config["neighbours_n"])
-        in_fifo_overflow_nxt = np.zeros(self.config["neighbours_n"])
-
-        pckt_in = np.zeros(self.config["neighbours_n"])
-        wr_en_in = np.zeros(self.config["neighbours_n"])
-        nxt_fifo_full_in = np.zeros(self.config["neighbours_n"])
-        nxt_fifo_ovrflw_in = np.zeros(self.config["neighbours_n"])
+        in_fifo_full_cur = np.zeros(self.config["neighbours_n"])
+        in_fifo_overflow_cur = np.zeros(self.config["neighbours_n"])
+        in_fifo_rd_en_i_cur = np.zeros(self.config["neighbours_n"])
 
         while True:
             # Capture the input data
             await clkedg
             await ro
 
+            for fifo_id, fifo in enumerate(self.input_fifos):
+                in_fifo_full_cur[fifo_id] = fifo.cycle_returns["full"]
+                in_fifo_overflow_cur[fifo_id] = fifo.cycle_returns["overflow"]
+                in_fifo_rd_en_i_cur[fifo_id] = fifo.bus.capture()["rd_en_i"].value
+
             bus_values = self.bus.capture()
-            pckt_sw_i = bus_values["pckt_sw_i"].value
-            wr_en_sw_i = bus_values["wr_en_sw_i"].value
-            nxt_fifo_overflow_i = bus_values["nxt_fifo_overflow_i"].value
-            nxt_fifo_full_i = bus_values["nxt_fifo_full_i"].value
+            pckt_sw_i = bus_values["pckt_sw_i"]
+            wr_en_sw_i = bus_values["wr_en_sw_i"]
             rst_ni = bus_values["rst_ni"].value
 
-            self.log.debug(f"\nIn Bus {bus_values}")
+            self.log.debug(f"SWIMON {bus_values}")
 
-            if rst_ni == 0:
-                # Output Regs
-                pckt_sw_o = np.zeros(self.config["neighbours_n"])
-                wr_en_sw_o = np.zeros(self.config["neighbours_n"])
-                in_fifo_full = np.zeros(self.config["neighbours_n"])
-                in_fifo_overflow = np.zeros(self.config["neighbours_n"])
-            else:
-                pckt_sw_o = pckt_sw_nxt
-                wr_en_sw_o = wr_en_sw_nxt
-                in_fifo_full_o = in_fifo_full_nxt
-                in_fifo_overflow_o = in_fifo_overflow_nxt
+            for bid, wr_en in enumerate(wr_en_sw_i.binstr):
+                if wr_en == "1" and rst_ni == 1:
+                    string = pckt_sw_i.binstr
+                    n = self.config["packet_w"]
+                    packet_sw_i_split = [(string[i:i + n]) for i in range(0, len(string), n)]
+                    chosen_pckt = packet_sw_i_split[bid]
 
-                # Calculate NEXT VALUES
+                    data = BinaryValue(chosen_pckt[-self.config["packet_data_w"]:],
+                                       self.config["packet_data_w"], bigEndian=False).value
+                    x_addr = BinaryValue(chosen_pckt[:self.config["packet_y_addr_w"]],
+                                         self.config["packet_x_addr_w"], bigEndian=False).value
+                    y_addr = BinaryValue(chosen_pckt[self.config["packet_y_addr_w"]:-self.config["packet_data_w"]],
+                                         self.config["packet_y_addr_w"], bigEndian=False).value
 
-                # what happens when wr_en_sw_i is high (any) ?
-                # FIFO_HAPPENS
-                # how do i make FIFO work in this case
+                    if not in_fifo_full_cur[4-bid] or (in_fifo_full_cur[4-bid] and in_fifo_rd_en_i_cur[4-bid]):
+                        # Router XY algorithm
+                        if x_addr == self.config["x_cord"]:
+                            if y_addr == self.config["y_cord"]:
+                                dst = resource
+                            elif y_addr < self.config["y_cord"]:
+                                dst = north
+                            else:
+                                dst = south
+                        elif x_addr > self.config["x_cord"]:
+                            dst = east
+                        else:
+                            dst = west
 
-            cycle_results = [pckt_sw_o, wr_en_sw_o, in_fifo_full_o, in_fifo_overflow_o]
-            self.log.debug(f"T_i: {cycle_results}")
-            self._recv(cycle_results)
-            self._recv([0])
+                        cycle_results = {"id": data, "dst": dst, "orig": chosen_pckt}
+                        self.log.debug(f"Acc {self.acc_packets.__len__()}. {cycle_results}, src: {4-bid}")
+
+                        self.acc_packets.append(cycle_results)
+                        self._recv(cycle_results)
+
+                    else:
+                        cycle_results = {"id": data,
+                                         "bid": 4-bid,
+                                         "full": in_fifo_full_cur[4-bid],
+                                         "fifo_id": self.input_fifos[4-bid].config["fifo_id"],
+                                         "ovrflow": in_fifo_overflow_cur[bid],
+                                         "wr_en": wr_en_sw_i.binstr}
+
+                        self.log.debug(f"Loss {cycle_results}")
+
+                        self.loss_packets.append(cycle_results)
+
+    def reset(self):
+        self.acc_packets = []
+        self.acc_packets = []

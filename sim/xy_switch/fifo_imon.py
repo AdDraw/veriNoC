@@ -20,6 +20,8 @@ class FifoIMon(BusMonitor):
         self.clock = clock
         self.trans_recv = []
 
+        self.cycle_returns = {}
+
         self.config = self._default_config.copy()
         for configoption, value in config.items():
             self.config[configoption] = value
@@ -138,6 +140,14 @@ class FifoIMon(BusMonitor):
                 if rd_ptr_nxt == 2**self.config["fifo_depth_w"]:
                     rd_ptr_nxt = 0
 
-            cycle_results = [data_o, empty, full, underflow, overflow]
-            self.log.debug(f"T_i: {cycle_results}")
-            self._recv(cycle_results)
+            cycle_results = {"data_o": data_o,
+                             "empty": empty,
+                             "full": full,
+                             "underflow": underflow,
+                             "overflow": overflow}
+
+            self.log.debug(f"FIFO {self.config['fifo_id']}, T_i: {cycle_results}")
+
+            self.cycle_returns = cycle_results
+
+            self._recv([0])

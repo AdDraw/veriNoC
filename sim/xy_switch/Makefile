@@ -4,7 +4,9 @@ export SHELL=/bin/bash
 export TOPLEVEL_LANG ?= verilog
 VER_DIR=$(shell pwd)/../../srcs/switch/simple_mesh_xy
 
-export DEBUG_ATTACH ?= 0
+export DEBUG_ATTACH ?=0
+export TESTFACTORY ?=0
+#export COVERAGE?=0
 
 # files
 VERILOG_SOURCES += $(VER_DIR)/xy_switch.v
@@ -25,13 +27,14 @@ export X_CORD=1
 export Y_CORD=1
 export PACKET_X_ADDR_W=4
 export PACKET_Y_ADDR_W=4
-export PACKET_DATA_W=8
+export PACKET_DATA_W=16
 PCKT_W_calc = $(shell expr $(PACKET_X_ADDR_W) + $(PACKET_Y_ADDR_W) + $(PACKET_DATA_W) )
 export PACKET_W=$(PCKT_W_calc)
 export IN_FIFO_DEPTH_W=2
 
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
+#COMPILE_ARGS+= -m /usr/local/libexec/covered.vpi covered_vpi.v
 COMPILE_ARGS+= -P $(TOPLEVEL).PORT_N=$(PORT_N)
 COMPILE_ARGS+= -P $(TOPLEVEL).X_CORD=$(X_CORD)
 COMPILE_ARGS+= -P $(TOPLEVEL).Y_CORD=$(Y_CORD)

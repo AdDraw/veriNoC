@@ -50,7 +50,6 @@ module arbiter
         begin
           mux_in_sel_w = 0;
         end
-
       end
     end
 
