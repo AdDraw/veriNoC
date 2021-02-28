@@ -177,12 +177,6 @@ module xy_switch
         .pckt_in_chosen_o(pckt_in_chosen_w)
         );
 
-    // generate
-    //   for (i = 0; i < PORT_N; i = i + 1) begin
-    //     assign pckt_sw_o[(i + 1) * PCKT_W - 1 : i * PCKT_W ] = data_out_w[(i + 1) * PCKT_W - 1 : i * PCKT_W ];
-    //   end
-    // endgenerate
-
-    assign pckt_sw_o = data_out_w;
+    assign pckt_sw_o = (|vld_input_w) ? data_out_w : 0;
 
 endmodule

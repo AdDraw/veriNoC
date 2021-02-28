@@ -36,7 +36,7 @@ module xy_router
           // Y movement Finished, route to Resource
             mux_out_sel_w = RESOURCE;
           end
-          else if (y_addr > Y_CORD) begin
+          else if (y_addr < Y_CORD) begin
             mux_out_sel_w = NORTH;
           end
           else begin
