@@ -2,7 +2,6 @@
   Circular FIFO made with ZipCPU FIFO Guide
 */
 `timescale 1ns / 1ps
-// `define ALMOST_THRESHOLD
 
 module fifo
   #(
@@ -23,10 +22,6 @@ module fifo
     output [DATA_WIDTH-1 : 0] data_o,
     output full_o,
     output empty_o,
-    `ifdef ALMOST_THRESHOLD
-    output almost_empty_o,
-    output almmost_full_o,
-    `endif
     output overflow_o,
     output underflow_o
     );
@@ -49,15 +44,6 @@ module fifo
     assign full_w   = (wr_ptr_v + 1'b1 == rd_ptr_v) ? 1'b1 : 1'b0;
     assign empty_w  = (wr_ptr_v == rd_ptr_v) ? 1'b1 : 1'b0;
 
-    `ifdef ALMOST_THRESHOLD
-    wire almost_empty_w, almmost_full_w;
-    wire [FIFO_DEPTH_WIDTH-1 :0] val_in_fifo_w;
-    assign val_in_fifo_w = (wr_ptr_v >= rd_ptr_v) ? wr_ptr_v - rd_ptr_v : FIFO_DEPTH - rd_ptr_v + wr_ptr_v;
-    assign almost_empty_w = (val_in_fifo_w >= ALMOST_EMPTY_LEVEL) ? 1'b1 : 1'b0;
-    assign almmost_full_w = (val_in_fifo_w <= ALMOST_EMPTY_LEVEL) ? 1'b1 : 1'b0;
-    `endif
-
-
     // FIFO WRITE
     always @ ( posedge clk_i or negedge rst_ni ) begin
       if (!rst_ni) begin
@@ -68,7 +54,7 @@ module fifo
         wr_ptr_v    <= 0;
       end
       else begin
-        if (wr_en_i ) begin
+        if (wr_en_i) begin
           if (!full_w || rd_en_i) begin
             fifo_v[wr_ptr_v]  <= data_i;
             wr_ptr_v          <= wr_ptr_v + 1'b1;
@@ -108,11 +94,7 @@ module fifo
     assign data_o       = data_v;
     assign full_o       = full_w;
     assign empty_o      = empty_w;
-    assign underflow_o  = underflow_v;
-    assign overflow_o   = overflow_v;
+    assign underflow_o  = (empty_w == 1'b1) ? underflow_v : 1'b0;
+    assign overflow_o   = (full_w == 1'b1) ? overflow_v : 1'b0;
 
-    `ifdef ALMOST_THRESHOLD
-    assign almost_empty_o = almost_empty_w;
-    assign almmost_full_o = almmost_full_w;
-    `endif
 endmodule
