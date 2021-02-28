@@ -35,6 +35,11 @@ class FifoOMon(BusMonitor):
             underflow_o = bus_values["underflow_o"].value
             overflow_o = bus_values["overflow_o"].value
 
-            cycle_results = [data_o, empty_o, full_o, underflow_o, overflow_o]
+            cycle_results = {"data": data_o,
+                             "empty": empty_o,
+                             "full": full_o,
+                             "underflow": underflow_o,
+                             "overflow": overflow_o}
+
             self.log.debug(f'T_o: {cycle_results}')
             self._recv(cycle_results)

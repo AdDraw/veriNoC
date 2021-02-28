@@ -5,10 +5,6 @@
 
 module fifo
   #(
-    `ifdef ALMOST_THRESHOLD
-    parameter ALMOST_EMPTY_LEVEL = 2,
-    parameter ALMOST_FULL_LEVEL = 10,
-    `endif
     parameter DATA_WIDTH = 8,
     parameter FIFO_DEPTH_WIDTH = 2,
     parameter ID=0
