@@ -3,3 +3,5 @@ dump.vcd
 __pycache__/
 results.xml
 .idea/
+htmlcov
+.coverage
