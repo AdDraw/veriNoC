@@ -61,6 +61,9 @@ module fifo
             wr_ptr_v          <= wr_ptr_v;
           end
         end
+        else begin
+          if (!full_w) overflow_v <= 1'b0;
+        end
       end
     end
 
@@ -83,6 +86,9 @@ module fifo
             rd_ptr_v    <= rd_ptr_v;
           end
         end
+        else begin
+          if (!empty_w) underflow_v <= 1'b0;
+        end
       end
     end
 
@@ -93,4 +99,36 @@ module fifo
     assign underflow_o  = (empty_w == 1'b1) ? underflow_v : 1'b0;
     assign overflow_o   = (full_w == 1'b1) ? overflow_v : 1'b0;
 
+
+    `ifdef FORMAL
+
+      initial assume(!rst_ni);
+
+      initial begin
+        assert (rd_ptr_v == 0);
+        assert (wr_ptr_v == 0);
+        assert (empty_o);
+        assert (!full_o);
+      end
+
+      always @(*) begin
+        if (rst_ni)
+        begin
+          // Full & Empty checks
+          assert (!(empty_o && full_o));
+
+          // Underflow check
+          if (full_o == 1'b0) assert (!overflow_o);
+
+          // Underflow check
+          if (empty_o == 1'b0) assert (!underflow_o);
+
+          if (wr_ptr_v == rd_ptr_v) assert (empty_o);
+
+          if (wr_ptr_v + 1'b1 == rd_ptr_v) assert(full_o);
+
+        end
+          // assert ();
+      end
+    `endif
 endmodule
