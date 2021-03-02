@@ -3,11 +3,9 @@ task1 task1_2
 task2 task1_2
 
 [options]
-task1: mode prove
-task2:
-mode bmc
 depth 50
---
+task1: mode prove
+task2: mode bmc
 
 [engines]
 smtbmc z3
