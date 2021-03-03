@@ -1,7 +1,7 @@
-read_verilog ../srcs/resource/fifo.v
+read_verilog ../srcs/components/fifo.v
 proc; fsm; opt; memory; opt
 techmap; opt
 check
 # cover -o cvrg.rpt
 show;
-write_verilog ../srcs/resource/ff_synth.v
+write_verilog ../srcs/components/fifo_synth.v

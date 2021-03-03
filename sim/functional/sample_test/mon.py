@@ -1,7 +1,7 @@
 import cocotb
 from cocotb.monitors import BusMonitor
 from cocotb.triggers import RisingEdge, ReadOnly
-from make import CNT_BITWIDTH, ALMOST_FULL_LEVEL, ALMOST_EMPTY_LEVEL, ENABLE_LOW_SAT, ENABLE_HIGH_SAT
+import os
 
 
 class CNT_Mon(BusMonitor):
@@ -12,6 +12,13 @@ class CNT_Mon(BusMonitor):
         self.name = name
         self.clock = clock
         self.trans_recv = []
+
+        self.cnt_w = int(os.environ["CNT_BITWIDTH"])
+        self.aempty_lvl = int(os.environ["ALMOST_EMPTY_LEVEL"])
+        self.afull_lvl = int(os.environ["ALMOST_FULL_LEVEL"])
+        self.en_low_sat = int(os.environ["ENABLE_LOW_SAT"])
+        self.en_high_sat = int(os.environ["ENABLE_HIGH_SAT"])
+
         BusMonitor.__init__(self, entity, name, clock, callback=callback)
 
     @cocotb.coroutine
@@ -35,26 +42,26 @@ class CNT_Mon(BusMonitor):
                 counter = 0
             else:
                 if dir_i == 1:
-                    if counter == (pow(2, CNT_BITWIDTH) - 1) :
+                    if counter == (pow(2, self.cnt_w) - 1) :
                         counter = 0
                     else:
                         counter = counter + 1
                 else:
                     if counter == 0:
-                        counter = pow(2, CNT_BITWIDTH) - 1
+                        counter = pow(2, self.cnt_w) - 1
                     else:
                         counter = counter - 1
 
-            if ENABLE_LOW_SAT == 1:
-                if counter <= ALMOST_EMPTY_LEVEL:
+            if self.en_low_sat == 1:
+                if counter <= self.aempty_lvl:
                     almost_empty = 1
                 else:
                     almost_empty = 0
             else:
                 almost_empty = 0
 
-            if ENABLE_HIGH_SAT == 1:
-                if counter >= ALMOST_FULL_LEVEL:
+            if self.en_high_sat == 1:
+                if counter >= self.afull_lvl:
                     almost_full = 1
                 else:
                     almost_full = 0
@@ -62,7 +69,7 @@ class CNT_Mon(BusMonitor):
                 almost_full = 0
 
             if rst_ni == 1:
-                cycle_results = [counter, almost_full, almost_empty]
+                cycle_results = {"cnt":counter, "afull": almost_full, "aempty":almost_empty}
                 self.trans_recv.append(cycle_results)
                 i += 1
                 if i > 1:
