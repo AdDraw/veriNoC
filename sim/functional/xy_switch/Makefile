@@ -2,7 +2,7 @@ export PYTHON_BIN=/usr/bin/python3
 export SHELL=/bin/bash
 
 export TOPLEVEL_LANG ?= verilog
-VER_DIR=$(shell pwd)/../../srcs/switch/simple_mesh_xy
+VER_DIR=$(shell git rev-parse --show-toplevel)/srcs/switch/simple_mesh_xy
 
 export DEBUG_ATTACH ?=0
 export TESTFACTORY ?=0

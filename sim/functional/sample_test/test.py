@@ -65,7 +65,7 @@ async def test(dut, log_lvl=INFO, cycles=4010):
         counter_res = dut.counter_o.value.integer
         almost_full = dut.almost_full_o.value.integer
         almost_empty = dut.almost_empty_o.value.integer
-        measured_res = [counter_res, almost_full, almost_empty]
+        measured_res = {"cnt":counter_res, "afull":almost_full, "aempty":almost_empty}
         que.append(measured_res)
 
     cocotb.log.info("---------------------------------------------------------------------------- Simulation Finished!")
