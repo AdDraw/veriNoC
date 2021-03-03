@@ -1,0 +1,18 @@
+[tasks]
+prove
+bmc
+
+[options]
+depth 50
+prove: mode prove
+bmc: mode bmc
+
+[engines]
+smtbmc --progress --nomem z3
+
+[script]
+read -formal fifo.v
+prep -top fifo
+
+[files]
+../../srcs/components/fifo.v
