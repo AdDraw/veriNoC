@@ -7,7 +7,8 @@ module tb
     parameter PCKT_XADDR_W = 4,
     parameter PCKT_YADDR_W = 4,
     parameter PCKT_DATA_W = 8,
-    parameter PCKT_W = PCKT_XADDR_W + PCKT_YADDR_W + PCKT_DATA_W
+    parameter PCKT_W = PCKT_XADDR_W + PCKT_YADDR_W + PCKT_DATA_W,
+    parameter SW_CONFIG = 0
     )
   (
 
@@ -43,7 +44,8 @@ module tb
       .PCKT_XADDR_W(PCKT_XADDR_W),
       .PCKT_YADDR_W(PCKT_YADDR_W),
       .PCKT_DATA_W(PCKT_DATA_W),
-      .PCKT_W(PCKT_W)
+      .PCKT_W(PCKT_W),
+      .SW_CONFIG(SW_CONFIG)
       )
     xy_switch_inst
     (

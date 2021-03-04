@@ -34,7 +34,7 @@ module control_unit
     // Read while HOT
     // rd_en control
     // vld_input_o control
-    always @(posedge clk_i or posedge rst_ni)
+    always @(posedge clk_i or negedge rst_ni)
     begin
       if (!rst_ni)
       begin
@@ -53,9 +53,6 @@ module control_unit
 
 
     // when to update the output regs
-
-
-
     assign rd_en_o      = rd_en_w;
     assign vld_input_o  = vld_input_v;
     assign wr_en_o      = wr_en_w;

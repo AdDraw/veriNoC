@@ -6,12 +6,16 @@ import cocotb.handle
 import numpy as np
 from fifo_imon import FifoIMon
 
-resource = 0
-west = 1
-east = 2
-north = 3
-south = 4
 
+CENTER  = 0
+EDGE_RT = 1
+EDGE_LT = 2
+EDGE_RB = 3
+EDGE_LB = 4
+SIDE_R  = 5
+SIDE_L  = 6
+SIDE_T  = 7
+SIDE_B  = 8
 
 class SWIMon(BusMonitor):
     """
@@ -29,7 +33,8 @@ class SWIMon(BusMonitor):
         "neighbours_n": 5,
         "fifo_depth_w": 2,
         "x_cord": 0,
-        "y_cord": 0
+        "y_cord": 0,
+        "sw_config": 0
     }
 
     def __init__(self, entity, name, clock, config=None, log_lvl=INFO, callback=None):
@@ -44,6 +49,11 @@ class SWIMon(BusMonitor):
             self.config = self._default_config
         else:
             self.config = config
+
+        self.port_n = self.config["neighbours_n"] - 1
+        self.directions = {}
+        self.sw_type = None
+        self.sw_type_config(self.config["sw_config"])
 
         # initialize INPUT FIFO cycle accurate tested models
         self.input_fifos = []
@@ -62,6 +72,7 @@ class SWIMon(BusMonitor):
             self.log.setLevel(INFO)
 
         self.log.info(f"\nSwitch IMON Setup: {self.config}")
+        self.log.info(f"SW CONFIG {self.sw_type} resulted in {self.directions}")
 
     @cocotb.coroutine
     async def _monitor_recv(self):
@@ -104,31 +115,32 @@ class SWIMon(BusMonitor):
                     y_addr = BinaryValue(chosen_pckt[self.config["packet_y_addr_w"]:-self.config["packet_data_w"]],
                                          self.config["packet_y_addr_w"], bigEndian=False).value
 
-                    if not in_fifo_full_cur[4-bid] or (in_fifo_full_cur[4-bid] and in_fifo_rd_en_i_cur[4-bid]):
+                    if not in_fifo_full_cur[self.port_n-bid] or (in_fifo_full_cur[self.port_n-bid] and in_fifo_rd_en_i_cur[self.port_n-bid]):
                         # Router XY algorithm
+
                         if x_addr == self.config["x_cord"]:
                             if y_addr == self.config["y_cord"]:
-                                dst = resource
+                                dst = self.directions["resource"]
                             elif y_addr < self.config["y_cord"]:
-                                dst = north
+                                dst = self.directions["up"]
                             else:
-                                dst = south
+                                dst = self.directions["down"]
                         elif x_addr > self.config["x_cord"]:
-                            dst = east
+                            dst = self.directions["right"]
                         else:
-                            dst = west
+                            dst = self.directions["left"]
 
                         cycle_results = {"id": data, "dst": dst, "orig": chosen_pckt}
-                        self.log.debug(f"Acc {self.acc_packets.__len__()}. {cycle_results}, src: {4-bid}")
+                        self.log.debug(f"Acc {self.acc_packets.__len__()}. {cycle_results}, src: {self.port_n-bid}")
 
                         self.acc_packets.append(cycle_results)
                         self._recv(cycle_results)
 
                     else:
                         cycle_results = {"id": data,
-                                         "bid": 4-bid,
-                                         "full": in_fifo_full_cur[4-bid],
-                                         "fifo_id": self.input_fifos[4-bid].config["fifo_id"],
+                                         "bid": self.port_n-bid,
+                                         "full": in_fifo_full_cur[self.port_n-bid],
+                                         "fifo_id": self.input_fifos[self.port_n-bid].config["fifo_id"],
                                          "ovrflow": in_fifo_overflow_cur[bid],
                                          "wr_en": wr_en_sw_i.binstr}
 
@@ -139,3 +151,32 @@ class SWIMon(BusMonitor):
     def reset(self):
         self.acc_packets = []
         self.acc_packets = []
+
+    def sw_type_config(self, sw_config):
+        if sw_config == CENTER:
+            self.sw_type = "CENTER"
+            self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": 4}
+        elif sw_config == EDGE_LB:
+            self.sw_type = "EDGE_LB"
+            self.directions = {"resource": 0, "left": "error", "up": 1, "right": 2, "down": 0}
+        elif sw_config == EDGE_LT:
+            self.sw_type = "EDGE_LT"
+            self.directions = {"resource": 0, "left": "error", "up": "error", "right": 1, "down": 2}
+        elif sw_config == EDGE_RB:
+            self.sw_type = "EDGE_RB"
+            self.directions = {"resource": 0, "left": 1, "up": 2, "right": "error", "down": "error"}
+        elif sw_config == EDGE_RT:
+            self.sw_type = "EDGE_RT"
+            self.directions = {"resource": 0, "left": 1, "up": "error", "right": "error", "down": 2}
+        elif sw_config == SIDE_L:
+            self.sw_type = "SIDE_L"
+            self.directions = {"resource": 0, "left": "error", "up": 1, "right": 2, "down": 3}
+        elif sw_config == SIDE_R:
+            self.sw_type = "SIDE_R"
+            self.directions = {"resource": 0, "left": 1, "up": 2, "right": "error", "down": 3}
+        elif sw_config == SIDE_T:
+            self.sw_type = "SIDE_T"
+            self.directions = {"resource": 0, "left": 1, "up": "error", "right": 2, "down": 3}
+        elif sw_config == SIDE_B:
+            self.sw_type = "SIDE_B"
+            self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": "error"}

@@ -45,7 +45,8 @@ class SWTB:
             "neighbours_n": int(os.environ["PORT_N"]),
             "fifo_depth_w": int(os.environ["IN_FIFO_DEPTH_W"]),
             "x_cord": int(os.environ["X_CORD"]),
-            "y_cord": int(os.environ["Y_CORD"])
+            "y_cord": int(os.environ["Y_CORD"]),
+            "sw_config": int(os.environ["SW_CONFIG"])
         }
 
         self.run_stats = []
@@ -98,11 +99,15 @@ class SWTB:
         #     self.log.info(f"{rid}. full {record}")
 
         sorted_seen = sorted(self.seen_out, key=lambda k: k['id'])
+        self.log.info(f"Lenght of received packets {sorted_seen.__len__()}")
         for rid, rd2 in enumerate(sorted_seen):
-            if rd2["id"] == self.expected_out[rid]["id"]:
-                self.log.debug(f"comapre {rd2}, {self.expected_out[rid]}")
+            if rid < self.expected_out.__len__():
+                if rd2["id"] == self.expected_out[rid]["id"]:
+                    self.log.debug(f"comapre {rd2}, {self.expected_out[rid]}")
+                else:
+                    self.log.debug(f"comapre {rd2}, {self.expected_out[rid]}")
             else:
-                self.log.debug(f"comapre {rd2}, {self.expected_out[rid]}")
+                self.log.error(f"comapre {rd2}, This packet was not expected")
 
         dropped_pckt_n = self.sw_drv.sent_packets - self.sw_o_mon.packets_received
         if dropped_pckt_n == self.sw_i_mon.loss_packets.__len__():
@@ -118,16 +123,23 @@ class SWTB:
 
             fail_cnt = 0
             att_cnt = 0
+            should_not_be_sent_cnt = 0
             for r_e, r_s in zip(self.expected_out, sorted_seen):
                 if r_e != r_s:
-                    self.log.warning(f"{fail_cnt}: {r_e} != {r_s}")
-                    fail_cnt += 1
+                    if r_e["dst"] == "error" and r_s["dst"] == 0:
+                        should_not_be_sent_cnt += 1
+                    else:
+                        self.log.warning(f"{fail_cnt}: {r_e} != {r_s}")
+                        fail_cnt += 1
                 att_cnt += 1
 
             if fail_cnt > 0:
                 raise TestFailure(f"Incorrectly routed packets {fail_cnt}/{att_cnt}")
             else:
                 self.log.info("All packets that were not dropped were properly routed!")
+                if (should_not_be_sent_cnt > 0):
+                    self.log.info(f"By mistake, sent {should_not_be_sent_cnt} wrongly addressed packets,"
+                                  f" but they were handled properly(send to RESOURCE[TODO: make it smarter])")
                 raise TestSuccess(f"All packets that were not dropped were properly routed!")
         else:
             raise TestFailure(f"Incorrect number of packets was routed {len(sorted_seen)}/{len(self.expected_out)}")
@@ -166,7 +178,7 @@ async def test_255(dut, log_lvl=INFO, cycles=100000):
 
 
 @cocotb.test()
-async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=2, with_nxt_fifo_rand=True, cycles=100000):
+async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fifo_rand=True, cycles=100000):
     cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
 
     if int(os.environ['DEBUG_ATTACH']) > 0:
@@ -193,13 +205,12 @@ async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=2, with_nxt_fi
         cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
 
     for i in range(transaction_n):
-        src = randint(0, 4)
+        src = randint(0, swtb.config["neighbours_n"]-1)
         x_dest = getrandbits(swtb.config["packet_x_addr_w"])
         y_dest = getrandbits(swtb.config["packet_y_addr_w"])
         await swtb.sw_drv.write_to_single_input(input_id=src, x_dest=x_dest, y_dest=y_dest)
 
     await swtb.sw_drv.clear_sw_input(True)
-    dut.nxt_fifo_full_i <= 0
 
     await ClockCycles(dut.clk_i, 10)
 
@@ -209,7 +220,7 @@ async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=2, with_nxt_fi
 
 
 @cocotb.test()
-async def test_rand_multi_input(dut, log_lvl=INFO, transaction_w=2, with_nxt_fifo_rand=True, cycles=100000):
+async def test_rand_multi_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fifo_rand=True, cycles=100000):
     cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
 
     if int(os.environ['DEBUG_ATTACH']) > 0:
@@ -236,14 +247,12 @@ async def test_rand_multi_input(dut, log_lvl=INFO, transaction_w=2, with_nxt_fif
         cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
 
     for i in range(transaction_n):
-        n = randint(0, 4)
+        n = randint(0, swtb.config["neighbours_n"]-1)
         await swtb.sw_drv.write_to_n_inputs(n)
 
     await swtb.sw_drv.clear_sw_input(True)
-    dut.nxt_fifo_full_i <= 0
 
     await ClockCycles(dut.clk_i, 10)
-
     await ClockCycles(dut.clk_i, 100)
 
     swtb.compare()
@@ -273,5 +282,7 @@ async def send5way(swtb):
     await swtb.sw_drv.write_to_single_input(0, 1, 1)  # from Reasource to Resource
     await swtb.sw_drv.write_to_single_input(2, 0, 1)  # send left
     await swtb.sw_drv.write_to_single_input(1, 2, 1)  # send right
-    await swtb.sw_drv.write_to_single_input(3, 1, 2)  # send down
-    await swtb.sw_drv.write_to_single_input(4, 1, 0)  # send up
+    if swtb.config["neighbours_n"] > 3:
+        await swtb.sw_drv.write_to_single_input(3, 1, 2)  # send down
+        if swtb.config["neighbours_n"] == 5:
+            await swtb.sw_drv.write_to_single_input(4, 1, 0)  # send up
