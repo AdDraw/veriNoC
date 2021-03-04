@@ -104,4 +104,11 @@ module arbiter
 
     assign mux_in_sel_o = mux_in_sel_w;
 
+    `ifdef FORMAL
+      always @(*) begin
+          // Full & Empty checks
+        if (PORT_N == 3) assert(mux_in_sel_i != 4 || mux_in_sel_i != 3);
+        else if (PORT_N == 4) assert(mux_in_sel_i != 4);
+      end
+    `endif
 endmodule

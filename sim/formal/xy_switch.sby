@@ -1,0 +1,30 @@
+[tasks]
+prove
+bmc
+
+[options]
+depth 30
+prove: mode prove
+bmc: mode bmc
+
+[engines]
+smtbmc --progress --nomem z3
+
+[script]
+read -formal switch_constants.v
+read -formal fifo.v
+read -formal packet_arbiter.v
+read -formal router_xy.v
+read -formal crossbar.v
+read -formal control_unit.v
+read -formal xy_switch.v
+prep -top xy_switch
+
+[files]
+../../srcs/switch/simple_mesh_xy/switch_constants.v
+../../srcs/components/fifo.v
+../../srcs/switch/simple_mesh_xy/packet_arbiter.v
+../../srcs/switch/simple_mesh_xy/router_xy.v
+../../srcs/switch/simple_mesh_xy/crossbar.v
+../../srcs/switch/simple_mesh_xy/control_unit.v
+../../srcs/switch/simple_mesh_xy/xy_switch.v
