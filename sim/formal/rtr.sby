@@ -1,0 +1,20 @@
+[tasks]
+prove
+bmc
+
+[options]
+depth 50
+prove: mode prove
+bmc: mode bmc
+
+[engines]
+smtbmc --progress --nomem z3
+
+[script]
+read -formal switch_constants.v
+read -formal router_xy.v
+prep -top xy_router
+
+[files]
+../../srcs/switch/simple_mesh_xy/switch_constants.v
+../../srcs/switch/simple_mesh_xy/router_xy.v

@@ -143,4 +143,10 @@ module xy_router
       end
     `endif
 
+    `ifdef FORMAL
+      always @(*) begin
+        if (PORT_N == 3 || PORT_N == 4 || PORT_N == 5 )
+          assert (mux_out_sel_o < PORT_N);
+      end
+    `endif
 endmodule
