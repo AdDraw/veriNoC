@@ -13,7 +13,7 @@ module tb
   (
 
     // GLOBAL
-    input clk_i,
+    // input clk_i,
     input rst_ni,
 
     // SWITCH INPUT BUFFER ports
@@ -34,6 +34,9 @@ module tb
       $display("XCORD %d", X_CORD);
       $display("YCORD %d", Y_CORD);
     end
+
+    reg clk_i = 1'b0;
+    always #5 clk_i <= ~clk_i;
 
     xy_switch
     #(

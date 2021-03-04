@@ -59,7 +59,6 @@ class SWTB:
 
     def setup_dut(self, cycle_n):
         cocotb.fork(self.reset_hdl())
-        cocotb.fork(Clock(self.dut.clk_i, CLOCK_PERIOD_NS).start(cycles=cycle_n))
 
     def reset_swtb(self):
         self.expected_out = []
