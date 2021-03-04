@@ -20,7 +20,8 @@ class SWOMon(BusMonitor):
         "neighbours_n": 5,
         "fifo_depth_w": 2,
         "x_cord": 0,
-        "y_cord": 0
+        "y_cord": 0,
+        "sw_config": 0
     }
 
     def __init__(self, entity, name, clock, config=None, log_lvl=INFO, callback=None):
@@ -34,6 +35,8 @@ class SWOMon(BusMonitor):
             self.config = self._default_config
         else:
             self.config = config
+
+        self.port_n = self.config["neighbours_n"] - 1
 
         BusMonitor.__init__(self, entity, name, clock, callback=callback)
         if log_lvl == DEBUG:
@@ -78,7 +81,7 @@ class SWOMon(BusMonitor):
                     data = BinaryValue(chosen_pckt[-self.config["packet_data_w"]:],
                                        self.config["packet_data_w"], bigEndian=False).value
 
-                    cycle_results = {"id": data, "dst": 4-bid, "orig": chosen_pckt}
+                    cycle_results = {"id": data, "dst": self.port_n - bid, "orig": chosen_pckt}
                     self.log.debug(f'T_o: {cycle_results}')
                     self._recv(cycle_results)
 

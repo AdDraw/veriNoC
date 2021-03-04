@@ -18,7 +18,8 @@ class SWPacketDriver(BusDriver):
         "neighbours_n": 5,
         "fifo_depth_w": 2,
         "x_cord": 0,
-        "y_cord": 0
+        "y_cord": 0,
+        "sw_config": 0
     }
 
     def __init__(self, entity, name, clock, config=None, log_lvl=INFO):
@@ -72,7 +73,7 @@ class SWPacketDriver(BusDriver):
         await RisingEdge(self.clock)
 
         self.sent_packets += n
-        sources = sample(range(4), n)
+        sources = sample(range(self.config["neighbours_n"]-1), n)
         packets = BinaryValue(0, self.config["neighbours_n"] * self.config["packet_w"], bigEndian=False)
         wr_en = 0
 
@@ -96,8 +97,9 @@ class SWPacketDriver(BusDriver):
             await RisingEdge(self.clock)
             self.bus.pckt_sw_i <= 0
             self.bus.wr_en_sw_i <= 0
+            self.bus.nxt_fifo_full_i <= 0
+            self.bus.nxt_fifo_overflow_i <= 0
 
     def reset(self):
         self.packet_id = 0
         self.sent_packets = 0
-

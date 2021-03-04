@@ -39,12 +39,13 @@ module xy_switch
 # (
     parameter X_CORD = 0,
     parameter Y_CORD = 0,
-    parameter PORT_N = 5, // 1 is minimum cause RESOURCE,
+    parameter PORT_N = 5, // 1 is minimum because of connection to RESOURCE,
     parameter IN_FIFO_DEPTH_W = 3,
     parameter PCKT_XADDR_W = 4,
     parameter PCKT_YADDR_W = 4,
     parameter PCKT_DATA_W = 8,
-    parameter PCKT_W = PCKT_XADDR_W + PCKT_YADDR_W + PCKT_DATA_W
+    parameter PCKT_W = PCKT_XADDR_W + PCKT_YADDR_W + PCKT_DATA_W,
+    parameter SW_CONFIG = `CENTER
     )
   (
 
@@ -133,7 +134,8 @@ module xy_switch
         .Y_CORD(Y_CORD),
         .PACKET_ADDR_X_W(PCKT_XADDR_W),
         .PACKET_ADDR_Y_W(PCKT_YADDR_W),
-        .OUTPUT_N_W($clog2(PORT_N))
+        .OUTPUT_N_W($clog2(PORT_N)),
+        .SW_CONFIG(SW_CONFIG)
         )
     router
       (
