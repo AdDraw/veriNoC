@@ -7,51 +7,100 @@ module arbiter
     output [$clog2(PORT_N)-1 : 0]  mux_in_sel_o
     );
 
-    localparam RESOURCE = 0;
-    localparam WEST     = 1;
-    localparam EAST     = 2;
-    localparam NORTH    = 3;
-    localparam SOUTH    = 4;
-
     reg [$clog2(PORT_N)-1 : 0]  mux_in_sel_w;
-    // Vertical priority
-    // N > S > E > W > R
-    always @(*)
-    begin
-      if (|vld_input_i)
-      begin
-        if (vld_input_i[NORTH])
-        begin
-          // TOP is valid
-          // choose top packet
-          mux_in_sel_w = NORTH;
-        end
 
-        else if ( vld_input_i[SOUTH])
+    generate
+      if (PORT_N == 5) begin
+        always @(*)
         begin
-          mux_in_sel_w = SOUTH;
-        end
+          if (|vld_input_i)
+          begin
+            if (vld_input_i[4])
+            begin
+              mux_in_sel_w = 4;
+            end
 
-        else if (vld_input_i[EAST])
-        begin
-          mux_in_sel_w = EAST;
-        end
+            else if ( vld_input_i[3])
+            begin
+              mux_in_sel_w = 3;
+            end
 
-        else if (vld_input_i[WEST])
-        begin
-          mux_in_sel_w = WEST;
-        end
+            else if (vld_input_i[2])
+            begin
+              mux_in_sel_w = 2;
+            end
 
-        else if (vld_input_i[RESOURCE])
-        begin
-          mux_in_sel_w = RESOURCE;
-        end
-        else
-        begin
-          mux_in_sel_w = 0;
+            else if (vld_input_i[1])
+            begin
+              mux_in_sel_w = 1;
+            end
+
+            else if (vld_input_i[0])
+            begin
+              mux_in_sel_w = 0;
+            end
+            else
+            begin
+              mux_in_sel_w = 0;
+            end
+          end
         end
       end
-    end
+      else if (PORT_N == 4) begin
+        always @(*)
+        begin
+          if ( vld_input_i[3])
+          begin
+            mux_in_sel_w = 3;
+          end
+
+          else if (vld_input_i[2])
+          begin
+            mux_in_sel_w = 2;
+          end
+
+          else if (vld_input_i[1])
+          begin
+            mux_in_sel_w = 1;
+          end
+
+          else if (vld_input_i[0])
+          begin
+            mux_in_sel_w = 0;
+          end
+          else
+          begin
+            mux_in_sel_w = 0;
+          end
+        end
+      end
+      else if (PORT_N == 3) begin
+        always @(*)
+        begin
+          if (|vld_input_i)
+          begin
+            if (vld_input_i[2])
+            begin
+              mux_in_sel_w = 2;
+            end
+
+            else if (vld_input_i[1])
+            begin
+              mux_in_sel_w = 1;
+            end
+
+            else if (vld_input_i[0])
+            begin
+              mux_in_sel_w = 0;
+            end
+            else
+            begin
+              mux_in_sel_w = 0;
+            end
+          end
+        end
+      end
+    endgenerate
 
     assign mux_in_sel_o = mux_in_sel_w;
 
