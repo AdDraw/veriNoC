@@ -2,160 +2,1163 @@
 
 (* dynports =  1  *)
 (* cells_not_processed =  1  *)
-(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:38.1-182.10" *)
+(* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:1.1-114.10" *)
+module arbiter(vld_input_i, mux_in_sel_o);
+  (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:14.9-47.12" *)
+  wire [2:0] _00_;
+  (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:14.9-47.12" *)
+  wire [2:0] _01_;
+  (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:14.9-47.12" *)
+  wire [2:0] _02_;
+  wire _03_;
+  wire [1:0] _04_;
+  wire _05_;
+  (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:7.36-7.48" *)
+  output [2:0] mux_in_sel_o;
+  (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:10.33-10.45" *)
+  reg [2:0] mux_in_sel_w;
+  (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:6.36-6.47" *)
+  input [4:0] vld_input_i;
+  assign _04_[0] = vld_input_i[0] |(* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:16.15-16.27" *)  vld_input_i[1];
+  assign _04_[1] = vld_input_i[2] |(* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:16.15-16.27" *)  vld_input_i[3];
+  assign _05_ = _04_[0] |(* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:16.15-16.27" *)  _04_[1];
+  assign _03_ = _05_ |(* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:16.15-16.27" *)  vld_input_i[4];
+  assign _02_[0] = vld_input_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:28.22-28.36|../srcs/switch/simple_mesh_xy/packet_arbiter.v:28.18-45.16" *) 1'h0 : vld_input_i[1];
+  assign _01_[0] = vld_input_i[3] ? (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:23.23-23.37|../srcs/switch/simple_mesh_xy/packet_arbiter.v:23.18-45.16" *) 1'h1 : _02_[0];
+  assign _01_[1] = vld_input_i[3] ? (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:23.23-23.37|../srcs/switch/simple_mesh_xy/packet_arbiter.v:23.18-45.16" *) 1'h1 : vld_input_i[2];
+  assign _00_[0] = vld_input_i[4] ? (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:18.17-18.31|../srcs/switch/simple_mesh_xy/packet_arbiter.v:18.13-45.16" *) 1'h0 : _01_[0];
+  assign _00_[1] = vld_input_i[4] ? (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:18.17-18.31|../srcs/switch/simple_mesh_xy/packet_arbiter.v:18.13-45.16" *) 1'h0 : _01_[1];
+  (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:14.9-47.12" *)
+  always @*
+    if (_03_) mux_in_sel_w[0] = _00_[0];
+  (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:14.9-47.12" *)
+  always @*
+    if (_03_) mux_in_sel_w[1] = _00_[1];
+  (* src = "../srcs/switch/simple_mesh_xy/packet_arbiter.v:14.9-47.12" *)
+  always @*
+    if (_03_) mux_in_sel_w[2] = vld_input_i[4];
+  assign _00_[2] = vld_input_i[4];
+  assign _01_[2] = 1'h0;
+  assign _02_[2:1] = { 1'h0, vld_input_i[2] };
+  assign mux_in_sel_o = mux_in_sel_w;
+endmodule
+
+(* dynports =  1  *)
+(* cells_not_processed =  1  *)
+(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:6.1-63.10" *)
+module control_unit(clk_i, rst_ni, empty_i, rd_en_o, vld_input_o, full_i, wr_en_o, mux_in_sel_i, mux_out_sel_i);
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:37.5-52.8" *)
+  wire [4:0] _00_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *)
+  wire [4:0] _01_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.56-32.88" *)
+  (* unused_bits = "5 6 7" *)
+  wire [31:0] _02_;
+  wire [1:0] _03_;
+  wire _04_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *)
+  wire [4:0] _05_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.80-32.87" *)
+  wire [31:0] _06_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.42-31.63" *)
+  wire [4:0] _07_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:46.25-46.46" *)
+  wire [4:0] _08_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.40-32.52" *)
+  wire _09_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:137.23-137.24" *)
+  wire _10_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:93.23-93.24" *)
+  wire [4:0] _11_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:93.23-93.24" *)
+  (* unused_bits = "5 6 7" *)
+  wire [31:0] _12_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:157.2-184.5" *)
+  (* unused_bits = "1 3" *)
+  wire [4:0] _13_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:157.2-184.5" *)
+  (* unused_bits = "1 2 3" *)
+  wire [4:0] _14_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:106.2-119.5" *)
+  wire [4:0] _15_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:106.2-119.5" *)
+  wire [4:0] _16_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:106.2-119.5" *)
+  wire [31:0] _17_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:106.2-119.5" *)
+  wire [31:0] _18_;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:11.11-11.16" *)
+  input clk_i;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:15.29-15.36" *)
+  input [4:0] empty_i;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:20.29-20.35" *)
+  input [4:0] full_i;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:24.34-24.46" *)
+  input [2:0] mux_in_sel_i;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:25.34-25.47" *)
+  input [2:0] mux_out_sel_i;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:16.29-16.36" *)
+  output [4:0] rd_en_o;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.29-31.36" *)
+  wire [4:0] rd_en_w;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:12.11-12.17" *)
+  input rst_ni;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:17.29-17.40" *)
+  output [4:0] vld_input_o;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:29.29-29.40" *)
+  reg [4:0] vld_input_v;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:21.29-21.36" *)
+  output [4:0] wr_en_o;
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.29-32.36" *)
+  wire [4:0] wr_en_w;
+  assign _03_[0] = vld_input_v[0] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.40-32.52" *)  vld_input_v[1];
+  assign _03_[1] = vld_input_v[2] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.40-32.52" *)  vld_input_v[3];
+  assign _04_ = _03_[0] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.40-32.52" *)  _03_[1];
+  assign _09_ = _04_ |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.40-32.52" *)  vld_input_v[4];
+  assign wr_en_w[0] = _09_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.39-32.92" *) _02_[0] : 1'h0;
+  assign wr_en_w[1] = _09_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.39-32.92" *) _02_[1] : 1'h0;
+  assign wr_en_w[2] = _09_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.39-32.92" *) _02_[2] : 1'h0;
+  assign wr_en_w[3] = _09_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.39-32.92" *) _02_[3] : 1'h0;
+  assign wr_en_w[4] = _09_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.39-32.92" *) _02_[4] : 1'h0;
+  assign _00_[0] = _10_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:47.13-47.35|../srcs/switch/simple_mesh_xy/control_unit.v:47.9-50.12" *) _01_[0] : _08_[0];
+  assign _00_[1] = _10_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:47.13-47.35|../srcs/switch/simple_mesh_xy/control_unit.v:47.9-50.12" *) _01_[1] : _08_[1];
+  assign _00_[2] = _10_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:47.13-47.35|../srcs/switch/simple_mesh_xy/control_unit.v:47.9-50.12" *) _01_[2] : _08_[2];
+  assign _00_[3] = _10_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:47.13-47.35|../srcs/switch/simple_mesh_xy/control_unit.v:47.9-50.12" *) _01_[3] : _08_[3];
+  assign _00_[4] = _10_ ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:47.13-47.35|../srcs/switch/simple_mesh_xy/control_unit.v:47.9-50.12" *) _01_[4] : _08_[4];
+  assign _13_[0] = mux_out_sel_i[0] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:178.4-183.7|/usr/local/bin/../share/yosys/techmap.v:178.8-178.12" *) wr_en_w[1] : wr_en_w[0];
+  assign _13_[2] = mux_out_sel_i[0] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:178.4-183.7|/usr/local/bin/../share/yosys/techmap.v:178.8-178.12" *) wr_en_w[3] : wr_en_w[2];
+  assign _13_[4] = mux_out_sel_i[0] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:178.4-183.7|/usr/local/bin/../share/yosys/techmap.v:178.8-178.12" *) 1'hx : wr_en_w[4];
+  assign _14_[0] = mux_out_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:178.4-183.7|/usr/local/bin/../share/yosys/techmap.v:178.8-178.12" *) _13_[2] : _13_[0];
+  assign _14_[4] = mux_out_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:178.4-183.7|/usr/local/bin/../share/yosys/techmap.v:178.8-178.12" *) 1'hx : _13_[4];
+  assign _10_ = mux_out_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:178.4-183.7|/usr/local/bin/../share/yosys/techmap.v:178.8-178.12" *) _14_[4] : _14_[0];
+  assign rd_en_w[0] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.39-31.65" *) _07_[0];
+  assign rd_en_w[1] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.39-31.65" *) _07_[1];
+  assign rd_en_w[2] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.39-31.65" *) _07_[2];
+  assign rd_en_w[3] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.39-31.65" *) _07_[3];
+  assign rd_en_w[4] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.39-31.65" *) _07_[4];
+  assign _06_[0] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.80-32.87" *) full_i[0];
+  assign _06_[1] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.80-32.87" *) full_i[1];
+  assign _06_[2] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.80-32.87" *) full_i[2];
+  assign _06_[3] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.80-32.87" *) full_i[3];
+  assign _06_[4] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.80-32.87" *) full_i[4];
+  assign _05_[0] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *) _11_[0];
+  assign _05_[1] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *) _11_[1];
+  assign _05_[2] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *) _11_[2];
+  assign _05_[3] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *) _11_[3];
+  assign _05_[4] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *) _11_[4];
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:37.5-52.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) vld_input_v[0] <= 1'h0;
+    else vld_input_v[0] <= _00_[0];
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:37.5-52.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) vld_input_v[1] <= 1'h0;
+    else vld_input_v[1] <= _00_[1];
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:37.5-52.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) vld_input_v[2] <= 1'h0;
+    else vld_input_v[2] <= _00_[2];
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:37.5-52.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) vld_input_v[3] <= 1'h0;
+    else vld_input_v[3] <= _00_[3];
+  (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:37.5-52.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) vld_input_v[4] <= 1'h0;
+    else vld_input_v[4] <= _00_[4];
+  assign _07_[0] = empty_i[0] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.42-31.63" *)  vld_input_v[0];
+  assign _07_[1] = empty_i[1] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.42-31.63" *)  vld_input_v[1];
+  assign _07_[2] = empty_i[2] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.42-31.63" *)  vld_input_v[2];
+  assign _07_[3] = empty_i[3] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.42-31.63" *)  vld_input_v[3];
+  assign _07_[4] = empty_i[4] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:31.42-31.63" *)  vld_input_v[4];
+  assign _02_[0] = _12_[0] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.56-32.88" *)  _06_[0];
+  assign _02_[1] = _12_[1] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.56-32.88" *)  _06_[1];
+  assign _02_[2] = _12_[2] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.56-32.88" *)  _06_[2];
+  assign _02_[3] = _12_[3] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.56-32.88" *)  _06_[3];
+  assign _02_[4] = _12_[4] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.56-32.88" *)  _06_[4];
+  assign _08_[0] = rd_en_w[0] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:46.25-46.46" *)  vld_input_v[0];
+  assign _08_[1] = rd_en_w[1] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:46.25-46.46" *)  vld_input_v[1];
+  assign _08_[2] = rd_en_w[2] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:46.25-46.46" *)  vld_input_v[2];
+  assign _08_[3] = rd_en_w[3] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:46.25-46.46" *)  vld_input_v[3];
+  assign _08_[4] = rd_en_w[4] |(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:46.25-46.46" *)  vld_input_v[4];
+  assign _01_[0] = _08_[0] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *)  _05_[0];
+  assign _01_[1] = _08_[1] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *)  _05_[1];
+  assign _01_[2] = _08_[2] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *)  _05_[2];
+  assign _01_[3] = _08_[3] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *)  _05_[3];
+  assign _01_[4] = _08_[4] &(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0" *)  _05_[4];
+  assign _11_[0] = mux_in_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _16_[0];
+  assign _11_[1] = mux_in_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _16_[1];
+  assign _11_[2] = mux_in_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _16_[2];
+  assign _11_[3] = mux_in_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _16_[3];
+  assign _11_[4] = mux_in_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) _16_[0] : 1'h0;
+  assign _16_[0] = mux_in_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _15_[0];
+  assign _16_[1] = mux_in_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : mux_in_sel_i[0];
+  assign _16_[2] = mux_in_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) _15_[0] : 1'h0;
+  assign _16_[3] = mux_in_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) mux_in_sel_i[0] : 1'h0;
+  assign _15_[0] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) mux_in_sel_i[0];
+  assign _12_[0] = mux_out_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _18_[0];
+  assign _12_[1] = mux_out_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _18_[1];
+  assign _12_[2] = mux_out_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _18_[2];
+  assign _12_[3] = mux_out_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _18_[3];
+  assign _12_[4] = mux_out_sel_i[2] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) _18_[0] : 1'h0;
+  assign _18_[0] = mux_out_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : _17_[0];
+  assign _18_[1] = mux_out_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) 1'h0 : mux_out_sel_i[0];
+  assign _18_[2] = mux_out_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) _17_[0] : 1'h0;
+  assign _18_[3] = mux_out_sel_i[1] ? (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) mux_out_sel_i[0] : 1'h0;
+  assign _17_[0] = ~(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:32.57-32.75|/usr/local/bin/../share/yosys/techmap.v:111.4-118.7|/usr/local/bin/../share/yosys/techmap.v:111.8-111.12" *) mux_out_sel_i[0];
+  assign _02_[31:5] = { 24'h000000, _12_[7:5] };
+  assign _06_[31:5] = 27'h7ffffff;
+  assign _12_[31:8] = 24'h000000;
+  assign _15_[4:1] = { 3'h0, mux_in_sel_i[0] };
+  assign _16_[4] = 1'h0;
+  assign _17_[31:1] = { 30'h00000000, mux_out_sel_i[0] };
+  assign _18_[31:4] = 28'h0000000;
+  assign rd_en_o = rd_en_w;
+  assign vld_input_o = vld_input_v;
+  assign wr_en_o = wr_en_w;
+endmodule
+
+(* dynports =  1  *)
+(* cells_not_processed =  1  *)
+(* src = "../srcs/components/fifo.v:6.1-134.10" *)
+module fifo(clk_i, rst_ni, wr_en_i, rd_en_i, data_i, data_o, full_o, empty_o, overflow_o, underflow_o);
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  wire _000_;
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  wire _001_;
+  wire _002_;
+  wire _003_;
+  wire _004_;
+  wire _005_;
+  wire _006_;
+  wire _007_;
+  wire _008_;
+  wire _009_;
+  wire _010_;
+  wire [1:0] _011_;
+  wire [1:0] _012_;
+  wire [1:0] _013_;
+  wire [1:0] _014_;
+  wire [1:0] _015_;
+  wire [1:0] _016_;
+  wire [1:0] _017_;
+  wire [1:0] _018_;
+  wire [1:0] _019_;
+  wire _020_;
+  wire _021_;
+  wire [1:0] _022_;
+  wire [1:0] _023_;
+  wire _024_;
+  wire _025_;
+  wire _026_;
+  wire _027_;
+  wire _028_;
+  wire _029_;
+  wire _030_;
+  (* src = "../srcs/components/fifo.v:54.15-54.33" *)
+  wire _031_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:583.28-583.35" *)
+  wire [31:0] _032_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:573.22-573.23" *)
+  wire [3:0] _033_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:575.21-575.22" *)
+  wire [7:0] _034_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:578.19-578.22" *)
+  wire [7:0] _035_;
+  wire _036_;
+  wire _037_;
+  wire _038_;
+  wire _039_;
+  wire _040_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/components/fifo.v:56.34-56.49|/usr/local/bin/../share/yosys/techmap.v:270.23-270.24" *)
+  wire [1:0] _041_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/components/fifo.v:56.34-56.49|/usr/local/bin/../share/yosys/techmap.v:270.26-270.27" *)
+  wire [1:0] _042_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/components/fifo.v:81.28-81.43|../srcs/components/fifo.v:56.34-56.49|/usr/local/bin/../share/yosys/techmap.v:270.23-270.24" *)
+  wire [1:0] _043_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/components/fifo.v:81.28-81.43|../srcs/components/fifo.v:56.34-56.49|/usr/local/bin/../share/yosys/techmap.v:270.26-270.27" *)
+  wire [1:0] _044_;
+  (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.15" *)
+  wire _045_;
+  (* src = "../srcs/components/fifo.v:13.11-13.16" *)
+  input clk_i;
+  (* src = "../srcs/components/fifo.v:17.30-17.36" *)
+  input [7:0] data_i;
+  (* src = "../srcs/components/fifo.v:18.31-18.37" *)
+  output [7:0] data_o;
+  (* src = "../srcs/components/fifo.v:33.28-33.34" *)
+  reg [7:0] data_v;
+  (* src = "../srcs/components/fifo.v:20.12-20.19" *)
+  output empty_o;
+  (* src = "../srcs/components/fifo.v:39.18-39.25" *)
+  wire empty_w;
+  (* src = "../srcs/components/fifo.v:34.28-34.34" *)
+  reg [7:0] \fifo_v[0] ;
+  (* src = "../srcs/components/fifo.v:34.28-34.34" *)
+  reg [7:0] \fifo_v[1] ;
+  (* src = "../srcs/components/fifo.v:34.28-34.34" *)
+  reg [7:0] \fifo_v[2] ;
+  (* src = "../srcs/components/fifo.v:34.28-34.34" *)
+  reg [7:0] \fifo_v[3] ;
+  (* src = "../srcs/components/fifo.v:19.12-19.18" *)
+  output full_o;
+  (* src = "../srcs/components/fifo.v:39.10-39.16" *)
+  wire full_w;
+  (* src = "../srcs/components/fifo.v:21.12-21.22" *)
+  output overflow_o;
+  (* src = "../srcs/components/fifo.v:36.9-36.19" *)
+  reg overflow_v;
+  (* src = "../srcs/components/fifo.v:16.11-16.18" *)
+  input rd_en_i;
+  (* src = "../srcs/components/fifo.v:35.44-35.52" *)
+  reg [1:0] rd_ptr_v;
+  (* src = "../srcs/components/fifo.v:14.11-14.17" *)
+  input rst_ni;
+  (* src = "../srcs/components/fifo.v:22.12-22.23" *)
+  output underflow_o;
+  (* src = "../srcs/components/fifo.v:36.21-36.32" *)
+  reg underflow_v;
+  (* src = "../srcs/components/fifo.v:15.11-15.18" *)
+  input wr_en_i;
+  (* src = "../srcs/components/fifo.v:35.34-35.42" *)
+  reg [1:0] wr_ptr_v;
+  assign _041_[0] = ~wr_ptr_v[0];
+  assign _009_ = ~wr_ptr_v[1];
+  assign _010_ = ~rd_ptr_v[1];
+  assign _002_ = _006_ & _036_;
+  assign _004_ = _006_ & _038_;
+  assign _003_ = _006_ & _037_;
+  assign _024_ = _043_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0" *)  _010_;
+  assign _025_ = rd_ptr_v[0] |(* src = "../srcs/components/fifo.v:0.0-0.0" *)  _010_;
+  assign _026_ = _043_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0" *)  rd_ptr_v[1];
+  assign _006_ = wr_en_i & _031_;
+  assign _005_ = _006_ & _039_;
+  assign _027_ = _041_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0" *)  _009_;
+  assign _028_ = wr_ptr_v[0] |(* src = "../srcs/components/fifo.v:0.0-0.0" *)  _009_;
+  assign _029_ = _041_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0" *)  wr_ptr_v[1];
+  assign _007_ = rd_en_i & _008_;
+  assign _011_[0] = _032_[7] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[15];
+  assign _011_[1] = _032_[23] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[31];
+  assign _035_[7] = _011_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _011_[1];
+  assign _012_[0] = _032_[6] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[14];
+  assign _012_[1] = _032_[22] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[30];
+  assign _035_[6] = _012_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _012_[1];
+  assign _013_[0] = _032_[5] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[13];
+  assign _013_[1] = _032_[21] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[29];
+  assign _035_[5] = _013_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _013_[1];
+  assign _014_[0] = _032_[4] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[12];
+  assign _014_[1] = _032_[20] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[28];
+  assign _035_[4] = _014_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _014_[1];
+  assign _015_[0] = _032_[3] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[11];
+  assign _015_[1] = _032_[19] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[27];
+  assign _035_[3] = _015_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _015_[1];
+  assign _016_[0] = _032_[2] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[10];
+  assign _016_[1] = _032_[18] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[26];
+  assign _035_[2] = _016_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _016_[1];
+  assign _017_[0] = _032_[1] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[9];
+  assign _017_[1] = _032_[17] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[25];
+  assign _035_[1] = _017_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _017_[1];
+  assign _018_[0] = _032_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[8];
+  assign _018_[1] = _032_[16] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _032_[24];
+  assign _035_[0] = _018_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _018_[1];
+  assign _019_[0] = _033_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.15" *)  _033_[1];
+  assign _019_[1] = _033_[2] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.15" *)  _033_[3];
+  assign _045_ = _019_[0] |(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.15" *)  _019_[1];
+  assign _030_ = _022_[0] |(* src = "../srcs/components/fifo.v:40.24-40.51" *)  _022_[1];
+  assign _008_ = _023_[0] |(* src = "../srcs/components/fifo.v:41.24-41.44" *)  _023_[1];
+  assign _020_ = rd_ptr_v[0] |(* src = "../srcs/components/fifo.v:0.0-0.0" *)  rd_ptr_v[1];
+  assign _021_ = wr_ptr_v[0] |(* src = "../srcs/components/fifo.v:0.0-0.0" *)  wr_ptr_v[1];
+  assign _033_[0] = ~(* src = "../srcs/components/fifo.v:0.0-0.0" *) _024_;
+  assign _033_[1] = ~(* src = "../srcs/components/fifo.v:0.0-0.0" *) _025_;
+  assign _033_[2] = ~(* src = "../srcs/components/fifo.v:0.0-0.0" *) _026_;
+  assign _033_[3] = ~(* src = "../srcs/components/fifo.v:0.0-0.0" *) _020_;
+  assign _036_ = ~(* src = "../srcs/components/fifo.v:0.0-0.0" *) _027_;
+  assign _037_ = ~(* src = "../srcs/components/fifo.v:0.0-0.0" *) _028_;
+  assign _038_ = ~(* src = "../srcs/components/fifo.v:0.0-0.0" *) _029_;
+  assign _039_ = ~(* src = "../srcs/components/fifo.v:0.0-0.0" *) _021_;
+  assign full_o = ~(* src = "../srcs/components/fifo.v:40.24-40.51" *) _030_;
+  assign empty_o = ~(* src = "../srcs/components/fifo.v:41.24-41.44" *) _008_;
+  assign _031_ = _030_ |(* src = "../srcs/components/fifo.v:54.15-54.33" *)  rd_en_i;
+  assign underflow_o = _008_ ? (* src = "../srcs/components/fifo.v:90.15-90.23|../srcs/components/fifo.v:90.11-90.45" *) 1'h0 : underflow_v;
+  assign _001_ = rd_en_i ? (* src = "../srcs/components/fifo.v:78.13-78.20|../srcs/components/fifo.v:78.9-91.12" *) empty_o : underflow_o;
+  assign overflow_o = _030_ ? (* src = "../srcs/components/fifo.v:65.15-65.22|../srcs/components/fifo.v:65.11-65.43" *) 1'h0 : overflow_v;
+  assign _040_ = ~(* src = "../srcs/components/fifo.v:54.15-54.33|../srcs/components/fifo.v:54.11-62.14" *) _031_;
+  assign _000_ = wr_en_i ? (* src = "../srcs/components/fifo.v:53.13-53.20|../srcs/components/fifo.v:53.9-66.12" *) _040_ : overflow_o;
+  assign _034_[0] = _045_ ? (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _035_[0] : 1'hx;
+  assign _034_[1] = _045_ ? (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _035_[1] : 1'hx;
+  assign _034_[2] = _045_ ? (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _035_[2] : 1'hx;
+  assign _034_[3] = _045_ ? (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _035_[3] : 1'hx;
+  assign _034_[4] = _045_ ? (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _035_[4] : 1'hx;
+  assign _034_[5] = _045_ ? (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _035_[5] : 1'hx;
+  assign _034_[6] = _045_ ? (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _035_[6] : 1'hx;
+  assign _034_[7] = _045_ ? (* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _035_[7] : 1'hx;
+  assign _043_[0] = ~(* src = "../srcs/components/fifo.v:81.28-81.43|../srcs/components/fifo.v:56.34-56.49|/usr/local/bin/../share/yosys/techmap.v:279.31-279.37" *) rd_ptr_v[0];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) underflow_v <= 1'h0;
+    else underflow_v <= _001_;
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) overflow_v <= 1'h0;
+    else overflow_v <= _000_;
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[0] [3] <= 1'h0;
+    else if (_005_) \fifo_v[0] [3] <= data_i[3];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[0] [4] <= 1'h0;
+    else if (_005_) \fifo_v[0] [4] <= data_i[4];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[0] [5] <= 1'h0;
+    else if (_005_) \fifo_v[0] [5] <= data_i[5];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[0] [6] <= 1'h0;
+    else if (_005_) \fifo_v[0] [6] <= data_i[6];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[0] [7] <= 1'h0;
+    else if (_005_) \fifo_v[0] [7] <= data_i[7];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[2] [0] <= 1'h0;
+    else if (_003_) \fifo_v[2] [0] <= data_i[0];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[2] [1] <= 1'h0;
+    else if (_003_) \fifo_v[2] [1] <= data_i[1];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[2] [2] <= 1'h0;
+    else if (_003_) \fifo_v[2] [2] <= data_i[2];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[2] [3] <= 1'h0;
+    else if (_003_) \fifo_v[2] [3] <= data_i[3];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[2] [4] <= 1'h0;
+    else if (_003_) \fifo_v[2] [4] <= data_i[4];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[2] [5] <= 1'h0;
+    else if (_003_) \fifo_v[2] [5] <= data_i[5];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[2] [6] <= 1'h0;
+    else if (_003_) \fifo_v[2] [6] <= data_i[6];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[2] [7] <= 1'h0;
+    else if (_003_) \fifo_v[2] [7] <= data_i[7];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[3] [0] <= 1'h0;
+    else if (_002_) \fifo_v[3] [0] <= data_i[0];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[3] [1] <= 1'h0;
+    else if (_002_) \fifo_v[3] [1] <= data_i[1];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[3] [2] <= 1'h0;
+    else if (_002_) \fifo_v[3] [2] <= data_i[2];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[3] [3] <= 1'h0;
+    else if (_002_) \fifo_v[3] [3] <= data_i[3];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[3] [4] <= 1'h0;
+    else if (_002_) \fifo_v[3] [4] <= data_i[4];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[3] [5] <= 1'h0;
+    else if (_002_) \fifo_v[3] [5] <= data_i[5];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[3] [6] <= 1'h0;
+    else if (_002_) \fifo_v[3] [6] <= data_i[6];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[3] [7] <= 1'h0;
+    else if (_002_) \fifo_v[3] [7] <= data_i[7];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) data_v[0] <= 1'h0;
+    else if (_007_) data_v[0] <= _034_[0];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) data_v[1] <= 1'h0;
+    else if (_007_) data_v[1] <= _034_[1];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) data_v[2] <= 1'h0;
+    else if (_007_) data_v[2] <= _034_[2];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) data_v[3] <= 1'h0;
+    else if (_007_) data_v[3] <= _034_[3];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) data_v[4] <= 1'h0;
+    else if (_007_) data_v[4] <= _034_[4];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) data_v[5] <= 1'h0;
+    else if (_007_) data_v[5] <= _034_[5];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) data_v[6] <= 1'h0;
+    else if (_007_) data_v[6] <= _034_[6];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) data_v[7] <= 1'h0;
+    else if (_007_) data_v[7] <= _034_[7];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[1] [0] <= 1'h0;
+    else if (_004_) \fifo_v[1] [0] <= data_i[0];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[1] [1] <= 1'h0;
+    else if (_004_) \fifo_v[1] [1] <= data_i[1];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[1] [2] <= 1'h0;
+    else if (_004_) \fifo_v[1] [2] <= data_i[2];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[1] [3] <= 1'h0;
+    else if (_004_) \fifo_v[1] [3] <= data_i[3];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[1] [4] <= 1'h0;
+    else if (_004_) \fifo_v[1] [4] <= data_i[4];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[1] [5] <= 1'h0;
+    else if (_004_) \fifo_v[1] [5] <= data_i[5];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[1] [6] <= 1'h0;
+    else if (_004_) \fifo_v[1] [6] <= data_i[6];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[1] [7] <= 1'h0;
+    else if (_004_) \fifo_v[1] [7] <= data_i[7];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) rd_ptr_v[0] <= 1'h0;
+    else if (_007_) rd_ptr_v[0] <= _043_[0];
+  (* src = "../srcs/components/fifo.v:71.5-93.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) rd_ptr_v[1] <= 1'h0;
+    else if (_007_) rd_ptr_v[1] <= _044_[1];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) wr_ptr_v[0] <= 1'h0;
+    else if (_006_) wr_ptr_v[0] <= _041_[0];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) wr_ptr_v[1] <= 1'h0;
+    else if (_006_) wr_ptr_v[1] <= _042_[1];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[0] [0] <= 1'h0;
+    else if (_005_) \fifo_v[0] [0] <= data_i[0];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[0] [1] <= 1'h0;
+    else if (_005_) \fifo_v[0] [1] <= data_i[1];
+  (* src = "../srcs/components/fifo.v:44.5-68.8" *)
+  always @(posedge clk_i, negedge rst_ni)
+    if (!rst_ni) \fifo_v[0] [2] <= 1'h0;
+    else if (_005_) \fifo_v[0] [2] <= data_i[2];
+  assign _032_[24] = \fifo_v[0] [0] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[3];
+  assign _032_[25] = \fifo_v[0] [1] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[3];
+  assign _032_[26] = \fifo_v[0] [2] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[3];
+  assign _032_[27] = \fifo_v[0] [3] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[3];
+  assign _032_[28] = \fifo_v[0] [4] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[3];
+  assign _032_[29] = \fifo_v[0] [5] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[3];
+  assign _032_[30] = \fifo_v[0] [6] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[3];
+  assign _032_[31] = \fifo_v[0] [7] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[3];
+  assign _032_[16] = \fifo_v[1] [0] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[2];
+  assign _032_[17] = \fifo_v[1] [1] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[2];
+  assign _032_[18] = \fifo_v[1] [2] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[2];
+  assign _032_[19] = \fifo_v[1] [3] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[2];
+  assign _032_[20] = \fifo_v[1] [4] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[2];
+  assign _032_[21] = \fifo_v[1] [5] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[2];
+  assign _032_[22] = \fifo_v[1] [6] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[2];
+  assign _032_[23] = \fifo_v[1] [7] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[2];
+  assign _032_[8] = \fifo_v[2] [0] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[1];
+  assign _032_[9] = \fifo_v[2] [1] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[1];
+  assign _032_[10] = \fifo_v[2] [2] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[1];
+  assign _032_[11] = \fifo_v[2] [3] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[1];
+  assign _032_[12] = \fifo_v[2] [4] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[1];
+  assign _032_[13] = \fifo_v[2] [5] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[1];
+  assign _032_[14] = \fifo_v[2] [6] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[1];
+  assign _032_[15] = \fifo_v[2] [7] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[1];
+  assign _032_[0] = \fifo_v[3] [0] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[0];
+  assign _032_[1] = \fifo_v[3] [1] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[0];
+  assign _032_[2] = \fifo_v[3] [2] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[0];
+  assign _032_[3] = \fifo_v[3] [3] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[0];
+  assign _032_[4] = \fifo_v[3] [4] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[0];
+  assign _032_[5] = \fifo_v[3] [5] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[0];
+  assign _032_[6] = \fifo_v[3] [6] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[0];
+  assign _032_[7] = \fifo_v[3] [7] &(* src = "../srcs/components/fifo.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _033_[0];
+  assign _042_[1] = wr_ptr_v[1] ^(* src = "../srcs/components/fifo.v:56.34-56.49|/usr/local/bin/../share/yosys/techmap.v:289.13-289.25" *)  wr_ptr_v[0];
+  assign _044_[1] = rd_ptr_v[1] ^(* src = "../srcs/components/fifo.v:81.28-81.43|../srcs/components/fifo.v:56.34-56.49|/usr/local/bin/../share/yosys/techmap.v:289.13-289.25" *)  rd_ptr_v[0];
+  assign _022_[0] = _041_[0] ^(* src = "../srcs/components/fifo.v:40.24-40.51" *)  rd_ptr_v[0];
+  assign _022_[1] = _042_[1] ^(* src = "../srcs/components/fifo.v:40.24-40.51" *)  rd_ptr_v[1];
+  assign _023_[0] = wr_ptr_v[0] ^(* src = "../srcs/components/fifo.v:41.24-41.44" *)  rd_ptr_v[0];
+  assign _023_[1] = wr_ptr_v[1] ^(* src = "../srcs/components/fifo.v:41.24-41.44" *)  rd_ptr_v[1];
+  assign _041_[1] = wr_ptr_v[1];
+  assign _042_[0] = _041_[0];
+  assign _043_[1] = rd_ptr_v[1];
+  assign _044_[0] = _043_[0];
+  assign data_o = data_v;
+  assign empty_w = empty_o;
+  assign full_w = full_o;
+endmodule
+
+(* dynports =  1  *)
+(* cells_not_processed =  1  *)
+(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:15.1-69.10" *)
+module n_to_n_crossbar(clk_i, rst_ni, data_i, mux_in_sel_i, mux_out_sel_i, pckt_in_chosen_o, data_o);
+  wire _000_;
+  wire _001_;
+  wire _002_;
+  wire _003_;
+  wire _004_;
+  wire _005_;
+  wire _006_;
+  wire _007_;
+  wire _008_;
+  wire _009_;
+  wire _010_;
+  wire _011_;
+  wire _012_;
+  wire _013_;
+  wire [1:0] _014_;
+  wire _015_;
+  wire [1:0] _016_;
+  wire _017_;
+  wire [1:0] _018_;
+  wire _019_;
+  wire [1:0] _020_;
+  wire _021_;
+  wire [1:0] _022_;
+  wire _023_;
+  wire [1:0] _024_;
+  wire _025_;
+  wire [1:0] _026_;
+  wire _027_;
+  wire [1:0] _028_;
+  wire _029_;
+  wire [1:0] _030_;
+  wire _031_;
+  wire _032_;
+  wire _033_;
+  wire _034_;
+  wire _035_;
+  wire _036_;
+  wire _037_;
+  wire _038_;
+  wire _039_;
+  wire _040_;
+  wire _041_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:583.28-583.35" *)
+  wire [39:0] _042_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:573.22-573.23" *)
+  wire [4:0] _043_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:578.19-578.22" *)
+  wire [7:0] _044_;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.15" *)
+  wire _045_;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:21.13-21.18" *)
+  input clk_i;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:24.45-24.51" *)
+  input [39:0] data_i;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:29.45-29.51" *)
+  output [39:0] data_o;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:48.13-48.14" *)
+  wire [31:0] i;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:37.33-37.39" *)
+  wire [7:0] \mux_in[0] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:37.33-37.39" *)
+  wire [7:0] \mux_in[1] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:37.33-37.39" *)
+  wire [7:0] \mux_in[2] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:37.33-37.39" *)
+  wire [7:0] \mux_in[3] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:37.33-37.39" *)
+  wire [7:0] \mux_in[4] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:44.33-44.53" *)
+  wire [7:0] mux_in_data_chosen_w;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:25.45-25.57" *)
+  input [2:0] mux_in_sel_i;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:32.30-32.44" *)
+  wire [7:0] \mux_out_data_v[0] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:32.30-32.44" *)
+  wire [7:0] \mux_out_data_v[1] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:32.30-32.44" *)
+  wire [7:0] \mux_out_data_v[2] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:32.30-32.44" *)
+  wire [7:0] \mux_out_data_v[3] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:32.30-32.44" *)
+  wire [7:0] \mux_out_data_v[4] ;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:26.45-26.58" *)
+  input [2:0] mux_out_sel_i;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:28.45-28.61" *)
+  output [7:0] pckt_in_chosen_o;
+  (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:22.13-22.19" *)
+  input rst_ni;
+  assign _002_ = ~mux_in_sel_i[2];
+  assign _001_ = ~mux_in_sel_i[0];
+  assign _000_ = ~mux_in_sel_i[1];
+  assign _003_ = ~mux_out_sel_i[2];
+  assign _005_ = ~mux_out_sel_i[1];
+  assign _004_ = ~mux_out_sel_i[0];
+  assign _034_ = _006_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  _002_;
+  assign _007_ = _001_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  _000_;
+  assign _035_ = _007_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_in_sel_i[2];
+  assign _008_ = mux_in_sel_i[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  _000_;
+  assign _036_ = _008_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_in_sel_i[2];
+  assign _009_ = _001_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_in_sel_i[1];
+  assign _037_ = _009_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_in_sel_i[2];
+  assign _010_ = mux_out_sel_i[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_out_sel_i[1];
+  assign _038_ = _010_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  _003_;
+  assign _011_ = _004_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  _005_;
+  assign _039_ = _011_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_out_sel_i[2];
+  assign _012_ = mux_out_sel_i[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  _005_;
+  assign _040_ = _012_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_out_sel_i[2];
+  assign _013_ = _004_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_out_sel_i[1];
+  assign _041_ = _013_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_out_sel_i[2];
+  assign _014_[0] = _042_[7] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[15];
+  assign _014_[1] = _042_[23] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[31];
+  assign _015_ = _014_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _014_[1];
+  assign _044_[7] = _015_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[39];
+  assign _016_[0] = _042_[6] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[14];
+  assign _016_[1] = _042_[22] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[30];
+  assign _017_ = _016_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _016_[1];
+  assign _044_[6] = _017_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[38];
+  assign _018_[0] = _042_[5] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[13];
+  assign _018_[1] = _042_[21] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[29];
+  assign _019_ = _018_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _018_[1];
+  assign _044_[5] = _019_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[37];
+  assign _020_[0] = _042_[4] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[12];
+  assign _020_[1] = _042_[20] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[28];
+  assign _021_ = _020_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _020_[1];
+  assign _044_[4] = _021_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[36];
+  assign _022_[0] = _042_[3] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[11];
+  assign _022_[1] = _042_[19] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[27];
+  assign _023_ = _022_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _022_[1];
+  assign _044_[3] = _023_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[35];
+  assign _024_[0] = _042_[2] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[10];
+  assign _024_[1] = _042_[18] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[26];
+  assign _025_ = _024_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _024_[1];
+  assign _044_[2] = _025_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[34];
+  assign _026_[0] = _042_[1] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[9];
+  assign _026_[1] = _042_[17] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[25];
+  assign _027_ = _026_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _026_[1];
+  assign _044_[1] = _027_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[33];
+  assign _028_[0] = _042_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[8];
+  assign _028_[1] = _042_[16] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[24];
+  assign _029_ = _028_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _028_[1];
+  assign _044_[0] = _029_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:593.20-593.31" *)  _042_[32];
+  assign _030_[0] = _043_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.15" *)  _043_[1];
+  assign _030_[1] = _043_[2] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.15" *)  _043_[3];
+  assign _031_ = _030_[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.15" *)  _030_[1];
+  assign _045_ = _031_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.15" *)  _043_[4];
+  assign _006_ = mux_in_sel_i[0] |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_in_sel_i[1];
+  assign _032_ = _006_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_in_sel_i[2];
+  assign _033_ = _010_ |(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *)  mux_out_sel_i[2];
+  assign _043_[0] = ~(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) _034_;
+  assign _043_[1] = ~(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) _035_;
+  assign _043_[2] = ~(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) _036_;
+  assign _043_[3] = ~(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) _037_;
+  assign _043_[4] = ~(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) _032_;
+  assign \mux_out_data_v[0] [0] = _033_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[0];
+  assign \mux_out_data_v[0] [1] = _033_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[1];
+  assign \mux_out_data_v[0] [2] = _033_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[2];
+  assign \mux_out_data_v[0] [3] = _033_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[3];
+  assign \mux_out_data_v[0] [4] = _033_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[4];
+  assign \mux_out_data_v[0] [5] = _033_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[5];
+  assign \mux_out_data_v[0] [6] = _033_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[6];
+  assign \mux_out_data_v[0] [7] = _033_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[7];
+  assign \mux_out_data_v[4] [0] = _038_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[0];
+  assign \mux_out_data_v[4] [1] = _038_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[1];
+  assign \mux_out_data_v[4] [2] = _038_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[2];
+  assign \mux_out_data_v[4] [3] = _038_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[3];
+  assign \mux_out_data_v[4] [4] = _038_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[4];
+  assign \mux_out_data_v[4] [5] = _038_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[5];
+  assign \mux_out_data_v[4] [6] = _038_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[6];
+  assign \mux_out_data_v[4] [7] = _038_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[7];
+  assign \mux_out_data_v[3] [0] = _039_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[0];
+  assign \mux_out_data_v[3] [1] = _039_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[1];
+  assign \mux_out_data_v[3] [2] = _039_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[2];
+  assign \mux_out_data_v[3] [3] = _039_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[3];
+  assign \mux_out_data_v[3] [4] = _039_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[4];
+  assign \mux_out_data_v[3] [5] = _039_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[5];
+  assign \mux_out_data_v[3] [6] = _039_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[6];
+  assign \mux_out_data_v[3] [7] = _039_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[7];
+  assign \mux_out_data_v[2] [0] = _040_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[0];
+  assign \mux_out_data_v[2] [1] = _040_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[1];
+  assign \mux_out_data_v[2] [2] = _040_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[2];
+  assign \mux_out_data_v[2] [3] = _040_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[3];
+  assign \mux_out_data_v[2] [4] = _040_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[4];
+  assign \mux_out_data_v[2] [5] = _040_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[5];
+  assign \mux_out_data_v[2] [6] = _040_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[6];
+  assign \mux_out_data_v[2] [7] = _040_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[7];
+  assign \mux_out_data_v[1] [0] = _041_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[0];
+  assign \mux_out_data_v[1] [1] = _041_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[1];
+  assign \mux_out_data_v[1] [2] = _041_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[2];
+  assign \mux_out_data_v[1] [3] = _041_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[3];
+  assign \mux_out_data_v[1] [4] = _041_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[4];
+  assign \mux_out_data_v[1] [5] = _041_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[5];
+  assign \mux_out_data_v[1] [6] = _041_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[6];
+  assign \mux_out_data_v[1] [7] = _041_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0" *) 1'h0 : mux_in_data_chosen_w[7];
+  assign mux_in_data_chosen_w[0] = _045_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _044_[0] : 1'hx;
+  assign mux_in_data_chosen_w[1] = _045_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _044_[1] : 1'hx;
+  assign mux_in_data_chosen_w[2] = _045_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _044_[2] : 1'hx;
+  assign mux_in_data_chosen_w[3] = _045_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _044_[3] : 1'hx;
+  assign mux_in_data_chosen_w[4] = _045_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _044_[4] : 1'hx;
+  assign mux_in_data_chosen_w[5] = _045_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _044_[5] : 1'hx;
+  assign mux_in_data_chosen_w[6] = _045_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _044_[6] : 1'hx;
+  assign mux_in_data_chosen_w[7] = _045_ ? (* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:597.13-597.25" *) _044_[7] : 1'hx;
+  assign _042_[32] = data_i[0] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[4];
+  assign _042_[33] = data_i[1] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[4];
+  assign _042_[34] = data_i[2] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[4];
+  assign _042_[35] = data_i[3] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[4];
+  assign _042_[36] = data_i[4] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[4];
+  assign _042_[37] = data_i[5] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[4];
+  assign _042_[38] = data_i[6] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[4];
+  assign _042_[39] = data_i[7] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[4];
+  assign _042_[24] = data_i[8] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[3];
+  assign _042_[25] = data_i[9] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[3];
+  assign _042_[26] = data_i[10] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[3];
+  assign _042_[27] = data_i[11] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[3];
+  assign _042_[28] = data_i[12] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[3];
+  assign _042_[29] = data_i[13] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[3];
+  assign _042_[30] = data_i[14] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[3];
+  assign _042_[31] = data_i[15] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[3];
+  assign _042_[16] = data_i[16] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[2];
+  assign _042_[17] = data_i[17] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[2];
+  assign _042_[18] = data_i[18] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[2];
+  assign _042_[19] = data_i[19] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[2];
+  assign _042_[20] = data_i[20] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[2];
+  assign _042_[21] = data_i[21] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[2];
+  assign _042_[22] = data_i[22] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[2];
+  assign _042_[23] = data_i[23] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[2];
+  assign _042_[8] = data_i[24] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[1];
+  assign _042_[9] = data_i[25] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[1];
+  assign _042_[10] = data_i[26] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[1];
+  assign _042_[11] = data_i[27] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[1];
+  assign _042_[12] = data_i[28] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[1];
+  assign _042_[13] = data_i[29] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[1];
+  assign _042_[14] = data_i[30] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[1];
+  assign _042_[15] = data_i[31] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[1];
+  assign _042_[0] = data_i[32] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[0];
+  assign _042_[1] = data_i[33] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[0];
+  assign _042_[2] = data_i[34] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[0];
+  assign _042_[3] = data_i[35] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[0];
+  assign _042_[4] = data_i[36] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[0];
+  assign _042_[5] = data_i[37] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[0];
+  assign _042_[6] = data_i[38] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[0];
+  assign _042_[7] = data_i[39] &(* src = "../srcs/switch/simple_mesh_xy/crossbar.v:0.0-0.0|/usr/local/bin/../share/yosys/techmap.v:585.44-585.84" *)  _043_[0];
+  assign data_o = { \mux_out_data_v[4] , \mux_out_data_v[3] , \mux_out_data_v[2] , \mux_out_data_v[1] , \mux_out_data_v[0]  };
+  assign i = 32'd5;
+  assign \mux_in[0]  = data_i[7:0];
+  assign \mux_in[1]  = data_i[15:8];
+  assign \mux_in[2]  = data_i[23:16];
+  assign \mux_in[3]  = data_i[31:24];
+  assign \mux_in[4]  = data_i[39:32];
+  assign pckt_in_chosen_o = mux_in_data_chosen_w;
+endmodule
+
+(* dynports =  1  *)
+(* cells_not_processed =  1  *)
+(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:3.1-150.10" *)
+module xy_router(x_addr, y_addr, mux_out_sel_o);
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:106.5-131.8" *)
+  wire [2:0] _00_;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:106.5-131.8" *)
+  wire [2:0] _01_;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:106.5-131.8" *)
+  wire [2:0] _02_;
+  wire [1:0] _03_;
+  wire [1:0] _04_;
+  wire _05_;
+  wire [1:0] _06_;
+  wire _07_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30|/usr/local/bin/../share/yosys/techmap.v:274.23-274.25" *)
+  wire [3:0] _08_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30|/usr/local/bin/../share/yosys/techmap.v:270.23-270.24" *)
+  wire [3:0] _09_;
+  wire _10_;
+  wire _11_;
+  wire _12_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|/usr/local/bin/../share/yosys/techmap.v:274.23-274.25" *)
+  wire [3:0] _13_;
+  (* force_downto = 32'd1 *)
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|/usr/local/bin/../share/yosys/techmap.v:270.23-270.24" *)
+  (* unused_bits = "0 1" *)
+  wire [3:0] _14_;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.19-240.41" *)
+  wire _15_;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.12-240.41" *)
+  wire _16_;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.19-240.41" *)
+  wire _17_;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.19-240.41" *)
+  wire _18_;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.12-240.41" *)
+  wire _19_;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:39.34-39.38" *)
+  wire [2:0] DOWN;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:36.34-36.38" *)
+  wire [2:0] LEFT;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:35.34-35.42" *)
+  wire [2:0] RESOURCE;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:38.34-38.39" *)
+  wire [2:0] RIGHT;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:37.34-37.36" *)
+  wire [2:0] UP;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:15.31-15.44" *)
+  output [2:0] mux_out_sel_o;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:24.28-24.41" *)
+  wire [2:0] mux_out_sel_w;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:13.36-13.42" *)
+  input [3:0] x_addr;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:27.34-27.40" *)
+  wire [3:0] x_cord;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:14.36-14.42" *)
+  input [3:0] y_addr;
+  (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:28.34-28.40" *)
+  wire [3:0] y_cord;
+  assign _14_[3] = ~y_addr[3];
+  assign _14_[2] = ~y_addr[2];
+  assign _09_[2] = ~x_addr[2];
+  assign _09_[3] = ~x_addr[3];
+  assign _09_[1] = ~x_addr[1];
+  assign _09_[0] = ~x_addr[0];
+  assign _03_[0] = _09_[0] &(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30" *)  _09_[1];
+  assign _03_[1] = _09_[2] &(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30" *)  _09_[3];
+  assign _11_ = _03_[0] &(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30" *)  _03_[1];
+  assign _04_[0] = x_addr[0] |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:108.13-108.29" *)  x_addr[1];
+  assign _04_[1] = x_addr[2] |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:108.13-108.29" *)  x_addr[3];
+  assign _05_ = _04_[0] |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:108.13-108.29" *)  _04_[1];
+  assign _06_[0] = y_addr[0] |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:110.15-110.31" *)  y_addr[1];
+  assign _06_[1] = y_addr[2] |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:110.15-110.31" *)  y_addr[3];
+  assign _07_ = _06_[0] |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:110.15-110.31" *)  _06_[1];
+  assign _02_[1] = ~(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30|../srcs/switch/simple_mesh_xy/router_xy.v:122.11-128.14" *) _12_;
+  assign _01_[0] = ~(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|../srcs/switch/simple_mesh_xy/router_xy.v:114.16-119.14" *) _13_[3];
+  assign _00_[0] = _07_ ? (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:110.15-110.31|../srcs/switch/simple_mesh_xy/router_xy.v:110.11-119.14" *) _01_[0] : 1'h0;
+  assign mux_out_sel_o[0] = _05_ ? (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:108.13-108.29|../srcs/switch/simple_mesh_xy/router_xy.v:108.9-129.12" *) 1'h0 : _00_[0];
+  assign mux_out_sel_o[1] = _05_ ? (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:108.13-108.29|../srcs/switch/simple_mesh_xy/router_xy.v:108.9-129.12" *) _02_[1] : 1'h0;
+  assign _10_ = ~(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30" *) _08_[3];
+  assign _12_ = _10_ | _11_;
+  assign _17_ = _14_[3] &(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.19-240.41" *)  y_addr[2];
+  assign _18_ = _14_[3] &(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:241.12-241.34" *)  _14_[2];
+  assign _19_ = y_addr[3] |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.12-240.41" *)  _17_;
+  assign _13_[3] = _19_ |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:114.20-114.35|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.12-240.41" *)  _18_;
+  assign _15_ = _09_[3] &(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.19-240.41" *)  x_addr[2];
+  assign _16_ = x_addr[3] |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.12-240.41" *)  _15_;
+  assign _08_[3] = _16_ |(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:122.15-122.30|/usr/local/bin/../share/yosys/techmap.v:286.27-286.69|/usr/local/bin/../share/yosys/techmap.v:240.12-240.41" *)  _03_[1];
+  assign _00_[2:1] = 2'h0;
+  assign _01_[2:1] = 2'h0;
+  assign { _02_[2], _02_[0] } = 2'h0;
+  assign _08_[2:0] = 3'h7;
+  assign _13_[2:0] = 3'h7;
+  assign DOWN = 3'h0;
+  assign LEFT = 3'h0;
+  assign RESOURCE = 3'h0;
+  assign RIGHT = 3'h2;
+  assign UP = 3'h1;
+  assign mux_out_sel_o[2] = 1'h0;
+  assign mux_out_sel_w = { 1'h0, mux_out_sel_o[1:0] };
+  assign x_cord = 4'h0;
+  assign y_cord = 4'h0;
+endmodule
+
+(* dynports =  1  *)
+(* cells_not_processed =  1  *)
+(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:38.1-184.10" *)
 module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_overflow_o, nxt_fifo_full_i, nxt_fifo_overflow_i, wr_en_sw_o, pckt_sw_o);
   wire [1:0] _00_;
   wire _01_;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.25-180.37" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.25-182.37" *)
   wire _02_;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:52.11-52.16" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:53.11-53.16" *)
   input clk_i;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:72.37-72.47" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:73.37-73.47" *)
   wire [79:0] data_out_w;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:86.39-86.46" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:87.39-87.46" *)
   wire [4:0] empty_w;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:84.39-84.54" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:85.39-85.54" *)
   wire [79:0] fifo_data_out_w;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:91.30-91.41" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.41" *)
   wire [15:0] \genfifo[0].x_pckt_in_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.42" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:93.30-93.42" *)
   wire [15:0] \genfifo[0].x_pckt_out_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:91.30-91.41" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.41" *)
   wire [15:0] \genfifo[1].x_pckt_in_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.42" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:93.30-93.42" *)
   wire [15:0] \genfifo[1].x_pckt_out_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:91.30-91.41" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.41" *)
   wire [15:0] \genfifo[2].x_pckt_in_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.42" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:93.30-93.42" *)
   wire [15:0] \genfifo[2].x_pckt_out_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:91.30-91.41" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.41" *)
   wire [15:0] \genfifo[3].x_pckt_in_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.42" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:93.30-93.42" *)
   wire [15:0] \genfifo[3].x_pckt_out_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:91.30-91.41" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.41" *)
   wire [15:0] \genfifo[4].x_pckt_in_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:92.30-92.42" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:93.30-93.42" *)
   wire [15:0] \genfifo[4].x_pckt_out_w ;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:58.41-58.55" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:59.41-59.55" *)
   output [4:0] in_fifo_full_o;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:59.41-59.59" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:60.41-60.59" *)
   output [4:0] in_fifo_overflow_o;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:70.37-70.49" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:71.37-71.49" *)
   wire [2:0] mux_in_sel_w;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:71.37-71.50" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:72.37-72.50" *)
   wire [2:0] mux_out_sel_w;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:62.41-62.56" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:63.41-63.56" *)
   input [4:0] nxt_fifo_full_i;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:63.41-63.60" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:64.41-64.60" *)
   input [4:0] nxt_fifo_overflow_i;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:73.37-73.53" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:74.37-74.53" *)
+  (* unused_bits = "0 1 2 3 4 5 6 7" *)
   wire [15:0] pckt_in_chosen_w;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:57.41-57.50" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:58.41-58.50" *)
   input [79:0] pckt_sw_i;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:65.41-65.50" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:66.41-66.50" *)
   output [79:0] pckt_sw_o;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:85.39-85.46" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:86.39-86.46" *)
   wire [4:0] rd_en_w;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:53.11-53.17" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:54.11-54.17" *)
   input rst_ni;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:87.39-87.50" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:88.39-88.50" *)
+  (* unused_bits = "0 1 2 3 4" *)
   wire [4:0] underflow_w;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:69.37-69.48" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:70.37-70.48" *)
   wire [4:0] vld_input_w;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:56.41-56.51" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:57.41-57.51" *)
   input [4:0] wr_en_sw_i;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:64.41-64.51" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:65.41-65.51" *)
   output [4:0] wr_en_sw_o;
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:76.33-76.41" *)
-  wire [3:0] x_addr_w;
   (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:77.33-77.41" *)
+  wire [3:0] x_addr_w;
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:78.33-78.41" *)
   wire [3:0] y_addr_w;
-  assign _00_[0] = vld_input_w[0] |(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.25-180.37" *)  vld_input_w[1];
-  assign _00_[1] = vld_input_w[2] |(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.25-180.37" *)  vld_input_w[3];
-  assign _01_ = _00_[0] |(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.25-180.37" *)  _00_[1];
-  assign _02_ = _01_ |(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.25-180.37" *)  vld_input_w[4];
-  assign pckt_sw_o[16] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[16] : 1'h0;
-  assign pckt_sw_o[17] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[17] : 1'h0;
-  assign pckt_sw_o[18] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[18] : 1'h0;
-  assign pckt_sw_o[19] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[19] : 1'h0;
-  assign pckt_sw_o[20] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[20] : 1'h0;
-  assign pckt_sw_o[21] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[21] : 1'h0;
-  assign pckt_sw_o[22] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[22] : 1'h0;
-  assign pckt_sw_o[23] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[23] : 1'h0;
-  assign pckt_sw_o[24] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[24] : 1'h0;
-  assign pckt_sw_o[25] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[25] : 1'h0;
-  assign pckt_sw_o[26] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[26] : 1'h0;
-  assign pckt_sw_o[27] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[27] : 1'h0;
-  assign pckt_sw_o[28] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[28] : 1'h0;
-  assign pckt_sw_o[29] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[29] : 1'h0;
-  assign pckt_sw_o[30] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[30] : 1'h0;
-  assign pckt_sw_o[31] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[31] : 1'h0;
-  assign pckt_sw_o[32] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[32] : 1'h0;
-  assign pckt_sw_o[33] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[33] : 1'h0;
-  assign pckt_sw_o[34] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[34] : 1'h0;
-  assign pckt_sw_o[35] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[35] : 1'h0;
-  assign pckt_sw_o[36] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[36] : 1'h0;
-  assign pckt_sw_o[37] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[37] : 1'h0;
-  assign pckt_sw_o[38] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[38] : 1'h0;
-  assign pckt_sw_o[39] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[39] : 1'h0;
-  assign pckt_sw_o[40] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[40] : 1'h0;
-  assign pckt_sw_o[41] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[41] : 1'h0;
-  assign pckt_sw_o[42] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[42] : 1'h0;
-  assign pckt_sw_o[43] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[43] : 1'h0;
-  assign pckt_sw_o[44] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[44] : 1'h0;
-  assign pckt_sw_o[45] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[45] : 1'h0;
-  assign pckt_sw_o[46] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[46] : 1'h0;
-  assign pckt_sw_o[47] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[47] : 1'h0;
-  assign pckt_sw_o[48] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[48] : 1'h0;
-  assign pckt_sw_o[49] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[49] : 1'h0;
-  assign pckt_sw_o[50] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[50] : 1'h0;
-  assign pckt_sw_o[51] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[51] : 1'h0;
-  assign pckt_sw_o[52] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[52] : 1'h0;
-  assign pckt_sw_o[53] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[53] : 1'h0;
-  assign pckt_sw_o[54] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[54] : 1'h0;
-  assign pckt_sw_o[55] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[55] : 1'h0;
-  assign pckt_sw_o[56] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[56] : 1'h0;
-  assign pckt_sw_o[57] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[57] : 1'h0;
-  assign pckt_sw_o[58] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[58] : 1'h0;
-  assign pckt_sw_o[59] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[59] : 1'h0;
-  assign pckt_sw_o[60] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[60] : 1'h0;
-  assign pckt_sw_o[61] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[61] : 1'h0;
-  assign pckt_sw_o[62] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[62] : 1'h0;
-  assign pckt_sw_o[63] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[63] : 1'h0;
-  assign pckt_sw_o[64] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[64] : 1'h0;
-  assign pckt_sw_o[65] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[65] : 1'h0;
-  assign pckt_sw_o[66] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[66] : 1'h0;
-  assign pckt_sw_o[67] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[67] : 1'h0;
-  assign pckt_sw_o[68] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[68] : 1'h0;
-  assign pckt_sw_o[69] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[69] : 1'h0;
-  assign pckt_sw_o[70] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[70] : 1'h0;
-  assign pckt_sw_o[71] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[71] : 1'h0;
-  assign pckt_sw_o[72] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[72] : 1'h0;
-  assign pckt_sw_o[73] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[73] : 1'h0;
-  assign pckt_sw_o[74] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[74] : 1'h0;
-  assign pckt_sw_o[75] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[75] : 1'h0;
-  assign pckt_sw_o[76] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[76] : 1'h0;
-  assign pckt_sw_o[77] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[77] : 1'h0;
-  assign pckt_sw_o[78] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[78] : 1'h0;
-  assign pckt_sw_o[79] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[79] : 1'h0;
-  assign pckt_sw_o[0] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[0] : 1'h0;
-  assign pckt_sw_o[1] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[1] : 1'h0;
-  assign pckt_sw_o[2] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[2] : 1'h0;
-  assign pckt_sw_o[3] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[3] : 1'h0;
-  assign pckt_sw_o[4] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[4] : 1'h0;
-  assign pckt_sw_o[5] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[5] : 1'h0;
-  assign pckt_sw_o[6] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[6] : 1'h0;
-  assign pckt_sw_o[7] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[7] : 1'h0;
-  assign pckt_sw_o[8] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[8] : 1'h0;
-  assign pckt_sw_o[9] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[9] : 1'h0;
-  assign pckt_sw_o[10] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[10] : 1'h0;
-  assign pckt_sw_o[11] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[11] : 1'h0;
-  assign pckt_sw_o[12] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[12] : 1'h0;
-  assign pckt_sw_o[13] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[13] : 1'h0;
-  assign pckt_sw_o[14] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[14] : 1'h0;
-  assign pckt_sw_o[15] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:180.24-180.55" *) data_out_w[15] : 1'h0;
+  assign _00_[0] = vld_input_w[0] |(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.25-182.37" *)  vld_input_w[1];
+  assign _00_[1] = vld_input_w[2] |(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.25-182.37" *)  vld_input_w[3];
+  assign _01_ = _00_[0] |(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.25-182.37" *)  _00_[1];
+  assign _02_ = _01_ |(* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.25-182.37" *)  vld_input_w[4];
+  assign pckt_sw_o[0] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[0] : 1'h0;
+  assign pckt_sw_o[1] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[1] : 1'h0;
+  assign pckt_sw_o[2] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[2] : 1'h0;
+  assign pckt_sw_o[3] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[3] : 1'h0;
+  assign pckt_sw_o[4] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[4] : 1'h0;
+  assign pckt_sw_o[5] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[5] : 1'h0;
+  assign pckt_sw_o[6] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[6] : 1'h0;
+  assign pckt_sw_o[7] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[7] : 1'h0;
+  assign pckt_sw_o[8] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[8] : 1'h0;
+  assign pckt_sw_o[9] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[9] : 1'h0;
+  assign pckt_sw_o[10] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[10] : 1'h0;
+  assign pckt_sw_o[11] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[11] : 1'h0;
+  assign pckt_sw_o[12] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[12] : 1'h0;
+  assign pckt_sw_o[13] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[13] : 1'h0;
+  assign pckt_sw_o[14] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[14] : 1'h0;
+  assign pckt_sw_o[15] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[15] : 1'h0;
+  assign pckt_sw_o[16] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[16] : 1'h0;
+  assign pckt_sw_o[17] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[17] : 1'h0;
+  assign pckt_sw_o[18] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[18] : 1'h0;
+  assign pckt_sw_o[19] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[19] : 1'h0;
+  assign pckt_sw_o[20] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[20] : 1'h0;
+  assign pckt_sw_o[21] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[21] : 1'h0;
+  assign pckt_sw_o[22] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[22] : 1'h0;
+  assign pckt_sw_o[23] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[23] : 1'h0;
+  assign pckt_sw_o[24] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[24] : 1'h0;
+  assign pckt_sw_o[25] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[25] : 1'h0;
+  assign pckt_sw_o[26] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[26] : 1'h0;
+  assign pckt_sw_o[27] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[27] : 1'h0;
+  assign pckt_sw_o[28] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[28] : 1'h0;
+  assign pckt_sw_o[29] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[29] : 1'h0;
+  assign pckt_sw_o[30] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[30] : 1'h0;
+  assign pckt_sw_o[31] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[31] : 1'h0;
+  assign pckt_sw_o[32] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[32] : 1'h0;
+  assign pckt_sw_o[33] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[33] : 1'h0;
+  assign pckt_sw_o[34] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[34] : 1'h0;
+  assign pckt_sw_o[35] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[35] : 1'h0;
+  assign pckt_sw_o[36] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[36] : 1'h0;
+  assign pckt_sw_o[37] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[37] : 1'h0;
+  assign pckt_sw_o[38] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[38] : 1'h0;
+  assign pckt_sw_o[39] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[39] : 1'h0;
+  assign pckt_sw_o[40] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[40] : 1'h0;
+  assign pckt_sw_o[41] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[41] : 1'h0;
+  assign pckt_sw_o[42] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[42] : 1'h0;
+  assign pckt_sw_o[43] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[43] : 1'h0;
+  assign pckt_sw_o[44] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[44] : 1'h0;
+  assign pckt_sw_o[45] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[45] : 1'h0;
+  assign pckt_sw_o[46] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[46] : 1'h0;
+  assign pckt_sw_o[47] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[47] : 1'h0;
+  assign pckt_sw_o[48] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[48] : 1'h0;
+  assign pckt_sw_o[49] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[49] : 1'h0;
+  assign pckt_sw_o[50] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[50] : 1'h0;
+  assign pckt_sw_o[51] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[51] : 1'h0;
+  assign pckt_sw_o[52] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[52] : 1'h0;
+  assign pckt_sw_o[53] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[53] : 1'h0;
+  assign pckt_sw_o[54] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[54] : 1'h0;
+  assign pckt_sw_o[55] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[55] : 1'h0;
+  assign pckt_sw_o[56] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[56] : 1'h0;
+  assign pckt_sw_o[57] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[57] : 1'h0;
+  assign pckt_sw_o[58] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[58] : 1'h0;
+  assign pckt_sw_o[59] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[59] : 1'h0;
+  assign pckt_sw_o[60] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[60] : 1'h0;
+  assign pckt_sw_o[61] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[61] : 1'h0;
+  assign pckt_sw_o[62] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[62] : 1'h0;
+  assign pckt_sw_o[63] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[63] : 1'h0;
+  assign pckt_sw_o[64] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[64] : 1'h0;
+  assign pckt_sw_o[65] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[65] : 1'h0;
+  assign pckt_sw_o[66] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[66] : 1'h0;
+  assign pckt_sw_o[67] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[67] : 1'h0;
+  assign pckt_sw_o[68] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[68] : 1'h0;
+  assign pckt_sw_o[69] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[69] : 1'h0;
+  assign pckt_sw_o[70] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[70] : 1'h0;
+  assign pckt_sw_o[71] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[71] : 1'h0;
+  assign pckt_sw_o[72] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[72] : 1'h0;
+  assign pckt_sw_o[73] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[73] : 1'h0;
+  assign pckt_sw_o[74] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[74] : 1'h0;
+  assign pckt_sw_o[75] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[75] : 1'h0;
+  assign pckt_sw_o[76] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[76] : 1'h0;
+  assign pckt_sw_o[77] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[77] : 1'h0;
+  assign pckt_sw_o[78] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[78] : 1'h0;
+  assign pckt_sw_o[79] = _02_ ? (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:182.24-182.55" *) data_out_w[79] : 1'h0;
   (* module_not_derived = 32'd1 *)
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:123.5-127.10" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:124.5-128.10" *)
   arbiter #(
     .PORT_N(32'sd5)
   ) arb (
@@ -163,7 +1166,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
     .vld_input_i(vld_input_w)
   );
   (* module_not_derived = 32'd1 *)
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:150.5-161.10" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:152.5-163.10" *)
   control_unit #(
     .PORT_N(32'sd5)
   ) control_u (
@@ -178,13 +1181,13 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
     .wr_en_o(wr_en_sw_o)
   );
   (* module_not_derived = 32'd1 *)
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:169.5-178.10" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:171.5-180.10" *)
   n_to_n_crossbar #(
     .DATA_WIDTH(32'sd16),
     .PORT_N(32'sd5)
   ) crossbar (
     .clk_i(clk_i),
-    .data_i(fifo_data_out_w),
+    .data_i({ \genfifo[4].x_pckt_out_w , \genfifo[3].x_pckt_out_w , \genfifo[2].x_pckt_out_w , \genfifo[1].x_pckt_out_w , \genfifo[0].x_pckt_out_w  }),
     .data_o(data_out_w),
     .mux_in_sel_i(mux_in_sel_w),
     .mux_out_sel_i(mux_out_sel_w),
@@ -192,7 +1195,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
     .rst_ni(rst_ni)
   );
   (* module_not_derived = 32'd1 *)
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:100.9-112.14" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:101.9-113.14" *)
   fifo #(
     .DATA_WIDTH(32'sd16),
     .FIFO_DEPTH_WIDTH(32'sd3),
@@ -200,7 +1203,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
   ) \genfifo[0].x_input_fifo  (
     .clk_i(clk_i),
     .data_i(pckt_sw_i[15:0]),
-    .data_o(fifo_data_out_w[15:0]),
+    .data_o(\genfifo[0].x_pckt_out_w ),
     .empty_o(empty_w[0]),
     .full_o(in_fifo_full_o[0]),
     .overflow_o(in_fifo_overflow_o[0]),
@@ -210,7 +1213,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
     .wr_en_i(wr_en_sw_i[0])
   );
   (* module_not_derived = 32'd1 *)
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:100.9-112.14" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:101.9-113.14" *)
   fifo #(
     .DATA_WIDTH(32'sd16),
     .FIFO_DEPTH_WIDTH(32'sd3),
@@ -218,7 +1221,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
   ) \genfifo[1].x_input_fifo  (
     .clk_i(clk_i),
     .data_i(pckt_sw_i[31:16]),
-    .data_o(fifo_data_out_w[31:16]),
+    .data_o(\genfifo[1].x_pckt_out_w ),
     .empty_o(empty_w[1]),
     .full_o(in_fifo_full_o[1]),
     .overflow_o(in_fifo_overflow_o[1]),
@@ -228,7 +1231,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
     .wr_en_i(wr_en_sw_i[1])
   );
   (* module_not_derived = 32'd1 *)
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:100.9-112.14" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:101.9-113.14" *)
   fifo #(
     .DATA_WIDTH(32'sd16),
     .FIFO_DEPTH_WIDTH(32'sd3),
@@ -236,7 +1239,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
   ) \genfifo[2].x_input_fifo  (
     .clk_i(clk_i),
     .data_i(pckt_sw_i[47:32]),
-    .data_o(fifo_data_out_w[47:32]),
+    .data_o(\genfifo[2].x_pckt_out_w ),
     .empty_o(empty_w[2]),
     .full_o(in_fifo_full_o[2]),
     .overflow_o(in_fifo_overflow_o[2]),
@@ -246,7 +1249,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
     .wr_en_i(wr_en_sw_i[2])
   );
   (* module_not_derived = 32'd1 *)
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:100.9-112.14" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:101.9-113.14" *)
   fifo #(
     .DATA_WIDTH(32'sd16),
     .FIFO_DEPTH_WIDTH(32'sd3),
@@ -254,7 +1257,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
   ) \genfifo[3].x_input_fifo  (
     .clk_i(clk_i),
     .data_i(pckt_sw_i[63:48]),
-    .data_o(fifo_data_out_w[63:48]),
+    .data_o(\genfifo[3].x_pckt_out_w ),
     .empty_o(empty_w[3]),
     .full_o(in_fifo_full_o[3]),
     .overflow_o(in_fifo_overflow_o[3]),
@@ -264,7 +1267,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
     .wr_en_i(wr_en_sw_i[3])
   );
   (* module_not_derived = 32'd1 *)
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:100.9-112.14" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:101.9-113.14" *)
   fifo #(
     .DATA_WIDTH(32'sd16),
     .FIFO_DEPTH_WIDTH(32'sd3),
@@ -272,7 +1275,7 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
   ) \genfifo[4].x_input_fifo  (
     .clk_i(clk_i),
     .data_i(pckt_sw_i[79:64]),
-    .data_o(fifo_data_out_w[79:64]),
+    .data_o(\genfifo[4].x_pckt_out_w ),
     .empty_o(empty_w[4]),
     .full_o(in_fifo_full_o[4]),
     .overflow_o(in_fifo_overflow_o[4]),
@@ -282,11 +1285,12 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
     .wr_en_i(wr_en_sw_i[4])
   );
   (* module_not_derived = 32'd1 *)
-  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:138.5-143.10" *)
+  (* src = "../srcs/switch/simple_mesh_xy/xy_switch.v:140.5-145.10" *)
   xy_router #(
     .OUTPUT_N_W(32'sd3),
     .PACKET_ADDR_X_W(32'sd4),
     .PACKET_ADDR_Y_W(32'sd4),
+    .SW_CONFIG(32'sd0),
     .X_CORD(32'sd0),
     .Y_CORD(32'sd0)
   ) router (
@@ -294,16 +1298,12 @@ module xy_switch(clk_i, rst_ni, wr_en_sw_i, pckt_sw_i, in_fifo_full_o, in_fifo_o
     .x_addr(pckt_in_chosen_w[15:12]),
     .y_addr(pckt_in_chosen_w[11:8])
   );
+  assign fifo_data_out_w = { \genfifo[4].x_pckt_out_w , \genfifo[3].x_pckt_out_w , \genfifo[2].x_pckt_out_w , \genfifo[1].x_pckt_out_w , \genfifo[0].x_pckt_out_w  };
   assign \genfifo[0].x_pckt_in_w  = pckt_sw_i[15:0];
-  assign \genfifo[0].x_pckt_out_w  = fifo_data_out_w[15:0];
   assign \genfifo[1].x_pckt_in_w  = pckt_sw_i[31:16];
-  assign \genfifo[1].x_pckt_out_w  = fifo_data_out_w[31:16];
   assign \genfifo[2].x_pckt_in_w  = pckt_sw_i[47:32];
-  assign \genfifo[2].x_pckt_out_w  = fifo_data_out_w[47:32];
   assign \genfifo[3].x_pckt_in_w  = pckt_sw_i[63:48];
-  assign \genfifo[3].x_pckt_out_w  = fifo_data_out_w[63:48];
   assign \genfifo[4].x_pckt_in_w  = pckt_sw_i[79:64];
-  assign \genfifo[4].x_pckt_out_w  = fifo_data_out_w[79:64];
   assign x_addr_w = pckt_in_chosen_w[15:12];
   assign y_addr_w = pckt_in_chosen_w[11:8];
 endmodule
