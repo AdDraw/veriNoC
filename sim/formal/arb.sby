@@ -1,0 +1,18 @@
+[tasks]
+prove
+bmc
+
+[options]
+depth 50
+prove: mode prove
+bmc: mode bmc
+
+[engines]
+smtbmc --progress --nomem z3
+
+[script]
+read -formal packet_arbiter.v
+prep -top arbiter
+
+[files]
+../../srcs/switch/simple_mesh_xy/packet_arbiter.v
