@@ -60,14 +60,12 @@ module control_unit
 
     `ifdef FORMAL
 
-
       integer fi = 0;
 
       always @(posedge clk_i) assume(rst_ni);
 
       always @(*) begin
         if (rst_ni) begin
-
           for (fi=0; fi < PORT_N; fi++) begin
             assert(!(vld_input_v[fi] && rd_en_w[fi]));
             if (empty_i[fi]) assert(!rd_en_w[fi]);
