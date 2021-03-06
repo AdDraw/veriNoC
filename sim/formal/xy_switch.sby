@@ -8,7 +8,7 @@ prove: mode prove
 bmc: mode bmc
 
 [engines]
-smtbmc --progress --nomem z3
+smtbmc --progress --nomem
 
 [script]
 read -formal switch_constants.v

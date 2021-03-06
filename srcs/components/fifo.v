@@ -102,13 +102,8 @@ module fifo
 
     `ifdef FORMAL
 
-      initial assume(!rst_ni);
-
-      initial begin
-        assert (rd_ptr_v == 0);
-        assert (wr_ptr_v == 0);
-        assert (empty_o);
-        assert (!full_o);
+      always @(posedge clk_i) begin
+        assume(rst_ni);
       end
 
       always @(*) begin
@@ -128,7 +123,6 @@ module fifo
           if (wr_ptr_v + 1'b1 == rd_ptr_v) assert(full_o);
 
         end
-          // assert ();
       end
     `endif
 endmodule
