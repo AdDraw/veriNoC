@@ -45,7 +45,7 @@ endmodule
 
 (* dynports =  1  *)
 (* cells_not_processed =  1  *)
-(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:6.1-63.10" *)
+(* src = "../srcs/switch/simple_mesh_xy/control_unit.v:6.1-78.10" *)
 module control_unit(clk_i, rst_ni, empty_i, rd_en_o, vld_input_o, full_i, wr_en_o, mux_in_sel_i, mux_out_sel_i);
   (* src = "../srcs/switch/simple_mesh_xy/control_unit.v:37.5-52.8" *)
   wire [4:0] _00_;
@@ -223,7 +223,7 @@ endmodule
 
 (* dynports =  1  *)
 (* cells_not_processed =  1  *)
-(* src = "../srcs/components/fifo.v:6.1-134.10" *)
+(* src = "../srcs/components/fifo.v:6.1-128.10" *)
 module fifo(clk_i, rst_ni, wr_en_i, rd_en_i, data_i, data_o, full_o, empty_o, overflow_o, underflow_o);
   (* src = "../srcs/components/fifo.v:44.5-68.8" *)
   wire _000_;
@@ -895,7 +895,7 @@ endmodule
 
 (* dynports =  1  *)
 (* cells_not_processed =  1  *)
-(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:3.1-150.10" *)
+(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:3.1-152.10" *)
 module xy_router(x_addr, y_addr, mux_out_sel_o);
   (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:106.5-131.8" *)
   wire [2:0] _00_;

@@ -2,7 +2,7 @@
 
 (* dynports =  1  *)
 (* cells_not_processed =  1  *)
-(* src = "../srcs/components/fifo.v:6.1-134.10" *)
+(* src = "../srcs/components/fifo.v:6.1-128.10" *)
 module fifo(clk_i, rst_ni, wr_en_i, rd_en_i, data_i, data_o, full_o, empty_o, overflow_o, underflow_o);
   (* src = "../srcs/components/fifo.v:44.5-68.8" *)
   wire _000_;
