@@ -2,7 +2,7 @@
 
 (* dynports =  1  *)
 (* cells_not_processed =  1  *)
-(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:3.1-150.10" *)
+(* src = "../srcs/switch/simple_mesh_xy/router_xy.v:3.1-152.10" *)
 module xy_router(x_addr, y_addr, mux_out_sel_o);
   (* src = "../srcs/switch/simple_mesh_xy/router_xy.v:106.5-131.8" *)
   wire [2:0] _00_;
