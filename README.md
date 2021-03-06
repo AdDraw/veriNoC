@@ -4,7 +4,7 @@
 ---
 ## Assumptions:
 - **Verilog** as a main hdl language
-- **Verilator + cocotb + gtkwave** used as a sim tool
+- **Verilator/IcarusVerilog + cocotb + gtkwave** used as a sim tool
 - **Yosys** as a synth tool
 - Scripts should be written in Bash/Python
 - Verilator should be at least v4.022 to work with cocotb
