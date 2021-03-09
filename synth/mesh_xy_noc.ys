@@ -1,0 +1,14 @@
+read_verilog -defer ../srcs/components/fifo.v
+read_verilog -defer ../srcs/switch/simple_mesh_xy/switch_constants.v
+read_verilog -defer ../srcs/switch/simple_mesh_xy/packet_arbiter.v
+read_verilog -defer ../srcs/switch/simple_mesh_xy/router_xy.v
+read_verilog -defer ../srcs/switch/simple_mesh_xy/crossbar.v
+read_verilog -defer ../srcs/switch/simple_mesh_xy/control_unit.v
+read_verilog -defer ../srcs/switch/simple_mesh_xy/xy_switch.v
+read_verilog ../srcs/noc/mesh_xy_noc.v
+proc; fsm; opt; memory; opt
+techmap; opt
+check
+# cover -o cvrg.rpt
+show mesh_xy_noc;
+write_verilog ../srcs/noc/mesh_xy_noc_synth.v
