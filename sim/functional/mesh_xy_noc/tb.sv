@@ -15,16 +15,16 @@ module tb
     input rst_ni,
 
     // RESOURCE INPUT CHANNEL
-    input  [`RSC_PCKT_RANGE]          rsc_pckt_i,
-    input  [(ROW_N * COL_M) -1 : 0]   rsc_wren_i,
-    output [(ROW_N * COL_M) -1 : 0]   rsc_full_o,
-    output [(ROW_N * COL_M) -1 : 0]   rsc_ovrflw_o,
+    input  [`PACKET_W-1:0]          rsc_pckt_i [(ROW_N*COL_M)-1:0],
+    input  [(ROW_N * COL_M) -1 : 0] rsc_wren_i,
+    output [(ROW_N * COL_M) -1 : 0] noc_full_o,
+    output [(ROW_N * COL_M) -1 : 0] noc_ovrflw_o,
 
     // RESOURCE OUTPUT CHANNEL
-    output [`RSC_PCKT_RANGE]          rsc_pckt_o,
-    output [(ROW_N * COL_M) -1 : 0]   rsc_wren_o,
-    input  [(ROW_N * COL_M) -1 : 0]   rsc_full_i,
-    input  [(ROW_N * COL_M) -1 : 0]   rsc_ovrflw_i
+    output [`PACKET_W-1:0]          noc_pckt_o [(ROW_N*COL_M)-1:0],
+    output [(ROW_N * COL_M) -1 : 0] noc_wren_o,
+    input  [(ROW_N * COL_M) -1 : 0] rsc_full_i,
+    input  [(ROW_N * COL_M) -1 : 0] rsc_ovrflw_i
     );
 
     initial begin
@@ -38,6 +38,19 @@ module tb
     reg clk_i = 1'b0;
     always #5 clk_i <= ~clk_i;
 
+    wire [`RSC_PCKT_RANGE] rsc_pckt_iw;
+    wire [`RSC_PCKT_RANGE] noc_pckt_ow;
+
+    genvar ri, ci;
+    for (ri = 0; ri < ROW_N; ri=ri+1)
+    begin
+        for (ci = 0; ci < COL_M; ci=ci+1)
+        begin
+            assign rsc_pckt_iw[`CALC_PCKT_RANGE(ri,ci)] = rsc_pckt_i[ri*ROW_N + ci];
+            assign noc_pckt_o[ri*ROW_N + ci] = noc_pckt_ow[`CALC_PCKT_RANGE(ri,ci)];
+        end
+    end
+
     mesh_xy_noc
     #(
       .ROW_N(ROW_N),
@@ -50,13 +63,13 @@ module tb
       .clk_i(clk_i),
       .rst_ni(rst_ni),
 
-      .rsc_pckt_i(rsc_pckt_i),
+      .rsc_pckt_i(rsc_pckt_iw),
       .rsc_wren_i(rsc_wren_i),
-      .rsc_full_o(rsc_full_o),
-      .rsc_ovrflw_o(rsc_ovrflw_o),
+      .noc_full_o(noc_full_o),
+      .noc_ovrflw_o(noc_ovrflw_o),
 
-      .rsc_pckt_o(rsc_pckt_o),
-      .rsc_wren_o(rsc_wren_o),
+      .noc_pckt_o(noc_pckt_ow),
+      .noc_wren_o(noc_wren_o),
       .rsc_full_i(rsc_full_i),
       .rsc_ovrflw_i(rsc_ovrflw_i)
       );
@@ -65,7 +78,7 @@ module tb
     `ifdef COCOTB_SIM
     initial begin
       $dumpfile ("dump.vcd");
-      $dumpvars (0, inst_mesh_xy_noc);
+      $dumpvars (0, tb);
       #1;
     end
     `endif

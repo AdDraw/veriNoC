@@ -34,12 +34,12 @@ module mesh_xy_noc
       // RESOURCE INPUT CHANNEL
       input  [`RSC_PCKT_RANGE]          rsc_pckt_i,
       input  [(ROW_N * COL_M) -1 : 0]   rsc_wren_i,
-      output [(ROW_N * COL_M) -1 : 0]   rsc_full_o,
-      output [(ROW_N * COL_M) -1 : 0]   rsc_ovrflw_o,
+      output [(ROW_N * COL_M) -1 : 0]   noc_full_o,
+      output [(ROW_N * COL_M) -1 : 0]   noc_ovrflw_o,
 
       // RESOURCE OUTPUT CHANNEL
-      output [`RSC_PCKT_RANGE]          rsc_pckt_o,
-      output [(ROW_N * COL_M) -1 : 0]   rsc_wren_o,
+      output [`RSC_PCKT_RANGE]          noc_pckt_o,
+      output [(ROW_N * COL_M) -1 : 0]   noc_wren_o,
       input  [(ROW_N * COL_M) -1 : 0]   rsc_full_i,
       input  [(ROW_N * COL_M) -1 : 0]   rsc_ovrflw_i
       );
@@ -101,25 +101,25 @@ module mesh_xy_noc
           wire [port_n(`CENTER)-1 : 0]              x_sw_ovrflw_o;
 
           // inputs
-          assign x_sw_wren_i[0]         = rsc_wren_o[row_idx * ROW_N + col_idx];
+          assign x_sw_wren_i[0]         = rsc_wren_i[row_idx * ROW_N + col_idx];
           assign x_sw_wren_i[`LEFT]     = (col_idx > 0)           ? sw_wren_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_wren_i[`UP]       = (row_idx > 0)           ? sw_wren_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_wren_i[`RIGHT]    = (col_idx < (COL_M - 1)) ? sw_wren_w[row_idx][col_idx+1][`LEFT-1] : 0;
           assign x_sw_wren_i[`DOWN]     = (row_idx < (ROW_N - 1)) ? sw_wren_w[row_idx+1][col_idx][`UP-1]   : 0;
 
-          assign x_sw_full_i[0]         = rsc_full_o[row_idx*ROW_N + col_idx];
+          assign x_sw_full_i[0]         = rsc_full_i[row_idx*ROW_N + col_idx];
           assign x_sw_full_i[`LEFT]     = (col_idx > 0)           ? sw_full_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_full_i[`UP]       = (row_idx > 0)           ? sw_full_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_full_i[`RIGHT]    = (col_idx < (COL_M - 1)) ? sw_full_w[row_idx][col_idx+1][`LEFT-1] : 0;
           assign x_sw_full_i[`DOWN]     = (row_idx < (ROW_N - 1)) ? sw_full_w[row_idx+1][col_idx][`UP-1]   : 0;
 
-          assign x_sw_ovrflw_i[0]       = rsc_ovrflw_o[row_idx*ROW_N + col_idx];
+          assign x_sw_ovrflw_i[0]       = rsc_ovrflw_i[row_idx*ROW_N + col_idx];
           assign x_sw_ovrflw_i[`LEFT]   = (col_idx > 0)           ? sw_ovrflw_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_ovrflw_i[`UP]     = (row_idx > 0)           ? sw_ovrflw_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_ovrflw_i[`RIGHT]  = (col_idx < (COL_M - 1)) ? sw_ovrflw_w[row_idx][col_idx+1][`LEFT-1] : 0;
           assign x_sw_ovrflw_i[`DOWN]   = (row_idx < (ROW_N - 1)) ? sw_ovrflw_w[row_idx+1][col_idx][`UP-1]   : 0;
 
-          assign x_sw_pckt_i[`PACKET_W-1 : 0] = rsc_pckt_o[`CALC_PCKT_RANGE(row_idx, col_idx)];
+          assign x_sw_pckt_i[`PACKET_W-1 : 0] = rsc_pckt_i[`CALC_PCKT_RANGE(row_idx, col_idx)];
           assign x_sw_pckt_i[(`PACKET_W*(`LEFT+1))-1  : `PACKET_W*`LEFT]  = (col_idx > 0)           ? sw_pckt_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_pckt_i[(`PACKET_W*(`UP+1))-1    : `PACKET_W*`UP]    = (row_idx > 0)           ? sw_pckt_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_pckt_i[(`PACKET_W*(`RIGHT+1))-1 : `PACKET_W*`RIGHT] = (col_idx < (COL_M - 1)) ? sw_pckt_w[row_idx][col_idx+1][`LEFT-1] : 0;
@@ -152,10 +152,10 @@ module mesh_xy_noc
             );
 
           //outputs
-          assign rsc_wren_i   [row_idx*ROW_N + col_idx]             = x_sw_wren_o[0];
-          assign rsc_full_i   [row_idx*ROW_N + col_idx]             = x_sw_full_o[0];
-          assign rsc_ovrflw_i [row_idx*ROW_N + col_idx]             = x_sw_ovrflw_o[0];
-          assign rsc_pckt_i   [`CALC_PCKT_RANGE(row_idx, col_idx)]  = x_sw_pckt_o[`PACKET_W-1 : 0];
+          assign noc_wren_o   [row_idx*ROW_N + col_idx]             = x_sw_wren_o[0];
+          assign noc_full_o   [row_idx*ROW_N + col_idx]             = x_sw_full_o[0];
+          assign noc_ovrflw_o [row_idx*ROW_N + col_idx]             = x_sw_ovrflw_o[0];
+          assign noc_pckt_o   [`CALC_PCKT_RANGE(row_idx, col_idx)]  = x_sw_pckt_o[`PACKET_W-1 : 0];
 
           for (port_idx = 1; port_idx < port_n(`CENTER); port_idx = port_idx + 1)
           begin
