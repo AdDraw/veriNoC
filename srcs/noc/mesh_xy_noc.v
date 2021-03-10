@@ -22,15 +22,10 @@
 `define DOWN  4
 
 module mesh_xy_noc
-  # ( parameter ROW_N             = 3,
-      parameter COL_M             = 3,
-      parameter PCKT_DATA_W       = 8,
-      parameter FIFO_DEPTH_WIDTH  = 3
-
-      /* TODO:
-      parameter ROUTING TYPE;
-      */
-
+  # ( parameter ROW_N         = 3,
+      parameter COL_M         = 3,
+      parameter PCKT_DATA_W   = 8,
+      parameter FIFO_DEPTH_W  = 3
       )
     (
       input clk_i,
@@ -84,7 +79,7 @@ module mesh_xy_noc
 
     generate
       wire [`PACKET_W-1 : 0]  sw_pckt_w   [ROW_N-1:0][COL_M-1:0][3:0];
-      wire                    sw_wren_w  [ROW_N-1:0][COL_M-1:0][3:0];
+      wire                    sw_wren_w   [ROW_N-1:0][COL_M-1:0][3:0];
       wire                    sw_full_w   [ROW_N-1:0][COL_M-1:0][3:0];
       wire                    sw_ovrflw_w [ROW_N-1:0][COL_M-1:0][3:0];
 
@@ -112,19 +107,19 @@ module mesh_xy_noc
           assign x_sw_wren_i[`RIGHT]    = (col_idx < (COL_M - 1)) ? sw_wren_w[row_idx][col_idx+1][`LEFT-1] : 0;
           assign x_sw_wren_i[`DOWN]     = (row_idx < (ROW_N - 1)) ? sw_wren_w[row_idx+1][col_idx][`UP-1]   : 0;
 
-          assign x_sw_full_i[0]           =                           rsc_full_o[row_idx*ROW_N + col_idx];
+          assign x_sw_full_i[0]         = rsc_full_o[row_idx*ROW_N + col_idx];
           assign x_sw_full_i[`LEFT]     = (col_idx > 0)           ? sw_full_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_full_i[`UP]       = (row_idx > 0)           ? sw_full_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_full_i[`RIGHT]    = (col_idx < (COL_M - 1)) ? sw_full_w[row_idx][col_idx+1][`LEFT-1] : 0;
           assign x_sw_full_i[`DOWN]     = (row_idx < (ROW_N - 1)) ? sw_full_w[row_idx+1][col_idx][`UP-1]   : 0;
 
-          assign x_sw_ovrflw_i[0]         =                           rsc_ovrflw_o[row_idx*ROW_N + col_idx];
+          assign x_sw_ovrflw_i[0]       = rsc_ovrflw_o[row_idx*ROW_N + col_idx];
           assign x_sw_ovrflw_i[`LEFT]   = (col_idx > 0)           ? sw_ovrflw_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_ovrflw_i[`UP]     = (row_idx > 0)           ? sw_ovrflw_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_ovrflw_i[`RIGHT]  = (col_idx < (COL_M - 1)) ? sw_ovrflw_w[row_idx][col_idx+1][`LEFT-1] : 0;
           assign x_sw_ovrflw_i[`DOWN]   = (row_idx < (ROW_N - 1)) ? sw_ovrflw_w[row_idx+1][col_idx][`UP-1]   : 0;
 
-          assign x_sw_pckt_i[`PACKET_W-1 : 0]                             =                           rsc_pckt_o[`CALC_PCKT_RANGE(row_idx, col_idx)];
+          assign x_sw_pckt_i[`PACKET_W-1 : 0] = rsc_pckt_o[`CALC_PCKT_RANGE(row_idx, col_idx)];
           assign x_sw_pckt_i[(`PACKET_W*(`LEFT+1))-1  : `PACKET_W*`LEFT]  = (col_idx > 0)           ? sw_pckt_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_pckt_i[(`PACKET_W*(`UP+1))-1    : `PACKET_W*`UP]    = (row_idx > 0)           ? sw_pckt_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_pckt_i[(`PACKET_W*(`RIGHT+1))-1 : `PACKET_W*`RIGHT] = (col_idx < (COL_M - 1)) ? sw_pckt_w[row_idx][col_idx+1][`LEFT-1] : 0;
@@ -132,10 +127,10 @@ module mesh_xy_noc
 
           xy_switch
           #(
-            .X_CORD(row_idx),
-            .Y_CORD(col_idx),
+            .X_CORD(col_idx),
+            .Y_CORD(row_idx),
             .PORT_N(port_n(`CENTER)),
-            .IN_FIFO_DEPTH_W(FIFO_DEPTH_WIDTH),
+            .IN_FIFO_DEPTH_W(FIFO_DEPTH_W),
             .PCKT_XADDR_W($clog2(ROW_N)),
             .PCKT_YADDR_W($clog2(COL_M)),
             .PCKT_DATA_W(PCKT_DATA_W),
@@ -169,8 +164,8 @@ module mesh_xy_noc
             assign sw_ovrflw_w[row_idx][col_idx][port_idx-1] = x_sw_ovrflw_o  [port_idx];
             assign sw_pckt_w  [row_idx][col_idx][port_idx-1] = x_sw_pckt_o    [(`PACKET_W*(port_idx+1))-1 : `PACKET_W*port_idx];
           end
+
         end
       end
     endgenerate
-
 endmodule // mesh_xy_noc
