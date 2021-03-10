@@ -18,7 +18,7 @@ VERILOG_SOURCES += $(SWITCH_VER_DIR)/crossbar.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/router_xy.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/../../components/fifo.v
 VERILOG_SOURCES += $(NOC_VER_DIR)/mesh_xy_noc.v
-VERILOG_SOURCES += ./tb.v
+VERILOG_SOURCES += ./tb.sv
 
 # Specifies essentials of the DUT and the cocotb TB
 TOPLEVEL 	:= tb
