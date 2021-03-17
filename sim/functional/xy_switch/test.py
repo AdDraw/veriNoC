@@ -176,95 +176,95 @@ async def test_255(dut, log_lvl=INFO, cycles=100000):
     swtb.compare()
 
 
-# @cocotb.test()
-# async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fifo_rand=True, cycles=100000):
-#     cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
-#
-#     if int(os.environ['DEBUG_ATTACH']) > 0:
-#         import pydevd_pycharm
-#         pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
-#
-#     swtb = SWTB(dut.xy_switch_inst, log_lvl)
-#     swtb.setup_dut(cycle_n=cycles)
-#
-#     # Clear FIFO inputs
-#     swtb.reset_swtb()
-#
-#     await swtb.sw_drv.clear_sw_input()
-#     await swtb.reset_hdl()
-#
-#     await ClockCycles(dut.clk_i, 10)
-#
-#     if transaction_w <= swtb.config["packet_data_w"]:
-#         transaction_n = pow(2, transaction_w) - 1
-#     else:
-#         transaction_n = pow(2, swtb.config["packet_data_w"]) - 1
-#
-#     if with_nxt_fifo_rand is True:
-#         cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
-#
-#     for i in range(transaction_n):
-#         src = randint(0, swtb.config["neighbours_n"]-1)
-#         x_dest = getrandbits(swtb.config["packet_x_addr_w"])
-#         y_dest = getrandbits(swtb.config["packet_y_addr_w"])
-#         await swtb.sw_drv.write_to_single_input(input_id=src, x_dest=x_dest, y_dest=y_dest)
-#
-#     await swtb.sw_drv.clear_sw_input(True)
-#
-#     await ClockCycles(dut.clk_i, 10)
-#
-#     await ClockCycles(dut.clk_i, 100)
-#
-#     swtb.compare()
-#
-#
-# @cocotb.test()
-# async def test_rand_multi_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fifo_rand=True, cycles=100000):
-#     cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
-#
-#     if int(os.environ['DEBUG_ATTACH']) > 0:
-#         import pydevd_pycharm
-#         pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
-#
-#     swtb = SWTB(dut.xy_switch_inst, log_lvl)
-#     swtb.setup_dut(cycle_n=cycles)
-#
-#     # Clear FIFO inputs
-#     swtb.reset_swtb()
-#
-#     await swtb.sw_drv.clear_sw_input()
-#     await swtb.reset_hdl()
-#
-#     await ClockCycles(dut.clk_i, 10)
-#
-#     if transaction_w <= swtb.config["packet_data_w"]:
-#         transaction_n = pow(2, transaction_w) - 1
-#     else:
-#         transaction_n = pow(2, swtb.config["packet_data_w"]) - 1
-#
-#     if with_nxt_fifo_rand is True:
-#         cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
-#
-#     for i in range(transaction_n):
-#         n = randint(0, swtb.config["neighbours_n"]-1)
-#         await swtb.sw_drv.write_to_n_inputs(n)
-#
-#     await swtb.sw_drv.clear_sw_input(True)
-#
-#     await ClockCycles(dut.clk_i, 10)
-#     await ClockCycles(dut.clk_i, 100)
-#
-#     swtb.compare()
+@cocotb.test()
+async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fifo_rand=True, cycles=100000):
+    cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
 
-# if int(os.environ["TESTFACTORY"]):
-#     tf = TestFactory(test_function=test_rand_single_input)
-#     tf.add_option(name='transaction_w', optionlist=[*range(16)])
-#     tf.add_option(name='with_nxt_fifo_rand', optionlist=[True, False])
-#     tf.generate_tests()
-#     tf2 = TestFactory(test_function=test_rand_multi_input)
-#     tf2.add_option(name='transaction_w', optionlist=[*range(16)])
-#     tf2.add_option(name='with_nxt_fifo_rand', optionlist=[True, False])
-#     tf2.generate_tests()
+    if int(os.environ['DEBUG_ATTACH']) > 0:
+        import pydevd_pycharm
+        pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
+
+    swtb = SWTB(dut.xy_switch_inst, log_lvl)
+    swtb.setup_dut(cycle_n=cycles)
+
+    # Clear FIFO inputs
+    swtb.reset_swtb()
+
+    await swtb.sw_drv.clear_sw_input()
+    await swtb.reset_hdl()
+
+    await ClockCycles(dut.clk_i, 10)
+
+    if transaction_w <= swtb.config["packet_data_w"]:
+        transaction_n = pow(2, transaction_w) - 1
+    else:
+        transaction_n = pow(2, swtb.config["packet_data_w"]) - 1
+
+    if with_nxt_fifo_rand is True:
+        cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
+
+    for i in range(transaction_n):
+        src = randint(0, swtb.config["neighbours_n"]-1)
+        x_dest = getrandbits(swtb.config["packet_x_addr_w"])
+        y_dest = getrandbits(swtb.config["packet_y_addr_w"])
+        await swtb.sw_drv.write_to_single_input(input_id=src, x_dest=x_dest, y_dest=y_dest)
+
+    await swtb.sw_drv.clear_sw_input(True)
+
+    await ClockCycles(dut.clk_i, 10)
+
+    await ClockCycles(dut.clk_i, 100)
+
+    swtb.compare()
+
+
+@cocotb.test()
+async def test_rand_multi_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fifo_rand=True, cycles=100000):
+    cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
+
+    if int(os.environ['DEBUG_ATTACH']) > 0:
+        import pydevd_pycharm
+        pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
+
+    swtb = SWTB(dut.xy_switch_inst, log_lvl)
+    swtb.setup_dut(cycle_n=cycles)
+
+    # Clear FIFO inputs
+    swtb.reset_swtb()
+
+    await swtb.sw_drv.clear_sw_input()
+    await swtb.reset_hdl()
+
+    await ClockCycles(dut.clk_i, 10)
+
+    if transaction_w <= swtb.config["packet_data_w"]:
+        transaction_n = pow(2, transaction_w) - 1
+    else:
+        transaction_n = pow(2, swtb.config["packet_data_w"]) - 1
+
+    if with_nxt_fifo_rand is True:
+        cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
+
+    for i in range(transaction_n):
+        n = randint(0, swtb.config["neighbours_n"]-1)
+        await swtb.sw_drv.write_to_n_inputs(n)
+
+    await swtb.sw_drv.clear_sw_input(True)
+
+    await ClockCycles(dut.clk_i, 10)
+    await ClockCycles(dut.clk_i, 100)
+
+    swtb.compare()
+
+if int(os.environ["TESTFACTORY"]):
+    tf = TestFactory(test_function=test_rand_single_input)
+    tf.add_option(name='transaction_w', optionlist=[*range(16)])
+    tf.add_option(name='with_nxt_fifo_rand', optionlist=[True, False])
+    tf.generate_tests()
+    tf2 = TestFactory(test_function=test_rand_multi_input)
+    tf2.add_option(name='transaction_w', optionlist=[*range(16)])
+    tf2.add_option(name='with_nxt_fifo_rand', optionlist=[True, False])
+    tf2.generate_tests()
 
 
 async def send255(swtb):
