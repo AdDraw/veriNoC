@@ -25,10 +25,13 @@ TOPLEVEL 	:= tb
 MODULE   	:= test
 SIM 		?= icarus
 
-export ROW_N		?= 3
-export COL_M		?= 3
-export PCKT_DATA_W	?= 8
-export FIFO_DEPTH_W	?= 3
+export ROW_N		?= 2
+export COL_M		?= 2
+export PCKT_DATA_W	?= 12
+export FIFO_DEPTH_W	?= 7
+
+# Clock period in NS
+export CLK_PERIOD   ?= 10
 
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
@@ -37,6 +40,16 @@ COMPILE_ARGS+= -P $(TOPLEVEL).ROW_N=$(ROW_N)
 COMPILE_ARGS+= -P $(TOPLEVEL).COL_M=$(COL_M)
 COMPILE_ARGS+= -P $(TOPLEVEL).PCKT_DATA_W=$(PCKT_DATA_W)
 COMPILE_ARGS+= -P $(TOPLEVEL).FIFO_DEPTH_W=$(FIFO_DEPTH_W)
-COMPILE_ARGS+= -D SIMULATION=1
+COMPILE_ARGS+= -P $(TOPLEVEL).CLK_PERIOD=$(CLK_PERIOD)
+#COMPILE_ARGS+= -D SIMULATION=1
+
+DOT_BINARY ?= dot
+test_profile.pstat: sim
+callgraph.svg: test_profile.pstat
+	$(shell cocotb-config --python-bin) -m gprof2dot -f pstats ./$< | $(DOT_BINARY) -Tsvg -o $@
+
+.PHONY: profile
+profile:
+	COCOTB_ENABLE_PROFILING=1 $(MAKE) callgraph.svg
 
 include $(shell cocotb-config --makefiles)/Makefile.sim

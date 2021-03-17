@@ -108,11 +108,11 @@ class SWIMon(BusMonitor):
                     packet_sw_i_split = [(string[i:i + n]) for i in range(0, len(string), n)]
                     chosen_pckt = packet_sw_i_split[bid]
 
-                    data = BinaryValue(chosen_pckt[-self.config["packet_data_w"]:],
+                    data = BinaryValue(chosen_pckt[self.config['packet_y_addr_w'] + self.config['packet_x_addr_w']:self.config['packet_w']],
                                        self.config["packet_data_w"], bigEndian=False).value
-                    x_addr = BinaryValue(chosen_pckt[:self.config["packet_y_addr_w"]],
+                    x_addr = BinaryValue(chosen_pckt[self.config['packet_y_addr_w']:self.config['packet_y_addr_w'] + self.config['packet_x_addr_w']],
                                          self.config["packet_x_addr_w"], bigEndian=False).value
-                    y_addr = BinaryValue(chosen_pckt[self.config["packet_y_addr_w"]:-self.config["packet_data_w"]],
+                    y_addr = BinaryValue(chosen_pckt[0:self.config["packet_y_addr_w"]],
                                          self.config["packet_y_addr_w"], bigEndian=False).value
 
                     if not in_fifo_full_cur[self.port_n-bid] or (in_fifo_full_cur[self.port_n-bid] and in_fifo_rd_en_i_cur[self.port_n-bid]):

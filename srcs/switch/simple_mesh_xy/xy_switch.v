@@ -30,21 +30,22 @@
 
 
    PACKET :
-   |  X_Addr | [`PCKT_DATA_W + `PCKT_YADDR_W + `PCKT_XADDR_W - 1 : `PCKT_DATA_W + `PCKT_YADDR_W ]
-   |  Y_addr | [`PCKT_DATA_W + `PCKT_YADDR_W - 1 : `PCKT_DATA_W ]
-   |  DATA   | [`PCKT_DATA_W - 1 : 0 ]
+   |  ROW_addr    | [`PCKT_DATA_W + `PCKT_ROW_ADDR_W + `PCKT_COL_ADDR_W - 1 : `PCKT_DATA_W + `PCKT_ROW_ADDR_W ]
+   |  COLUMN_addr | [`PCKT_DATA_W + `PCKT_YADDR_W - 1 : `PCKT_DATA_W ]
+   |  DATA        | [`PCKT_DATA_W - 1 : 0 ]
 
 */
+`timescale 1ns / 1ps
 module xy_switch
 # (
-    parameter X_CORD = 0,
-    parameter Y_CORD = 0,
+    parameter COL_CORD = 0,
+    parameter ROW_CORD = 0,
     parameter PORT_N = 5, // 1 is minimum because of connection to RESOURCE,
     parameter IN_FIFO_DEPTH_W = 3,
-    parameter PCKT_XADDR_W = 4,
-    parameter PCKT_YADDR_W = 4,
+    parameter PCKT_COL_ADDR_W = 4,
+    parameter PCKT_ROW_ADDR_W = 4,
     parameter PCKT_DATA_W = 8,
-    parameter PCKT_W = PCKT_XADDR_W + PCKT_YADDR_W + PCKT_DATA_W,
+    parameter PCKT_W = PCKT_COL_ADDR_W + PCKT_ROW_ADDR_W + PCKT_DATA_W,
     parameter SW_CONFIG = `CENTER
     )
   (
@@ -74,8 +75,8 @@ module xy_switch
     wire [PCKT_W - 1 : 0]           pckt_in_chosen_w;
 
     // Wires assignments
-    wire [PCKT_XADDR_W - 1 : 0] x_addr_w = pckt_in_chosen_w[ PCKT_W - 1 : PCKT_DATA_W + PCKT_YADDR_W ];
-    wire [PCKT_YADDR_W - 1 : 0] y_addr_w = pckt_in_chosen_w[ PCKT_W - PCKT_XADDR_W - 1 : PCKT_DATA_W ];
+    wire [PCKT_ROW_ADDR_W - 1 : 0] row_addr_w = pckt_in_chosen_w[ PCKT_W - 1 : PCKT_DATA_W + PCKT_COL_ADDR_W ];
+    wire [PCKT_COL_ADDR_W - 1 : 0] col_addr_w = pckt_in_chosen_w[ PCKT_W - PCKT_ROW_ADDR_W - 1 : PCKT_DATA_W ];
 
     // Module Instantatiation
     // Input BUFFERS
@@ -130,17 +131,17 @@ module xy_switch
     // ROUTER - chooses output port
     xy_router
     # (
-        .X_CORD(X_CORD),
-        .Y_CORD(Y_CORD),
-        .PACKET_ADDR_X_W(PCKT_XADDR_W),
-        .PACKET_ADDR_Y_W(PCKT_YADDR_W),
+        .COL_CORD(COL_CORD),
+        .ROW_CORD(ROW_CORD),
+        .PACKET_ADDR_COL_W(PCKT_COL_ADDR_W),
+        .PACKET_ADDR_ROW_W(PCKT_ROW_ADDR_W),
         .OUTPUT_N_W($clog2(PORT_N)),
         .SW_CONFIG(SW_CONFIG)
         )
     router
       (
-        .x_addr(x_addr_w),
-        .y_addr(y_addr_w),
+        .col_addr(col_addr_w),
+        .row_addr(row_addr_w),
         .mux_out_sel_o(mux_out_sel_w)
         );
 

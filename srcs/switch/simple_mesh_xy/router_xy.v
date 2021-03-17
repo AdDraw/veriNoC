@@ -1,17 +1,17 @@
 // `include "./switch_params.v"
-
+`timescale 1ns / 1ps
 module xy_router
 # (
-    parameter X_CORD          = 4'd0,
-    parameter Y_CORD          = 4'd0,
-    parameter PACKET_ADDR_X_W = 4,
-    parameter PACKET_ADDR_Y_W = 4,
-    parameter OUTPUT_N_W      = 3,
-    parameter SW_CONFIG       = `EDGE_LB
+    parameter COL_CORD          = 4'd0,
+    parameter ROW_CORD          = 4'd0,
+    parameter PACKET_ADDR_COL_W = 4,
+    parameter PACKET_ADDR_ROW_W = 4,
+    parameter OUTPUT_N_W        = 3,
+    parameter SW_CONFIG         = `EDGE_LB
     )
   (
-    input  [PACKET_ADDR_X_W-1 : 0] x_addr,
-    input  [PACKET_ADDR_Y_W-1 : 0] y_addr,
+    input  [PACKET_ADDR_COL_W-1 : 0] col_addr,
+    input  [PACKET_ADDR_ROW_W-1 : 0] row_addr,
     output [OUTPUT_N_W-1 : 0] mux_out_sel_o
     );
 
@@ -24,8 +24,8 @@ module xy_router
     reg [OUTPUT_N_W-1 : 0] mux_out_sel_w;
 
     // For YOSYS to truncate the values
-    wire [PACKET_ADDR_X_W-1 : 0] x_cord = X_CORD;
-    wire [PACKET_ADDR_Y_W-1 : 0] y_cord = Y_CORD;
+    wire [PACKET_ADDR_COL_W-1 : 0] col_cord = COL_CORD;
+    wire [PACKET_ADDR_ROW_W-1 : 0] row_cord = ROW_CORD;
 
     // mapped Directions to PORT IDs
     // Packets that were incorrectly routed will land into Resource! (for now)
@@ -105,13 +105,13 @@ module xy_router
 
     always @(*) begin
         /* verilator lint_off WIDTH */
-        if (x_addr == x_cord) begin
+        if (col_addr == col_cord) begin
           // X movement Finished, start ELEVATION or DEELEVATION
-          if (y_addr == Y_CORD) begin
+          if (row_addr == row_cord) begin
           // Y movement Finished, route to Resource
             mux_out_sel_w = RESOURCE;
           end
-          else if (y_addr < y_cord) begin
+          else if (row_addr < row_cord) begin
             mux_out_sel_w = UP;
           end
           else begin
@@ -119,7 +119,7 @@ module xy_router
           end
         end
         else begin
-          if (x_addr > X_CORD) begin
+          if (col_addr > col_cord) begin
             // X movement not finished
             mux_out_sel_w = RIGHT;
           end
@@ -135,7 +135,7 @@ module xy_router
     `ifdef SIMULATION
       initial begin
         $display("SW_CONF %d", SW_CONFIG);
-        $display("PORT_N  %d", OUTPUT_N_W);
+        $display("OUTPUT_N_W %d", OUTPUT_N_W);
         $display("LEFT    %d", LEFT);
         $display("UP      %d", UP);
         $display("RIGHT   %d", RIGHT);

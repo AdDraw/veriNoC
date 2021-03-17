@@ -11,7 +11,7 @@
 
   Inputs and outputs passed as "inlined" arrays of atomic packets.
 */
-
+`timescale 1ns / 1ps
 module n_to_n_crossbar
 # (
     parameter DATA_WIDTH = 8,

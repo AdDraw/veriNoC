@@ -1,13 +1,14 @@
 `define PACKET_W (PCKT_DATA_W + $clog2(ROW_N) + $clog2(COL_M))
 `define RSC_PCKT_RANGE (`PACKET_W * ROW_N * COL_M) - 1 : 0
-`define CALC_PCKT_RANGE(ROW_IDX, COL_IDX) (((ROW_IDX*ROW_N) + COL_IDX + 1) * `PACKET_W) - 1 : (((ROW_IDX*ROW_N) + COL_IDX) * `PACKET_W)
+`define CALC_PCKT_RANGE(ROW_IDX, COL_IDX) (((ROW_IDX*COL_M) + COL_IDX + 1) * `PACKET_W) - 1 : (((ROW_IDX*COL_M) + COL_IDX) * `PACKET_W)
 
 module tb
   # (
     parameter ROW_N = 3,
     parameter COL_M = 3,
     parameter FIFO_DEPTH_W = 3,
-    parameter PCKT_DATA_W = 8
+    parameter PCKT_DATA_W = 8,
+    parameter CLK_PERIOD = 10
     )
   (
     // GLOBAL
@@ -36,7 +37,7 @@ module tb
     end
 
     reg clk_i = 1'b0;
-    always #5 clk_i <= ~clk_i;
+    always #(CLK_PERIOD/2) clk_i <= ~clk_i;
 
     wire [`RSC_PCKT_RANGE] rsc_pckt_iw;
     wire [`RSC_PCKT_RANGE] noc_pckt_ow;
@@ -46,8 +47,8 @@ module tb
     begin
         for (ci = 0; ci < COL_M; ci=ci+1)
         begin
-            assign rsc_pckt_iw[`CALC_PCKT_RANGE(ri,ci)] = rsc_pckt_i[ri*ROW_N + ci];
-            assign noc_pckt_o[ri*ROW_N + ci] = noc_pckt_ow[`CALC_PCKT_RANGE(ri,ci)];
+            assign rsc_pckt_iw[`CALC_PCKT_RANGE(ri,ci)] = rsc_pckt_i[ri*COL_M + ci];
+            assign noc_pckt_o[ri*COL_M + ci] = noc_pckt_ow[`CALC_PCKT_RANGE(ri,ci)];
         end
     end
 

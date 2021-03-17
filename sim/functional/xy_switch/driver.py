@@ -61,8 +61,8 @@ class SWPacketDriver(BusDriver):
         self.packet_id += 1
 
         packet = self.packet_id
-        packet |= (y_dest << self.config["packet_data_w"])
-        packet |= (x_dest << (self.config["packet_data_w"] + self.config["packet_y_addr_w"]))
+        packet |= (x_dest << self.config["packet_data_w"])
+        packet |= (y_dest << (self.config["packet_data_w"] + self.config["packet_x_addr_w"]))
         packets = BinaryValue(0, self.config["neighbours_n"]*self.config["packet_w"], bigEndian=False)
         packets |= (packet << input_id * self.config["packet_w"])
 
@@ -83,8 +83,8 @@ class SWPacketDriver(BusDriver):
             self.packet_id += 1
 
             packet = self.packet_id
-            packet |= (y_dest << self.config["packet_data_w"])
-            packet |= (x_dest << (self.config["packet_data_w"] + self.config["packet_y_addr_w"]))
+            packet |= (x_dest << self.config["packet_data_w"])
+            packet |= (y_dest << (self.config["packet_data_w"] + self.config["packet_x_addr_w"]))
 
             wr_en += 1 << source
             packets |= (packet << source * self.config["packet_w"])

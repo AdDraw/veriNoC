@@ -2,7 +2,7 @@
   Author: Adam Drawc
   Module Name: Control Unit that will be used for controlling which packet to route and if the output is ready for it
 */
-
+`timescale 1ns / 1ps
 module control_unit
 # (
     parameter PORT_N = 5
