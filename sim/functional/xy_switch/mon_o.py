@@ -78,7 +78,7 @@ class SWOMon(BusMonitor):
 
                     chosen_pckt = packet_sw_i_split[bid]
 
-                    data = BinaryValue(chosen_pckt[-self.config["packet_data_w"]:],
+                    data = BinaryValue(chosen_pckt[self.config['packet_y_addr_w'] + self.config['packet_x_addr_w']:self.config['packet_w']],
                                        self.config["packet_data_w"], bigEndian=False).value
 
                     cycle_results = {"id": data, "dst": self.port_n - bid, "orig": chosen_pckt}

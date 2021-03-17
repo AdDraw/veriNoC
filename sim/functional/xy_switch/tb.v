@@ -1,13 +1,13 @@
 module tb
   # (
-    parameter X_CORD = 0,
-    parameter Y_CORD = 0,
+    parameter COL_CORD = 0,
+    parameter ROW_CORD = 0,
     parameter PORT_N = 5, // 1 is minimum cause RESOURCE,
     parameter IN_FIFO_DEPTH_W = 3,
-    parameter PCKT_XADDR_W = 4,
-    parameter PCKT_YADDR_W = 4,
+    parameter PCKT_COL_ADDR_W = 4,
+    parameter PCKT_ROW_ADDR_W = 4,
     parameter PCKT_DATA_W = 8,
-    parameter PCKT_W = PCKT_XADDR_W + PCKT_YADDR_W + PCKT_DATA_W,
+    parameter PCKT_W = PCKT_COL_ADDR_W + PCKT_ROW_ADDR_W + PCKT_DATA_W,
     parameter SW_CONFIG = 0
     )
   (
@@ -31,8 +31,8 @@ module tb
 
     initial begin
       $display("TB SETUP:");
-      $display("XCORD %d", X_CORD);
-      $display("YCORD %d", Y_CORD);
+      $display("COL_CORD %d", COL_CORD);
+      $display("ROW_CORD %d", ROW_CORD);
     end
 
     reg clk_i = 1'b0;
@@ -40,12 +40,12 @@ module tb
 
     xy_switch
     #(
-      .X_CORD(X_CORD),
-      .Y_CORD(Y_CORD),
+      .COL_CORD(COL_CORD),
+      .ROW_CORD(ROW_CORD),
       .PORT_N(PORT_N),
       .IN_FIFO_DEPTH_W(IN_FIFO_DEPTH_W),
-      .PCKT_XADDR_W(PCKT_XADDR_W),
-      .PCKT_YADDR_W(PCKT_YADDR_W),
+      .PCKT_COL_ADDR_W(PCKT_COL_ADDR_W),
+      .PCKT_ROW_ADDR_W(PCKT_ROW_ADDR_W),
       .PCKT_DATA_W(PCKT_DATA_W),
       .PCKT_W(PCKT_W),
       .SW_CONFIG(SW_CONFIG)

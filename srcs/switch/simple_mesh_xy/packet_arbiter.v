@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module arbiter
 # (
     parameter PORT_N = 5
