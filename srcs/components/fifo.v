@@ -23,10 +23,12 @@ module fifo
     );
     localparam FIFO_DEPTH = 2**FIFO_DEPTH_WIDTH;
 
+  `ifdef SIMULATION
 	initial begin
 		$display("Verilog: FIFO%d -FIFO_DEPTH_WIDTH %d",ID, FIFO_DEPTH_WIDTH);
 		$display("Verilog: FIFO%d -DATA_WIDTH\t%d",ID, DATA_WIDTH);
 	end
+  `endif
 
     // Registers
     integer i;

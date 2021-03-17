@@ -10,9 +10,11 @@
   RB switch = (N-1, M-1)
 
 */
+`timescale 1ns / 1ps
+
 `define PACKET_W (PCKT_DATA_W + $clog2(ROW_N) + $clog2(COL_M))
 `define RSC_PCKT_RANGE (`PACKET_W * ROW_N * COL_M) - 1 : 0
-`define CALC_PCKT_RANGE(ROW_IDX, COL_IDX) (((ROW_IDX*ROW_N) + COL_IDX + 1) * `PACKET_W) - 1 : (((ROW_IDX*ROW_N) + COL_IDX) * `PACKET_W)
+`define CALC_PCKT_RANGE(ROW_IDX, COL_IDX) (((ROW_IDX*COL_M) + COL_IDX + 1) * `PACKET_W) - 1 : (((ROW_IDX*COL_M) + COL_IDX) * `PACKET_W)
 
 `define NUM_OF_EDGES (2*(ROW_N*COL_M) - (ROW_N + COL_M)) //assuming that each Switch can have up to 4 neighbouring switches in a mesh noc
 
@@ -101,19 +103,19 @@ module mesh_xy_noc
           wire [port_n(`CENTER)-1 : 0]              x_sw_ovrflw_o;
 
           // inputs
-          assign x_sw_wren_i[0]         = rsc_wren_i[row_idx * ROW_N + col_idx];
+          assign x_sw_wren_i[0]         = rsc_wren_i[row_idx * COL_M + col_idx];
           assign x_sw_wren_i[`LEFT]     = (col_idx > 0)           ? sw_wren_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_wren_i[`UP]       = (row_idx > 0)           ? sw_wren_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_wren_i[`RIGHT]    = (col_idx < (COL_M - 1)) ? sw_wren_w[row_idx][col_idx+1][`LEFT-1] : 0;
           assign x_sw_wren_i[`DOWN]     = (row_idx < (ROW_N - 1)) ? sw_wren_w[row_idx+1][col_idx][`UP-1]   : 0;
 
-          assign x_sw_full_i[0]         = rsc_full_i[row_idx*ROW_N + col_idx];
+          assign x_sw_full_i[0]         = rsc_full_i[row_idx*COL_M + col_idx];
           assign x_sw_full_i[`LEFT]     = (col_idx > 0)           ? sw_full_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_full_i[`UP]       = (row_idx > 0)           ? sw_full_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_full_i[`RIGHT]    = (col_idx < (COL_M - 1)) ? sw_full_w[row_idx][col_idx+1][`LEFT-1] : 0;
           assign x_sw_full_i[`DOWN]     = (row_idx < (ROW_N - 1)) ? sw_full_w[row_idx+1][col_idx][`UP-1]   : 0;
 
-          assign x_sw_ovrflw_i[0]       = rsc_ovrflw_i[row_idx*ROW_N + col_idx];
+          assign x_sw_ovrflw_i[0]       = rsc_ovrflw_i[row_idx*COL_M + col_idx];
           assign x_sw_ovrflw_i[`LEFT]   = (col_idx > 0)           ? sw_ovrflw_w[row_idx][col_idx-1][`RIGHT-1]: 0;
           assign x_sw_ovrflw_i[`UP]     = (row_idx > 0)           ? sw_ovrflw_w[row_idx-1][col_idx][`DOWN-1] : 0;
           assign x_sw_ovrflw_i[`RIGHT]  = (col_idx < (COL_M - 1)) ? sw_ovrflw_w[row_idx][col_idx+1][`LEFT-1] : 0;
@@ -127,12 +129,12 @@ module mesh_xy_noc
 
           xy_switch
           #(
-            .X_CORD(col_idx),
-            .Y_CORD(row_idx),
+            .COL_CORD(col_idx),
+            .ROW_CORD(row_idx),
             .PORT_N(port_n(`CENTER)),
             .IN_FIFO_DEPTH_W(FIFO_DEPTH_W),
-            .PCKT_XADDR_W($clog2(ROW_N)),
-            .PCKT_YADDR_W($clog2(COL_M)),
+            .PCKT_COL_ADDR_W($clog2(COL_M)),
+            .PCKT_ROW_ADDR_W($clog2(ROW_N)),
             .PCKT_DATA_W(PCKT_DATA_W),
             .PCKT_W(`PACKET_W),
             .SW_CONFIG(`CENTER)
@@ -152,9 +154,9 @@ module mesh_xy_noc
             );
 
           //outputs
-          assign noc_wren_o   [row_idx*ROW_N + col_idx]             = x_sw_wren_o[0];
-          assign noc_full_o   [row_idx*ROW_N + col_idx]             = x_sw_full_o[0];
-          assign noc_ovrflw_o [row_idx*ROW_N + col_idx]             = x_sw_ovrflw_o[0];
+          assign noc_wren_o   [row_idx*COL_M + col_idx]             = x_sw_wren_o[0];
+          assign noc_full_o   [row_idx*COL_M + col_idx]             = x_sw_full_o[0];
+          assign noc_ovrflw_o [row_idx*COL_M + col_idx]             = x_sw_ovrflw_o[0];
           assign noc_pckt_o   [`CALC_PCKT_RANGE(row_idx, col_idx)]  = x_sw_pckt_o[`PACKET_W-1 : 0];
 
           for (port_idx = 1; port_idx < port_n(`CENTER); port_idx = port_idx + 1)
