@@ -8,7 +8,8 @@ module tb
     parameter COL_M = 3,
     parameter FIFO_DEPTH_W = 3,
     parameter PCKT_DATA_W = 8,
-    parameter CLK_PERIOD = 10
+    parameter CLK_PERIOD = 10,
+    parameter VCD_NAME = "dump.vcd"
     )
   (
     // GLOBAL
@@ -78,7 +79,7 @@ module tb
     // the "macro" to dump signals
     `ifdef COCOTB_SIM
     initial begin
-      $dumpfile ("dump.vcd");
+      $dumpfile (VCD_NAME);
       $dumpvars (0, tb);
       #1;
     end
