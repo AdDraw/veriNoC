@@ -31,6 +31,7 @@ class Resource(BusDriver, BusMonitor):
         self.clock = clock
 
         self.sent_packets = []
+        self.dropped_packet_n = 0
         self.received_pckts = []
         self.bad_route = []
 
@@ -59,17 +60,21 @@ class Resource(BusDriver, BusMonitor):
         self.bus.rsc_ovrflw_i[self.resource_id].setimmediatevalue(0)
 
     async def send_packet_to_xy(self, data, row_dest, col_dest):
-        await RisingEdge(self.clock)
-        # if self.entity.noc_full_o[self.resource_id].value == 1:
-        #     await Edge(self.entity.noc_full_o[self.resource_id])
-
         packet = data
         packet |= (col_dest << self.config["pckt_data_w"])
         packet |= (row_dest << (self.config["pckt_data_w"] + self.config["packet_col_addr_w"]))
 
-        time = get_sim_time(units="ns")
+        await RisingEdge(self.clock)
+        if self.bus.noc_full_o[self.resource_id].value == 1:
+            await self.clear_rsc_output(sync=False)
+            self.dropped_packet_n += 1
+            return 1
 
-        self.sent_packets.append({"source": self.resource_id, "row_dest": row_dest, "col_dest": col_dest, "data": data,
+        time = get_sim_time(units="ns")
+        self.sent_packets.append({"source": self.resource_id,
+                                  "row_dest": row_dest,
+                                  "col_dest": col_dest,
+                                  "data": data,
                                   "time": time})
 
         self.bus.rsc_pckt_i[self.resource_id] <= packet
