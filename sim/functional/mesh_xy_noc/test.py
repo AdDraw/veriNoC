@@ -1,15 +1,19 @@
 # COCOTB imports
 import cocotb
 from cocotb.result import TestSuccess, TestFailure, TestError
-from cocotb.triggers import ClockCycles, RisingEdge
+from cocotb.triggers import ClockCycles, RisingEdge, Join, Combine, First
 from logging import INFO, DEBUG
 from cocotb.log import SimLog
+from cocotb.utils import get_sim_time
+from cocotb.regression import TestFactory
 # Global Imports
 import os
-from random import sample
+from random import sample, randint, getrandbits, random
 from math import log, ceil
 # Modules
 from Resource import Resource
+
+CLK_PERIOD = int(os.environ["CLK_PERIOD"])
 
 
 class NocTB:
@@ -95,8 +99,8 @@ class NocTB:
         await ClockCycles(self.dut.clk_i, 5)
         self.dut.rst_ni <= 1
 
-    def compare(self):
-        packets_sent = 0
+    async def compare(self):
+        packets_dropped = 0
         time_total = 0
         total_hops = 0
         min_time = pow(2, 20)
@@ -104,8 +108,20 @@ class NocTB:
         shortest_path = pow(2, 20)
         longest_path = -1
         sent_and_received = []
+
+        while True:
+            await ClockCycles(self.dut.clk_i, 100)
+            packets_sent = 0
+            for rsc in self.rsc_list:
+                packets_sent += rsc.sent_packets.__len__()
+
+            if packets_sent == self.received.__len__():
+                break
+
+        packets_sent = 0
         for rsc in self.rsc_list:
             packets_sent += rsc.sent_packets.__len__()
+            packets_dropped += rsc.dropped_packet_n
 
             for sent_pckt in rsc.sent_packets:
                 self.sent.append(sent_pckt)
@@ -116,10 +132,17 @@ class NocTB:
 
         self.log.info("------------------------------------------------------------------------- Final!")
         packets_received = self.received.__len__()
+
+        if packets_dropped/packets_sent > 0.5:
+            raise TestFailure(f"TB ERROR: Too many packets were dropped compared to sent! {packets_dropped}/{packets_sent}")
+
         if packets_received != packets_sent:
+            self.log.error(f"Dropped packets {packets_dropped}")
             raise TestFailure(f"Numbers of packets sent and received in the whole NOC is not the same "
                               f"rec: {packets_received} != sent: {packets_sent}")
+
         else:
+            self.log.error(f"Numbers of packets Dropped: {packets_dropped} (noc_full_o'HIGH)")
             self.log.warning(f"Number of received packets matches the sent packet count rec/sent: "
                              f"{packets_received}/{packets_sent}")
 
@@ -185,20 +208,22 @@ class NocTB:
                 mean_packet_life_ns = time_total/sent_and_received.__len__()
                 mean_packet_life_cyc = mean_packet_life_ns/self.clk_period
 
-                self.log.warning(f"Average packet lifetime: {mean_packet_life_ns} ns")
-                self.log.warning(f"Average packet lifetime: {mean_packet_life_cyc} cycles "
+                self.log.warning("1. LifeTime:")
+                self.log.warning(f"   - Average packet lifetime: {mean_packet_life_ns:.2f} ns")
+                self.log.warning(f"   - Average packet lifetime: {mean_packet_life_cyc:.2f} cycles "
                                  f"(CLK_PERIOD = {self.clk_period} ns)")
 
-                self.log.warning(f"Min packet lifetime: {min_time} ns")
-                self.log.warning(f"Max packet lifetime: {max_time} ns")
+                self.log.warning(f"   - Min packet lifetime    : {min_time} ns")
+                self.log.warning(f"   - Max packet lifetime    : {max_time} ns")
 
-                self.log.warning(f"Total Hops {total_hops} (with included hops from Resource to Switch)")
-                self.log.warning(f"Mean Time per Hop {time_total/total_hops} ns "
-                                 f"| {(time_total/total_hops)/self.clk_period} cyc")
-
-                self.log.warning(f"Longest packet path  {longest_path} hops")
-                self.log.warning(f"Shortest packet path {shortest_path} hops")
-                self.log.warning(f"Average packet path  {total_hops/self.sent.__len__()} hops")
+                self.log.warning("2. Hops:")
+                self.log.warning(f"   - Total Hops             : {total_hops} "
+                                 f"(with included hops from Resource to Switch)")
+                self.log.warning(f"   - Mean Time per Hop      : {(time_total/total_hops):.2f} ns"
+                                 f"| {((time_total/total_hops)/self.clk_period):.2f} cyc")
+                self.log.warning(f"   - Longest packet path    : {longest_path} hops")
+                self.log.warning(f"   - Shortest packet path   : {shortest_path} hops")
+                self.log.warning(f"   - Average packet path    : {total_hops/self.sent.__len__():.2f} hops")
 
         self.log.info("")
         raise TestSuccess()
@@ -206,6 +231,19 @@ class NocTB:
 
 @cocotb.test()
 async def smoke_test(dut, log_lvl=INFO, cycles=100000):
+    """
+    Testcase that tries to catch simple bold errors
+    Send the packet from LT switch to RB switch and reversed.
+
+    Args:
+        dut: top level HDL module
+        log_lvl: INFO or DEBUG
+        cycles: deprecated
+
+    Returns:
+        PASS or FAIL
+
+    """
     log = SimLog("smoke_test")
     log.setLevel(log_lvl)
     log.info("----------------------------------------------------------------------------- Setup!")
@@ -219,6 +257,9 @@ async def smoke_test(dut, log_lvl=INFO, cycles=100000):
     noctb.setup_dut()
     log.info("----------------------------------------------------------------------------- Simulation!")
     await ClockCycles(dut.clk_i, 100)
+
+    timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
+                                                         noctb.config["fifo_depth_w"])))._wait())
     # Edge LT
     # - send RT
     await noctb.rsc_list[0].send_packet_to_xy(1, 0, noctb.config["col_m"]-1)
@@ -242,10 +283,9 @@ async def smoke_test(dut, log_lvl=INFO, cycles=100000):
     await noctb.rsc_list[-1].send_packet_to_xy(6, 0, 0)
     await noctb.rsc_list[-1].clear_rsc_output(True)
 
-    await ClockCycles(dut.clk_i, 100)
-
     log.info("----------------------------------------------------------------------------- Results!")
-    noctb.compare()
+    comparison = cocotb.fork(noctb.compare())
+    await First(timeout, comparison)
 
 
 @cocotb.test()
@@ -262,12 +302,16 @@ async def test_allpaths_1(dut, log_lvl=INFO, cycles=100000):
     noctb = NocTB(dut, log_lvl)
     noctb.setup_dut()
     log.info("----------------------------------------------------------------------------- Simulation!")
+    start_time = get_sim_time(units="ns")
 
     await ClockCycles(dut.clk_i, 100)
     # loop that goes over every reasource !
 
     if pow(noctb.rsc_list.__len__(), 2) > pow(2, noctb.config["pckt_data_w"]):
         raise TestError("Pckt Data Width is not big enough to provide unique ID to each packet")
+
+    timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
+                                                         noctb.config["fifo_depth_w"])))._wait())
 
     multipliers = sample(range(pow(2, noctb.config["pckt_data_w"])), noctb.rsc_list.__len__()*noctb.resource_n)
     for sending_rsc in noctb.rsc_list:
@@ -280,10 +324,12 @@ async def test_allpaths_1(dut, log_lvl=INFO, cycles=100000):
             await sending_rsc.clear_rsc_output(True)
             await ClockCycles(dut.clk_i, 1)
 
-    await ClockCycles(dut.clk_i, pow(2, noctb.config["fifo_depth_w"]))
+    cycles_overhead = int(round(((get_sim_time("ns") - start_time)/ CLK_PERIOD) * 0.5))
+    await ClockCycles(dut.clk_i, cycles_overhead)
 
     log.info("----------------------------------------------------------------------------- Results!")
-    noctb.compare()
+    comparison = cocotb.fork(noctb.compare())
+    await First(timeout, comparison)
 
 
 @cocotb.test()
@@ -301,10 +347,14 @@ async def test_allpaths_2(dut, log_lvl=INFO, cycles=100000):
     noctb = NocTB(dut, log_lvl)
     noctb.setup_dut()
     log.info("----------------------------------------------------------------------------- Simulation!")
+    start_time = get_sim_time(units="ns")
 
     await ClockCycles(dut.clk_i, 100)
-    # loop that goes over every reasource !
 
+    timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
+                                                         noctb.config["fifo_depth_w"])))._wait())
+
+    # loop that goes over every reasource !
     if pow(noctb.rsc_list.__len__(), 2) > pow(2, noctb.config["pckt_data_w"]):
         raise TestError("Pckt Data Width is not big enough to provide unique ID to each packet")
 
@@ -318,8 +368,77 @@ async def test_allpaths_2(dut, log_lvl=INFO, cycles=100000):
             multipliers.pop(0)
         await sending_rsc.clear_rsc_output(True)
 
-    await ClockCycles(dut.clk_i, pow(2, noctb.config["fifo_depth_w"]))
+    log.info("----------------------------------------------------------------------------- Results!")
+    comparison = cocotb.fork(noctb.compare())
+    await First(timeout, comparison)
+    raise TimeoutError
+
+
+@cocotb.test()
+async def test_setload(dut, log_lvl=INFO, load_percentage=0.1, active_cycles_n=1000):
+    """
+    Testcase that enforces N% of resources each cycle that issue a packet in the NoC.
+
+    Args:
+        dut: toplevel module
+        log_lvl: logging.INFO or logging.DEBUG
+        load_percentage: How many resources(%) are active in each cycle
+        active_cycles_n: How many cycles are resources active
+
+    Returns:
+        PASS, ERROR, FAIL
+    """
+
+    log = SimLog("test_percentage_load")
+    log.setLevel(log_lvl)
+
+    log.info("----------------------------------------------------------------------------- Setup!")
+    if int(os.environ['DEBUG_ATTACH']) > 0:
+        import pydevd_pycharm
+        pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
+
+    dut._discover_all()
+    log.debug(dut._sub_handles)
+    noctb = NocTB(dut, log_lvl)
+    noctb.setup_dut()
+    log.info("----------------------------------------------------------------------------- Simulation!")
+
+    active_resource_n = ceil(noctb.rsc_list.__len__() * load_percentage)
+    if active_resource_n > (noctb.rsc_list.__len__()):
+        active_resource_n = noctb.rsc_list.__len__()
+
+    await ClockCycles(dut.clk_i, 100)
+    timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
+                                                         noctb.config["fifo_depth_w"] +
+                                                         active_resource_n)))._wait())
+
+    if (active_resource_n * active_cycles_n) > pow(2, noctb.config["pckt_data_w"]):
+        raise TestError("Pckt Data Width is not big enough to provide unique ID to each packet")
+    else:
+        log.error(f"active_resource_n {active_resource_n}")
+
+    multipliers = sample(range(pow(2, noctb.config["pckt_data_w"])), active_resource_n * active_cycles_n)
+    for i in range(active_cycles_n):
+        sources = sample(noctb.rsc_list, active_resource_n)
+        sender_forks = []
+        for sender in sources:
+            row = randint(0, noctb.config["row_n"]-1)
+            col = randint(0, noctb.config["col_m"]-1)
+            sender_forks.append(cocotb.fork(sender.send_packet_to_xy(multipliers[0], row, col)))
+            multipliers.pop(0)
+        await Combine(*sender_forks)
+
+        sender_forks = []
+        for sender in sources:
+            sender_forks.append(cocotb.fork(sender.clear_rsc_output(True)))
+        await Combine(*sender_forks)
 
     log.info("----------------------------------------------------------------------------- Results!")
-    noctb.compare()
+    comparison = cocotb.fork(noctb.compare())
+    await First(timeout, comparison)
+    raise TimeoutError
 
+if int(os.environ["TESTFACTORY"]) == 1:
+    tf = TestFactory(test_setload)
+    tf.add_option("load_percentage", [0.3, 0.5, 0.7, 1])
+    tf.generate_tests()
