@@ -1,5 +1,5 @@
 import cocotb
-from cocotb.monitors import BusMonitor
+from cocotb_bus.monitors import BusMonitor
 from cocotb.triggers import RisingEdge, ReadOnly
 from cocotb.binary import BinaryValue
 
