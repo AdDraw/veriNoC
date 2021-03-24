@@ -40,6 +40,7 @@ jobs:
   formal:
     # The type of runner that the job will run on
     runs-on: self-hosted
+    needs: build
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -55,6 +56,7 @@ jobs:
   functional:
     # The type of runner that the job will run on
     runs-on: self-hosted
+    needs: build
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -73,3 +75,18 @@ jobs:
         run: |
           cd sim/functional/mesh_xy_noc
           make -j8 -B
+  synth:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+    needs: build
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Runs a set of commands using the runners shell
+      - name: synthesis
+        run: |
+          cd synth
+          yosys fifo_synth.ys
+          yosys mesh_xy_noc.ys
+          yosys router_synth.ys
+          yosys sw_xy_synth.ys
