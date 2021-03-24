@@ -1,4 +1,4 @@
-from cocotb.drivers import BusDriver
+from cocotb_bus.drivers import BusDriver
 from cocotb.triggers import RisingEdge, ClockCycles, ReadOnly
 from cocotb.binary import BinaryValue
 from cocotb.result import TestError
