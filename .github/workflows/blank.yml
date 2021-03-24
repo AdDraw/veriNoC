@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
@@ -24,9 +24,9 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      
+
       - name: PIP3 Requirements
-        run: pip3 install -r requirements.txt 
+        run: pip3 install -r requirements.txt
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
@@ -37,3 +37,42 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+  formal:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Runs a set of commands using the runners shell
+      - name: formal checks
+        run: |
+          cd sim/formal
+          sby -f arb.sby
+          sby -f fifo.sby
+          sby -f rtr.sby
+          sby -f xy_switch.sby
+
+  functional:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Runs a set of commands using the runners shell
+      - name: prep
+        run: cd sim/functional
+
+      - name: FIFO sim
+        run: |
+          cd circ_fifo_sim
+          make -j8 -B
+
+      - name: XY_switch sim
+        run: |
+          cd xy_switch
+          make -j8 -B
+
+      - name: Mesh XY sim
+        run: |
+          cd mesh_xy_noc
+          make -j8 -B
