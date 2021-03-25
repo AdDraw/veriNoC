@@ -71,10 +71,15 @@ jobs:
           cd sim/functional/xy_switch
           make -j8 -B
 
-      - name: Mesh XY sim
+      - name: Mesh XY sim Single
         run: |
           cd sim/functional/mesh_xy_noc
-          make -j8 -B
+          python3 run_and_verify.py -tf 1
+
+      - name: Mesh XY sim regression
+        run: |
+          cd sim/functional/mesh_xy_noc
+          python3 regression.py
   synth:
     # The type of runner that the job will run on
     runs-on: self-hosted
