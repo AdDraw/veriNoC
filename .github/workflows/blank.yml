@@ -45,18 +45,30 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Runs a set of commands using the runners shell
-      - name: formal checks
+      - name: Arbiter
         run: |
           cd sim/formal
           sby -f arb.sby
+
+      - name: FIFO
+        run: |
+          cd sim/formal
           sby -f fifo.sby
+
+      - name: RouterXY
+        run: |
+          cd sim/formal
           sby -f rtr.sby
+
+      - name: XY_SWITCH
+        run: |
+          cd sim/formal
           sby -f xy_switch.sby
 
   functional:
     # The type of runner that the job will run on
     runs-on: self-hosted
-    needs: build
+    needs: [build, synth, formal]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -64,12 +76,17 @@ jobs:
       - name: FIFO sim
         run: |
           cd sim/functional/circ_fifo_sim
-          make -j8 -B
+          python3 run_and_verify.py
+
+      - name: FIFO sim POST-SYNTH
+        run: |
+          cd sim/functional/circ_fifo_sim
+          python3 run_and_verify.py -ps 1
 
       - name: XY_switch sim
         run: |
           cd sim/functional/xy_switch
-          make -j8 -B
+          python3 run_and_verify.py -tf 1
 
       - name: Mesh XY sim Single
         run: |
