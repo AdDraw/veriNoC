@@ -88,10 +88,22 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Runs a set of commands using the runners shell
-      - name: synthesis
+      - name: fifo synth
         run: |
           cd synth
           yosys fifo_synth.ys
+
+      - name: mesh_xy noc synth
+        run: |
+          cd synth
           yosys mesh_xy_noc.ys
-          yosys router_synth.ys
+
+      - name: sw_xy synth
+        run: |
+          cd synth
           yosys sw_xy_synth.ys
+
+      - name: router synth
+        run: |
+          cd synth
+          yosys router_synth.ys
