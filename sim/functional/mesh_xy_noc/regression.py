@@ -1,8 +1,8 @@
 import subprocess
 import xml.etree.ElementTree as ET
 
-row_max = 6
-col_max = 6
+row_max = 4
+col_max = 4
 
 fail_testcases = []
 testcase_cnt = 0
