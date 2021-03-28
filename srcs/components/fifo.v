@@ -5,9 +5,15 @@
 
 module fifo
   #(
-    parameter DATA_WIDTH = 8,
-    parameter FIFO_DEPTH_WIDTH = 2,
-    parameter ID=0
+    `ifdef YS_FIFO_TOP
+    parameter DATA_WIDTH        = `YS_DATA_WIDTH,
+    parameter FIFO_DEPTH_WIDTH  = `YS_FIFO_DEPTH_WIDTH,
+    `else
+    parameter DATA_WIDTH        = 8,
+    parameter FIFO_DEPTH_WIDTH  = 2,
+    `endif
+
+    parameter ID                = 0
     )
   (
     input clk_i,
