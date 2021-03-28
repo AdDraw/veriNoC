@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Sim + Synth + Formal CI
 
 # Controls when the action will run.
 on:
@@ -108,19 +108,19 @@ jobs:
       - name: fifo synth
         run: |
           cd synth
-          yosys fifo_synth.ys
+          ./yosys_wrapper -sf fifo_synth.ys
 
       - name: mesh_xy noc synth
         run: |
           cd synth
-          yosys mesh_xy_noc.ys
+          ./yosys_wrapper -sf mesh_xy_noc.ys
 
       - name: sw_xy synth
         run: |
           cd synth
-          yosys sw_xy_synth.ys
+          ./yosys_wrapper -sf sw_xy_synth.ys
 
       - name: router synth
         run: |
           cd synth
-          yosys router_synth.ys
+          ./yosys_wrapper -sf router_synth.ys

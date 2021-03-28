@@ -1,8 +1,0 @@
-read_verilog ../srcs/switch/simple_mesh_xy/switch_constants.v
-read_verilog ../srcs/switch/simple_mesh_xy/router_xy.v
-proc; fsm; opt; memory; opt
-techmap; opt
-check
-# cover -o cvrg.rpt
-show;
-write_verilog ../srcs/switch/simple_mesh_xy/rtr_synth.v
