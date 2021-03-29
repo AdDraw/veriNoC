@@ -108,19 +108,19 @@ jobs:
       - name: fifo synth
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf fifo_synth.ys
+          ./yosys_wrapper.sh -sf fifo_synth.tcl
 
       - name: mesh_xy noc synth
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf mesh_xy_noc.ys
+          ./yosys_wrapper.sh -sf mesh_xy_noc.tcl
 
       - name: sw_xy synth
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf sw_xy_synth.ys
+          ./yosys_wrapper.sh -sf sw_xy_synth.tcl
 
       - name: router synth
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf router_synth.ys
+          ./yosys_wrapper.sh -sf router_synth.tcl
