@@ -38,12 +38,11 @@ do
   export $param
 done
 
-script_file_edit=${SCRIPT_FILE%".tcl"}
 #SCRIPT_FILE parsing (remove .tcl from the file name)
+script_file_edit=${SCRIPT_FILE%".tcl"}
 synth_log_name=$path2log/$script_file_edit".log"
 
-yosys -tl $synth_log_name $SCRIPT_FILE
-
+yosys -tl $synth_log_name $SCRIPT_FILE || exit 1
 
 if [[ -e ~/.yosys_show.dot ]]; then
   #statements
