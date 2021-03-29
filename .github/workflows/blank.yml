@@ -80,7 +80,9 @@ jobs:
 
       - name: FIFO sim POST-SYNTH
         run: |
-          cd sim/functional/circ_fifo_sim
+          cd synth/
+          ./yosys_wrapper.sh -sf fifo_synth.tcl FIFO_DEPTH_WIDTH=2 DATA_WIDTH=8
+          cd ../sim/functional/circ_fifo_sim
           python3 run_and_verify.py -ps 1
 
       - name: XY_switch sim
