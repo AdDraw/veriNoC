@@ -10,11 +10,21 @@ set values(0) 4
 set values(1) 8
 
 chparam -list
+log "Parameters and their values:"
 for { set index 0 }  { $index < [array size params] }  { incr index } {
-   log "params($index) : $params($index)"
    if { [info exists ::env($params($index))] } {
      set values($index) $::env($params($index))
    }
+   log "$index. : $params($index)= $values($index)"
+}
+
+# IF SHOW_PARAMS is set to 1, it only specifies what the TOPMODULE parameters are
+# it also shows params and values lists of parameters that are modifiable and their default values
+if {$::env(SHOW_PARAMS) == 1} {
+  read_verilog ../srcs/components/fifo.v
+  log "Parameters from the top-module"
+  chparam -list
+  exit 0
 }
 
 read_verilog  -DYS_FIFO_TOP=1 \
@@ -34,6 +44,11 @@ techmap; opt
 # cleanup
 clean
 
-show  -enum -width -colors 3 $top_module
+if { ![info exists ::env(NO_XDOT)] } {
+  show  -enum -width -colors 3 $top_module
+}
+
 json -o $::env(JSON_PATH)/$top_module-.json
 write_verilog ../srcs/components/fifo_synth.v
+
+stat

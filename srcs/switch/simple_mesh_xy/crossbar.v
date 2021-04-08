@@ -47,7 +47,7 @@ module n_to_n_crossbar
 
     integer i;
 
-    // OUTPUT MUX, with registers
+    // OUTPUT MUX, with wires
     always @(*)
     begin
       for (i = 0; i < PORT_N; i = i + 1)
