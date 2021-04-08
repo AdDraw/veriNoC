@@ -110,7 +110,7 @@ class NocTB:
         sent_and_received = []
 
         while True:
-            await ClockCycles(self.dut.clk_i, 100)
+            await ClockCycles(self.dut.clk_i, 10)
             packets_sent = 0
             for rsc in self.rsc_list:
                 packets_sent += rsc.sent_packets.__len__()
@@ -228,6 +228,123 @@ class NocTB:
         self.log.info("")
         raise TestSuccess()
 
+    def print_stats(self):
+        packets_dropped = 0
+        time_total = 0
+        total_hops = 0
+        min_time = pow(2, 20)
+        max_time = -1
+        shortest_path = pow(2, 20)
+        longest_path = -1
+        sent_and_received = []
+
+        packets_sent = 0
+        for rsc in self.rsc_list:
+            packets_sent += rsc.sent_packets.__len__()
+            packets_dropped += rsc.dropped_packet_n
+
+            for sent_pckt in rsc.sent_packets:
+                self.sent.append(sent_pckt)
+                self.log.debug(sent_pckt)
+
+            for rec_pckt in rsc.received_pckts:
+                self.log.debug(rec_pckt)
+
+        self.log.info("------------------------------------------------------------------------- Final!")
+        packets_received = self.received.__len__()
+
+        if packets_dropped/packets_sent > 0.5:
+            self.log.info(f"TB ERROR: Too many packets were dropped compared to sent! {packets_dropped}/{packets_sent}")
+
+        if packets_received != packets_sent:
+            self.log.error(f"Dropped packets {packets_dropped}")
+            self.log.info(f"Numbers of packets sent and received in the whole NOC is not the same "
+                              f"rec: {packets_received} != sent: {packets_sent}")
+
+        else:
+            self.log.error(f"Numbers of packets Dropped: {packets_dropped} (noc_full_o'HIGH)")
+            self.log.warning(f"Number of received packets matches the sent packet count rec/sent: "
+                             f"{packets_received}/{packets_sent}")
+
+            # check correctness (and what was sent and received)
+
+            received_tmp = self.received
+            for sent_pckt in self.sent:
+                s_col_dest = sent_pckt["col_dest"]
+                s_row_dest = sent_pckt["row_dest"]
+                s_data = sent_pckt["data"]
+                s_time = sent_pckt["time"]
+
+                checked = 0
+                for rp_idx, rec_pckt in enumerate(received_tmp):
+                    r_col_dest = rec_pckt["col_dest"]
+                    r_row_dest = rec_pckt["row_dest"]
+                    r_data = rec_pckt["data"]
+                    r_time = rec_pckt["time"]
+                    if s_col_dest == r_col_dest and s_row_dest == r_row_dest and s_data == r_data:
+                        received_tmp.pop(rp_idx)
+                        time_diff = r_time - s_time
+
+                        s_row_cord, s_col_cord = divmod(sent_pckt["source"],  self.config["col_m"])
+                        r_row_cord, r_col_cord = divmod(rec_pckt["sink"], self.config["col_m"])
+
+                        sent_and_received.append({"from": [sent_pckt["source"], s_row_cord, s_col_cord],
+                                                  "to": [rec_pckt["sink"], r_row_cord, r_col_cord],
+                                                  "time": time_diff})
+
+                        if s_row_cord > r_row_cord:
+                            vert_hops = s_row_cord - r_row_cord
+                        else:
+                            vert_hops = r_row_cord - s_row_cord
+                        if s_col_cord > r_col_cord:
+                            hor_hops = s_col_cord - r_col_cord
+                        else:
+                            hor_hops = r_col_cord - s_col_cord
+                        hops_req = 1 + hor_hops + vert_hops
+                        if hops_req < shortest_path:
+                            shortest_path = hops_req
+                        if hops_req > longest_path:
+                            longest_path = hops_req
+
+                        self.log.debug(sent_and_received[-1])
+
+                        if time_diff < min_time:
+                            min_time = time_diff
+                        if time_diff > max_time:
+                            max_time = time_diff
+
+                        time_total += time_diff
+                        total_hops += hops_req
+                        checked = 1
+                        break
+
+                if not checked:
+                    self.log.info(f"sent_packet not received {sent_pckt}")
+
+            if sent_and_received.__len__() == self.sent.__len__():
+                self.log.warning(f"All sent packets were properly received "
+                                 f"{sent_and_received.__len__()}/{self.sent.__len__()}")
+
+                mean_packet_life_ns = time_total/sent_and_received.__len__()
+                mean_packet_life_cyc = mean_packet_life_ns/self.clk_period
+
+                self.log.warning("1. LifeTime:")
+                self.log.warning(f"   - Average packet lifetime: {mean_packet_life_ns:.2f} ns")
+                self.log.warning(f"   - Average packet lifetime: {mean_packet_life_cyc:.2f} cycles "
+                                 f"(CLK_PERIOD = {self.clk_period} ns)")
+
+                self.log.warning(f"   - Min packet lifetime    : {min_time} ns")
+                self.log.warning(f"   - Max packet lifetime    : {max_time} ns")
+
+                self.log.warning("2. Hops:")
+                self.log.warning(f"   - Total Hops             : {total_hops} "
+                                 f"(with included hops from Resource to Switch)")
+                self.log.warning(f"   - Mean Time per Hop      : {(time_total/total_hops):.2f} ns"
+                                 f"| {((time_total/total_hops)/self.clk_period):.2f} cyc")
+                self.log.warning(f"   - Longest packet path    : {longest_path} hops")
+                self.log.warning(f"   - Shortest packet path   : {shortest_path} hops")
+                self.log.warning(f"   - Average packet path    : {total_hops/self.sent.__len__():.2f} hops")
+
 
 @cocotb.test()
 async def smoke_test(dut, log_lvl=INFO, cycles=100000):
@@ -259,7 +376,7 @@ async def smoke_test(dut, log_lvl=INFO, cycles=100000):
     await ClockCycles(dut.clk_i, 100)
 
     timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
-                                                         noctb.config["fifo_depth_w"])))._wait())
+                                                         noctb.config["fifo_depth_w"])+2))._wait())
     # Edge LT
     # - send RT
     await noctb.rsc_list[0].send_packet_to_xy(1, 0, noctb.config["col_m"]-1)
@@ -286,7 +403,8 @@ async def smoke_test(dut, log_lvl=INFO, cycles=100000):
     log.info("----------------------------------------------------------------------------- Results!")
     comparison = cocotb.fork(noctb.compare())
     await First(timeout, comparison)
-
+    noctb.print_stats()
+    raise TimeoutError
 
 @cocotb.test()
 async def test_allpaths_1(dut, log_lvl=INFO, cycles=100000):
@@ -311,7 +429,7 @@ async def test_allpaths_1(dut, log_lvl=INFO, cycles=100000):
         raise TestError("Pckt Data Width is not big enough to provide unique ID to each packet")
 
     timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
-                                                         noctb.config["fifo_depth_w"])))._wait())
+                                                         noctb.config["fifo_depth_w"])+2))._wait())
 
     multipliers = sample(range(pow(2, noctb.config["pckt_data_w"])), noctb.rsc_list.__len__()*noctb.resource_n)
     for sending_rsc in noctb.rsc_list:
@@ -330,7 +448,8 @@ async def test_allpaths_1(dut, log_lvl=INFO, cycles=100000):
     log.info("----------------------------------------------------------------------------- Results!")
     comparison = cocotb.fork(noctb.compare())
     await First(timeout, comparison)
-
+    noctb.print_stats()
+    raise TimeoutError
 
 @cocotb.test()
 async def test_allpaths_2(dut, log_lvl=INFO, cycles=100000):
@@ -352,7 +471,7 @@ async def test_allpaths_2(dut, log_lvl=INFO, cycles=100000):
     await ClockCycles(dut.clk_i, 100)
 
     timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
-                                                         noctb.config["fifo_depth_w"])))._wait())
+                                                         noctb.config["fifo_depth_w"])+2))._wait())
 
     # loop that goes over every reasource !
     if pow(noctb.rsc_list.__len__(), 2) > pow(2, noctb.config["pckt_data_w"]):
@@ -371,6 +490,7 @@ async def test_allpaths_2(dut, log_lvl=INFO, cycles=100000):
     log.info("----------------------------------------------------------------------------- Results!")
     comparison = cocotb.fork(noctb.compare())
     await First(timeout, comparison)
+    noctb.print_stats()
     raise TimeoutError
 
 
@@ -410,7 +530,7 @@ async def test_setload(dut, log_lvl=INFO, load_percentage=0.1, active_cycles_n=1
     await ClockCycles(dut.clk_i, 100)
     timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
                                                          noctb.config["fifo_depth_w"] +
-                                                         active_resource_n)))._wait())
+                                                         active_resource_n+2)))._wait())
 
     if (active_resource_n * active_cycles_n) > pow(2, noctb.config["pckt_data_w"]):
         raise TestError("Pckt Data Width is not big enough to provide unique ID to each packet")
@@ -436,9 +556,10 @@ async def test_setload(dut, log_lvl=INFO, load_percentage=0.1, active_cycles_n=1
     log.info("----------------------------------------------------------------------------- Results!")
     comparison = cocotb.fork(noctb.compare())
     await First(timeout, comparison)
+    noctb.print_stats()
     raise TimeoutError
 
 if int(os.environ["TESTFACTORY"]) == 1:
     tf = TestFactory(test_setload)
-    tf.add_option("load_percentage", [0.3, 0.5, 0.7, 1])
+    tf.add_option("load_percentage", [0.3, 0.5, 0.7])
     tf.generate_tests()

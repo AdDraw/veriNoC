@@ -141,7 +141,7 @@ module xy_router
 
     assign mux_out_sel_o = mux_out_sel_w;
 
-    `ifdef SIMULATION
+    `ifdef LOG_DEBUG
       initial begin
         $display("SW_CONF %d", SW_CONFIG);
         $display("OUTPUT_N_W %d", OUTPUT_N_W);

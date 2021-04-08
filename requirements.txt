@@ -1,1 +1,2 @@
 cocotb
+git-python
