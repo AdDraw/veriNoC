@@ -24,11 +24,21 @@ set values(2) 8
 set values(3) 4
 
 chparam -list
+log "Parameters and their values:(after they were overriden with arguments)"
 for { set index 0 }  { $index < [array size params] }  { incr index } {
-   log "params($index) : $params($index)"
    if { [info exists ::env($params($index))] } {
      set values($index) $::env($params($index))
    }
+   log "$index. : $params($index) = $values($index)"
+}
+
+# IF SHOW_PARAMS is set to 1, it only specifies what the TOPMODULE parameters are
+# it also shows params and values lists of parameters that are modifiable and their default values
+if {$::env(SHOW_PARAMS) == 1} {
+  read_verilog ../srcs/noc/mesh_xy_noc.v
+  log "Parameters from the top-module"
+  chparam -list
+  exit 0
 }
 
 echo on
@@ -38,9 +48,8 @@ read_verilog  -DYS_MESH_XY_TOP=1 \
               -DYS_$params(2)=$values(2) \
               -DYS_$params(3)=$values(3) \
               ../srcs/noc/mesh_xy_noc.v
-echo off
 
-hierarchy -check -top $top_module
+hierarchy -top $top_module -keep_portwidths -check
 
 # the high-level stuff
 procs; opt; fsm; opt; memory; opt
@@ -51,7 +60,11 @@ techmap; opt
 # cleanup
 clean
 
-show  -enum -stretch -width -colors 3 $top_module
+if { ![info exists ::env(NO_XDOT)] } {
+  show  -enum -width -colors 3 $top_module
+}
 
 json -o $::env(JSON_PATH)/$top_module-$values(0)-$values(1).json
 write_verilog ../srcs/noc/mesh_xy_noc_synth.v
+
+stat $top_module

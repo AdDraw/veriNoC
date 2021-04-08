@@ -65,7 +65,7 @@ jobs:
           cd sim/formal
           sby -f xy_switch.sby
 
-  functional:
+  functional_presynth:
     # The type of runner that the job will run on
     runs-on: self-hosted
     needs: [build, synth, formal]
@@ -73,32 +73,61 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Runs a set of commands using the runners shell
-      - name: FIFO sim
+      - name: FIFO
         run: |
           cd sim/functional/circ_fifo_sim
           python3 run_and_verify.py
 
-      - name: FIFO sim POST-SYNTH
-        run: |
-          cd synth/
-          ./yosys_wrapper.sh -sf fifo_synth.tcl FIFO_DEPTH_WIDTH=2 DATA_WIDTH=8
-          cd ../sim/functional/circ_fifo_sim
-          python3 run_and_verify.py -ps 1
-
-      - name: XY_switch sim
+      - name: XY_switch
         run: |
           cd sim/functional/xy_switch
           python3 run_and_verify.py -tf 1
 
-      - name: Mesh XY sim Single
+      - name: Mesh XY Single
         run: |
           cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf 1
+          python3 run_and_verify.py -tf 1 -ff_depth 6 -pckt_w 14
 
-      - name: Mesh XY sim regression
+      - name: Mesh XY Regression
         run: |
           cd sim/functional/mesh_xy_noc
-          python3 regression.py
+          python3 run_and_verify.py -tf 1 -ff_depth 6 -pckt_w 14 -regression 1
+
+  functional_postsynth:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+    needs: [build, synth, formal, functional_presynth]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Runs a set of commands using the runners shell
+      - name: FIFO
+        run: |
+          cd synth/
+          ./yosys_wrapper.sh -sf fifo_synth.tcl FIFO_DEPTH_WIDTH=2 DATA_WIDTH=8 --no-xdot
+          cd ../sim/functional/circ_fifo_sim
+          python3 run_and_verify.py -ps 1
+
+      - name: Mesh XY 2x2
+        run: |
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf 1 -ps 1 -synth 1 -ff_depth 4 -pckt_w 12 -row_n 2 -col_m 2
+
+      - name: Mesh XY 2x3
+        run: |
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf 1 -ps 1 -synth 1 -ff_depth 4 -pckt_w 13 -row_n 2 -col_m 3
+
+      - name: Mesh XY 3x3
+        run: |
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf 1 -ps 1 -synth 1 -ff_depth 4 -pckt_w 13 -row_n 3 -col_m 3
+
+      - name: Mesh XY 4x4
+        run: |
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf 1 -ps 1 -synth 1 -ff_depth 4 -pckt_w 14 -row_n 4 -col_m 4
+
   synth:
     # The type of runner that the job will run on
     runs-on: self-hosted
@@ -110,19 +139,19 @@ jobs:
       - name: fifo synth
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf fifo_synth.tcl
+          ./yosys_wrapper.sh -sf fifo_synth.tcl --no-xdot
 
       - name: mesh_xy noc synth
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf mesh_xy_noc.tcl
+          ./yosys_wrapper.sh -sf mesh_xy_noc.tcl --no-xdot
 
       - name: sw_xy synth
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf sw_xy_synth.tcl
+          ./yosys_wrapper.sh -sf sw_xy_synth.tcl --no-xdot
 
       - name: router synth
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf router_synth.tcl
+          ./yosys_wrapper.sh -sf router_synth.tcl --no-xdot

@@ -27,6 +27,7 @@ module control_unit
     );
 
     reg   [PORT_N-1 : 0]    vld_input_v;
+    integer i;
 
     wire  [PORT_N-1 : 0]    rd_en_w = ~( empty_i | vld_input_v );
     wire  [PORT_N - 1 : 0]  wr_en_w = (|vld_input_v) ? (1 << mux_out_sel_i) & (~full_i) : 0;
@@ -44,9 +45,18 @@ module control_unit
       begin
         // if one is not empty and at least 1 is not vld
         vld_input_v <= (rd_en_w | vld_input_v);
-        if (wr_en_w[mux_out_sel_i])
+        if ( |wr_en_w )
         begin
-          vld_input_v[mux_in_sel_i] <= 1'b0;
+          for (i = 0; i < PORT_N; i = i + 1) begin
+            if ( i == mux_in_sel_i )
+            begin
+              vld_input_v[i] <= 1'b0; // CLEAN !
+            end
+            else
+            begin
+              vld_input_v[i] <= rd_en_w[i] | vld_input_v[i];
+            end
+          end
         end
       end
     end

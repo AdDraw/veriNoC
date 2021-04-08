@@ -5,3 +5,4 @@ results.xml
 .idea/
 htmlcov
 .coverage
+sim.log
