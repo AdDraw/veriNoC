@@ -1,2 +1,4 @@
 cocotb
 git-python
+pandas
+matplotlib
