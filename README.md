@@ -1,27 +1,21 @@
-## Magiament 
+## Magiament
 ![example workflow](https://github.com/AdDraw/magiament/actions/workflows/blank.yml/badge.svg)
 ### Master Thesis 2020/2022 Network on Chip Router
 
 ---
-##### Elka PW Lib Credentials
-**Login**: 308977\
-**Password**: NOSTR99adamus
-##### Pelikan Credentials
-**Host**: pelikan.adec.elka.pw.edu.pl\
-**Login**: adrawc\
-**Password**: uI16f5pUNamy
-##### SVN Credentials
-**Host**:svn://pelikan.adec.elka.pw.edu.pl/STUD/trunk/projects/digital/NOC\
-**Login**: adrawc\
-**Password**: wHaC4q_WjtAT_(^&*KJ
+> results are kept in the `results` directory
 
 ---
 ## Assumptions:
 - **Verilog** as a main hdl language
 - **Verilator/IcarusVerilog + cocotb + gtkwave** used as a sim tool
 - **Yosys** as a synth tool
-- Scripts should be written in Bash/Python
-- Verilator should be at least v4.022 to work with cocotb
+- **SymbiYosys** as a formal verification tool
+- Scripts should be written in Bash/Python/Tcl
+- Verilator should be at least `v4.022` to work with cocotb
+- IcarusVerilog has to be of version `11.0`
+
+> Cocotb Verilator support is experimental so for now it's not supported
 
 ## Directory format
 - **docs** for documents
@@ -29,9 +23,12 @@
 - **srcs** for hdl files
   - files from different projects in the same directory
 - **sim** for simulation files
-  - each design with it's own subdir
-- **synth** for synthesis scripts and results
-  - each synth script with it's own directory
+  - **formal**
+    - SymbiYosys scripts
+  - **functional**
+    - Cocotb Testbenches
+    - each design with it's own subdir
+- **synth** for synthesis scripts(in `.tcl`) and results
 
 ## Verilog codestyle
 The Codestyle that will be used is straight from Freescale's Verilog Codestyle.
@@ -121,3 +118,15 @@ It is much more readable to keep port names and connected signals aligned in two
 - **No Hardcoded** values when defining the width of a signal, only params/defines/localparams should be used
 
 ---
+
+##### Elka PW Lib Credentials
+**Login**: 308977\
+**Password**: NOSTR99adamus
+##### Pelikan Credentials
+**Host**: pelikan.adec.elka.pw.edu.pl\
+**Login**: adrawc\
+**Password**: uI16f5pUNamy
+##### SVN Credentials
+**Host**:svn://pelikan.adec.elka.pw.edu.pl/STUD/trunk/projects/digital/NOC\
+**Login**: adrawc\
+**Password**: wHaC4q_WjtAT_(^&*KJ
