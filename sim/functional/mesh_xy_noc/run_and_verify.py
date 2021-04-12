@@ -129,7 +129,7 @@ def main(tf, ps, synth, row_n, col_m, ff_depth, pckt_w, regression, log_lvl) -> 
                     log.error(f"TC {tc_id + 1}/{run[1].__len__()}. {tc}")
             log.info("-----------------------------------------------------------------------------------------"
                      "------------------")
-        log.info(f"SUCCESS: {run[2]}/{run[1].__len__()} [failed runs / attempts]")
+        log.info(f"RESULTS: {run[2]}/{run[1].__len__()} [failed runs / attempts]")
         log.info(f"Finished main() with exit_code={run[0]}")
         exit(run[0])
 
@@ -137,15 +137,31 @@ def main(tf, ps, synth, row_n, col_m, ff_depth, pckt_w, regression, log_lvl) -> 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Mesh XY NOC Testbench Run & Verify.')
     parser.add_argument('-tf', default=0, help='Set value to 1 if you want to enable'
-                                               ' TestFactory() for some testcases by default = 0')
+                                               ' TestFactory() for some testcases. Not enabled by Default')
     parser.add_argument('-ps', default=0, help='Set value to 1 if you want to enable'
-                                               ' run simulation using a post-synth netlist by default = 0')
-    parser.add_argument('-synth', default=0, help='Set value to 1 if you want to enable'
-                                                  ' run simulation using a post-synth netlist by default = 0')
+                                               ' run simulation using a post-synth netlist. Not enabled by Default')
+    parser.add_argument('-synth', default=0, help='Set value to 1 if you want to rerun the synthesis using'
+                                                  ' parameter values taken from arguments. Not enabled by Default')
     parser.add_argument('-row_n', default=2, help='ROW_N parameter')
     parser.add_argument('-col_m', default=2, help='COL_M parameter')
     parser.add_argument('-ff_depth', default=4, help='FIFO_DEPTH_W parameter')
-    parser.add_argument('-pckt_w', default=10, help='PCKT_DATA_W parameter')
-    parser.add_argument('-regression', default=0, help="IF '1' RUNS NOC simulations from 2x2 to 4x4")
+    parser.add_argument('-pckt_w', default=12, help='PCKT_DATA_W parameter')
+    parser.add_argument('-regression', default=0, help="IF '1' RUNS NOC simulations from 2x2 to 4x4"
+                                                       " to check size problems")
     parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
+
+    args = parser.parse_args()
+
+    if args.ps:
+        metrics_filename = f"mesh_noc_xy_postsynth_{args.row_n}_{args.col_m}" \
+                           f"_{args.ff_depth}_{args.pckt_w}.json"
+    else:
+        metrics_filename = f"mesh_noc_xy_presynth_{args.row_n}_{args.col_m}" \
+                           f"_{args.ff_depth}_{args.pckt_w}.json"
+
+    if os.path.exists(metrics_filename):
+        os.remove(metrics_filename)
+
+    os.environ['METRICS_FILENAME'] = metrics_filename
+
     main(**vars(parser.parse_args()))

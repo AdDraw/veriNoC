@@ -7,6 +7,7 @@ NOC_VER_DIR=$(shell git rev-parse --show-toplevel)/srcs/noc
 
 export DEBUG_ATTACH ?=0
 export TESTFACTORY ?=0
+export SYNTH ?= 0
 #export COVERAGE?=0
 LOG_DEBUG?=0
 
