@@ -5,13 +5,13 @@ export TOPLEVEL_LANG ?= verilog
 VER_DIR=$(shell git rev-parse --show-toplevel)/srcs/components
 
 # files
-VERILOG_SOURCES= $(VER_DIR)/fifo.v
+VERILOG_SOURCES= $(VER_DIR)/circ_fifo.v
 ifeq ($(SYNTH), 1)
-	VERILOG_SOURCES= $(VER_DIR)/fifo_synth.v
+	VERILOG_SOURCES= $(VER_DIR)/circ_fifo_synth.v
 endif
 
 # Specifies essentials of the DUT and the cocotb TB
-TOPLEVEL := fifo
+TOPLEVEL := circ_fifo
 MODULE   := test
 SIM 		 ?= icarus
 

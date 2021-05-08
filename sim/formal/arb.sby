@@ -11,8 +11,8 @@ bmc: mode bmc
 smtbmc --progress --nomem z3
 
 [script]
-read -formal packet_arbiter.v
-prep -top arbiter
+read -formal static_priority_arbiter.v
+prep -top static_priority_arbiter
 
 [files]
-../../srcs/switch/simple_mesh_xy/packet_arbiter.v
+../../srcs/switch/arbiters/static_priority_arbiter.v

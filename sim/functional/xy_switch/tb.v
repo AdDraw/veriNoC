@@ -7,8 +7,7 @@ module tb
     parameter PCKT_COL_ADDR_W = 4,
     parameter PCKT_ROW_ADDR_W = 4,
     parameter PCKT_DATA_W = 8,
-    parameter PCKT_W = PCKT_COL_ADDR_W + PCKT_ROW_ADDR_W + PCKT_DATA_W,
-    parameter SW_CONFIG = 0
+    parameter PCKT_W = PCKT_COL_ADDR_W + PCKT_ROW_ADDR_W + PCKT_DATA_W
     )
   (
 
@@ -47,8 +46,7 @@ module tb
       .PCKT_COL_ADDR_W(PCKT_COL_ADDR_W),
       .PCKT_ROW_ADDR_W(PCKT_ROW_ADDR_W),
       .PCKT_DATA_W(PCKT_DATA_W),
-      .PCKT_W(PCKT_W),
-      .SW_CONFIG(SW_CONFIG)
+      .PCKT_W(PCKT_W)
       )
     xy_switch_inst
     (
