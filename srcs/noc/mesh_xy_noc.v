@@ -2,10 +2,12 @@
   Adam Drawc 7.03.2021@PW
 
   Network on Chip
-  TYPE: MESH
-  ROUTING: XY
+  - 2D mesh topology
+  - Dimension Order Routing
+  - Packet-Based Store& forward Flow control
+  - static priority arbitration for competing packets
+  - Each packet contains of a single unit of data that contains (Xaddr, Yaddr, Data)
 
-  Static SWITCH indexing/ordering
   LT switch = (0,0)
   RB switch = (N-1, M-1)
 
@@ -144,8 +146,7 @@ module mesh_xy_noc
             .PCKT_COL_ADDR_W($clog2(COL_M)),
             .PCKT_ROW_ADDR_W($clog2(ROW_N)),
             .PCKT_DATA_W(PCKT_DATA_W),
-            .PCKT_W(`PACKET_W),
-            .SW_CONFIG(`CENTER)
+            .PCKT_W(`PACKET_W)
             )
           x_sw
           (

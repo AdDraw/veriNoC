@@ -1,10 +1,10 @@
 yosys -import
 
-read_verilog  -defer ../srcs/components/fifo.v
+read_verilog  -defer ../srcs/components/circ_fifo.v
 read_verilog  -defer ../srcs/switch/simple_mesh_xy/switch_constants.v
-read_verilog  -defer ../srcs/switch/simple_mesh_xy/packet_arbiter.v
-read_verilog  -defer ../srcs/switch/simple_mesh_xy/router_xy.v
-read_verilog  -defer ../srcs/switch/simple_mesh_xy/crossbar.v
+read_verilog  -defer ../srcs/switch/arbiters/static_priority_arbiter.v
+read_verilog  -defer ../srcs/switch/routers/xy_router.v
+read_verilog  -defer ../srcs/switch/crossbars/nxn_single_crossbar.v
 read_verilog  -defer ../srcs/switch/simple_mesh_xy/control_unit.v
 
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
@@ -18,7 +18,6 @@ set params(3) IN_FIFO_DEPTH_W
 set params(4) PCKT_COL_ADDR_W
 set params(5) PCKT_ROW_ADDR_W
 set params(6) PCKT_DATA_W
-set params(7) SW_CONFIG
 
 set values(0) 1
 set values(1) 1
@@ -27,7 +26,6 @@ set values(3) 6
 set values(4) 3
 set values(5) 3
 set values(6) 8
-set values(7) 0
 
 chparam -list
 log "Parameters and their values:(after they were overriden with arguments)"
@@ -57,7 +55,6 @@ read_verilog  -DYS_XY_SW_TOP=1 \
               -DYS_$params(4)=$values(4) \
               -DYS_$params(5)=$values(5) \
               -DYS_$params(6)=$values(6) \
-              -DYS_$params(7)=$values(7) \
               ../srcs/switch/simple_mesh_xy/xy_switch.v
 
 echo off
