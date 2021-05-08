@@ -11,8 +11,12 @@ bmc: mode bmc
 smtbmc --progress --nomem z3
 
 [script]
+read -formal constants.v
 read -formal circ_fifo.v
-prep -top circ_fifo
+read -formal virtual_channel.v
+prep -top virtual_channel
 
 [files]
+../../srcs/switch/constants.v
+../../srcs/switch/virtual_channels/virtual_channel.v
 ../../srcs/components/circ_fifo.v

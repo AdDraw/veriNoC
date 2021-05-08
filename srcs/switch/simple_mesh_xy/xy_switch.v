@@ -46,7 +46,6 @@ module xy_switch
       parameter PCKT_COL_ADDR_W = `YS_PCKT_COL_ADDR_W,
       parameter PCKT_ROW_ADDR_W = `YS_PCKT_ROW_ADDR_W,
       parameter PCKT_DATA_W     = `YS_PCKT_DATA_W,
-      parameter SW_CONFIG       = `YS_SW_CONFIG,
     `else
       parameter COL_CORD = 0,
       parameter ROW_CORD = 0,
@@ -55,7 +54,6 @@ module xy_switch
       parameter PCKT_COL_ADDR_W = 4,
       parameter PCKT_ROW_ADDR_W = 4,
       parameter PCKT_DATA_W = 8,
-      parameter SW_CONFIG = `CENTER,
     `endif
     parameter PCKT_W = PCKT_COL_ADDR_W + PCKT_ROW_ADDR_W + PCKT_DATA_W
     )
@@ -104,10 +102,10 @@ module xy_switch
         wire [PCKT_W -1 : 0] x_pckt_in_w = pckt_sw_i[PCKT_W * ( i + 1 ) - 1 : PCKT_W * i];
         wire [PCKT_W -1 : 0] x_pckt_out_w;
 
-        fifo
+        circ_fifo
           #(
-            .DATA_WIDTH(PCKT_W),
-            .FIFO_DEPTH_WIDTH(IN_FIFO_DEPTH_W),
+            .DATA_W(PCKT_W),
+            .FIFO_DEPTH_W(IN_FIFO_DEPTH_W),
             .ID(i)
             )
         x_input_fifo
@@ -120,8 +118,8 @@ module xy_switch
             .data_o( x_pckt_out_w ),              //data to go out of FIFO
             .full_o( in_fifo_full_o[i] ),         //if this fifo is full, pass it on to the Switch connected to you
             .empty_o( empty_w[i] ),               // empty is used internally and indicates data to be routed
-            .overflow_o( in_fifo_overflow_o[i] ), //OVRFLW ???
-            .underflow_o( underflow_w[i] )        //UNDERFLOW ???
+            .overflow_o( in_fifo_overflow_o[i] ), // might be nice
+            .underflow_o( underflow_w[i] )        // might be nice to have
             );
 
         assign fifo_data_out_w [PCKT_W * ( i + 1 ) - 1 : PCKT_W * i]  = x_pckt_out_w;
@@ -129,14 +127,14 @@ module xy_switch
     endgenerate
 
     // ARBITER - chooses input port
-    arbiter
+    static_priority_arbiter
     # (
-        .PORT_N(PORT_N)
+        .IN_N(PORT_N)
         )
     arb
       (
         .vld_input_i(vld_input_w),
-        .mux_in_sel_o(mux_in_sel_w)
+        .arb_res_o(mux_in_sel_w)
         );
 
     // ROUTER - chooses output port
@@ -146,14 +144,13 @@ module xy_switch
         .ROW_CORD(ROW_CORD),
         .PACKET_ADDR_COL_W(PCKT_COL_ADDR_W),
         .PACKET_ADDR_ROW_W(PCKT_ROW_ADDR_W),
-        .OUTPUT_N_W($clog2(PORT_N)),
-        .SW_CONFIG(SW_CONFIG)
+        .OUTPUT_N_W($clog2(PORT_N))
         )
     router
       (
-        .col_addr(col_addr_w),
-        .row_addr(row_addr_w),
-        .mux_out_sel_o(mux_out_sel_w)
+        .col_addr_i(col_addr_w),
+        .row_addr_i(row_addr_w),
+        .out_chan_sel_o(mux_out_sel_w)
         );
 
     // CONTROL UNIT
@@ -175,18 +172,16 @@ module xy_switch
         );
 
     // CROSSBAR
-    n_to_n_crossbar
+    nxn_single_crossbar
     # (
-        .DATA_WIDTH(PCKT_W),
+        .DATA_W(PCKT_W),
         .PORT_N(PORT_N)
         )
     crossbar
       (
-        .clk_i(clk_i),
-        .rst_ni(rst_ni),
         .data_i(fifo_data_out_w),
-        .mux_in_sel_i(mux_in_sel_w),
-        .mux_out_sel_i(mux_out_sel_w),
+        .in_sel_i(mux_in_sel_w),
+        .out_sel_i(mux_out_sel_w),
         .data_o(data_out_w),
         .pckt_in_chosen_o(pckt_in_chosen_w)
         );

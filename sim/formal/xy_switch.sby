@@ -12,19 +12,19 @@ smtbmc --progress --nomem
 
 [script]
 read -formal switch_constants.v
-read -formal fifo.v
-read -formal packet_arbiter.v
-read -formal router_xy.v
-read -formal crossbar.v
+read -formal circ_fifo.v
+read -formal static_priority_arbiter.v
+read -formal xy_router.v
+read -formal nxn_single_crossbar.v
 read -formal control_unit.v
 read -formal xy_switch.v
 prep -top xy_switch
 
 [files]
 ../../srcs/switch/simple_mesh_xy/switch_constants.v
-../../srcs/components/fifo.v
-../../srcs/switch/simple_mesh_xy/packet_arbiter.v
-../../srcs/switch/simple_mesh_xy/router_xy.v
-../../srcs/switch/simple_mesh_xy/crossbar.v
+../../srcs/components/circ_fifo.v
+../../srcs/switch/arbiters/static_priority_arbiter.v
+../../srcs/switch/routers/xy_router.v
+../../srcs/switch/crossbars/nxn_single_crossbar.v
 ../../srcs/switch/simple_mesh_xy/control_unit.v
 ../../srcs/switch/simple_mesh_xy/xy_switch.v
