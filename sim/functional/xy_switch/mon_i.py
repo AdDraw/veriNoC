@@ -7,16 +7,6 @@ import numpy as np
 from fifo_imon import FifoIMon
 
 
-CENTER  = 0
-EDGE_RT = 1
-EDGE_LT = 2
-EDGE_RB = 3
-EDGE_LB = 4
-SIDE_R  = 5
-SIDE_L  = 6
-SIDE_T  = 7
-SIDE_B  = 8
-
 class SWIMon(BusMonitor):
     """
         Input monitor logs the values that appear at the input signals of the module
@@ -33,8 +23,7 @@ class SWIMon(BusMonitor):
         "neighbours_n": 5,
         "fifo_depth_w": 2,
         "x_cord": 0,
-        "y_cord": 0,
-        "sw_config": 0
+        "y_cord": 0
     }
 
     def __init__(self, entity, name, clock, config=None, log_lvl=INFO, callback=None):
@@ -51,9 +40,9 @@ class SWIMon(BusMonitor):
             self.config = config
 
         self.port_n = self.config["neighbours_n"] - 1
-        self.directions = {}
-        self.sw_type = None
-        self.sw_type_config(self.config["sw_config"])
+        # self.sw_type = None
+        # self.sw_type_config(self.config["sw_config"])
+        self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": 4}
 
         # initialize INPUT FIFO cycle accurate tested models
         self.input_fifos = []
@@ -72,7 +61,6 @@ class SWIMon(BusMonitor):
             self.log.setLevel(INFO)
 
         self.log.info(f"\nSwitch IMON Setup: {self.config}")
-        self.log.info(f"SW CONFIG {self.sw_type} resulted in {self.directions}")
 
     @cocotb.coroutine
     async def _monitor_recv(self):
@@ -148,35 +136,35 @@ class SWIMon(BusMonitor):
 
                         self.loss_packets.append(cycle_results)
 
-    def reset(self):
-        self.acc_packets = []
-        self.acc_packets = []
-
-    def sw_type_config(self, sw_config):
-        if sw_config == CENTER:
-            self.sw_type = "CENTER"
-            self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": 4}
-        elif sw_config == EDGE_LB:
-            self.sw_type = "EDGE_LB"
-            self.directions = {"resource": 0, "left": "error", "up": 1, "right": 2, "down": 0}
-        elif sw_config == EDGE_LT:
-            self.sw_type = "EDGE_LT"
-            self.directions = {"resource": 0, "left": "error", "up": "error", "right": 1, "down": 2}
-        elif sw_config == EDGE_RB:
-            self.sw_type = "EDGE_RB"
-            self.directions = {"resource": 0, "left": 1, "up": 2, "right": "error", "down": "error"}
-        elif sw_config == EDGE_RT:
-            self.sw_type = "EDGE_RT"
-            self.directions = {"resource": 0, "left": 1, "up": "error", "right": "error", "down": 2}
-        elif sw_config == SIDE_L:
-            self.sw_type = "SIDE_L"
-            self.directions = {"resource": 0, "left": "error", "up": 1, "right": 2, "down": 3}
-        elif sw_config == SIDE_R:
-            self.sw_type = "SIDE_R"
-            self.directions = {"resource": 0, "left": 1, "up": 2, "right": "error", "down": 3}
-        elif sw_config == SIDE_T:
-            self.sw_type = "SIDE_T"
-            self.directions = {"resource": 0, "left": 1, "up": "error", "right": 2, "down": 3}
-        elif sw_config == SIDE_B:
-            self.sw_type = "SIDE_B"
-            self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": "error"}
+    # def reset(self):
+    #     self.acc_packets = []
+    #     self.acc_packets = []
+    #
+    # def sw_type_config(self, sw_config):
+    #     if sw_config == CENTER:
+    #         self.sw_type = "CENTER"
+    #         self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": 4}
+    #     elif sw_config == EDGE_LB:
+    #         self.sw_type = "EDGE_LB"
+    #         self.directions = {"resource": 0, "left": "error", "up": 1, "right": 2, "down": 0}
+    #     elif sw_config == EDGE_LT:
+    #         self.sw_type = "EDGE_LT"
+    #         self.directions = {"resource": 0, "left": "error", "up": "error", "right": 1, "down": 2}
+    #     elif sw_config == EDGE_RB:
+    #         self.sw_type = "EDGE_RB"
+    #         self.directions = {"resource": 0, "left": 1, "up": 2, "right": "error", "down": "error"}
+    #     elif sw_config == EDGE_RT:
+    #         self.sw_type = "EDGE_RT"
+    #         self.directions = {"resource": 0, "left": 1, "up": "error", "right": "error", "down": 2}
+    #     elif sw_config == SIDE_L:
+    #         self.sw_type = "SIDE_L"
+    #         self.directions = {"resource": 0, "left": "error", "up": 1, "right": 2, "down": 3}
+    #     elif sw_config == SIDE_R:
+    #         self.sw_type = "SIDE_R"
+    #         self.directions = {"resource": 0, "left": 1, "up": 2, "right": "error", "down": 3}
+    #     elif sw_config == SIDE_T:
+    #         self.sw_type = "SIDE_T"
+    #         self.directions = {"resource": 0, "left": 1, "up": "error", "right": 2, "down": 3}
+    #     elif sw_config == SIDE_B:
+    #         self.sw_type = "SIDE_B"
+    #         self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": "error"}

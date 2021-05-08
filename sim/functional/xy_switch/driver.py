@@ -18,8 +18,7 @@ class SWPacketDriver(BusDriver):
         "neighbours_n": 5,
         "fifo_depth_w": 2,
         "x_cord": 0,
-        "y_cord": 0,
-        "sw_config": 0
+        "y_cord": 0
     }
 
     def __init__(self, entity, name, clock, config=None, log_lvl=INFO):

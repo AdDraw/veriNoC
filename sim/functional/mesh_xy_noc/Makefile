@@ -2,7 +2,7 @@ export PYTHON_BIN=/usr/bin/python3
 export SHELL=/bin/bash
 
 export TOPLEVEL_LANG ?= verilog
-SWITCH_VER_DIR=$(shell git rev-parse --show-toplevel)/srcs/switch/simple_mesh_xy
+SWITCH_VER_DIR=$(shell git rev-parse --show-toplevel)/srcs/switch/
 NOC_VER_DIR=$(shell git rev-parse --show-toplevel)/srcs/noc
 
 export DEBUG_ATTACH ?=0
@@ -12,13 +12,13 @@ export SYNTH ?= 0
 LOG_DEBUG?=0
 
 # files
-VERILOG_SOURCES += $(SWITCH_VER_DIR)/switch_constants.v
-VERILOG_SOURCES += $(SWITCH_VER_DIR)/xy_switch.v
-VERILOG_SOURCES += $(SWITCH_VER_DIR)/control_unit.v
-VERILOG_SOURCES += $(SWITCH_VER_DIR)/packet_arbiter.v
-VERILOG_SOURCES += $(SWITCH_VER_DIR)/crossbar.v
-VERILOG_SOURCES += $(SWITCH_VER_DIR)/router_xy.v
-VERILOG_SOURCES += $(SWITCH_VER_DIR)/../../components/fifo.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/simple_mesh_xy/switch_constants.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/simple_mesh_xy/xy_switch.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/simple_mesh_xy/control_unit.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/static_priority_arbiter.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/crossbars/nxn_single_crossbar.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/routers/xy_router.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/../components/circ_fifo.v
 VERILOG_SOURCES += $(NOC_VER_DIR)/mesh_xy_noc.v
 ifeq ($(SYNTH), 1)
 	VERILOG_SOURCES = $(NOC_VER_DIR)/mesh_xy_noc_synth.v

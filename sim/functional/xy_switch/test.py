@@ -45,8 +45,7 @@ class SWTB:
             "neighbours_n": int(os.environ["PORT_N"]),
             "fifo_depth_w": int(os.environ["IN_FIFO_DEPTH_W"]),
             "x_cord": int(os.environ["COL_CORD"]),
-            "y_cord": int(os.environ["ROW_CORD"]),
-            "sw_config": int(os.environ["SW_CONFIG"])
+            "y_cord": int(os.environ["ROW_CORD"])
         }
 
         self.run_stats = []
