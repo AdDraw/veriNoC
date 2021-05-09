@@ -14,7 +14,7 @@ class FifoIMon(BusMonitor):
         self.name = name
         self.clock = clock
         self.trans_recv = []
-        self.fifo_depth_width = int(os.environ["FIFO_DEPTH_W"])
+        self.fifo_depth_width = int(os.environ["FIFO_DEPTH_WIDTH"])
         BusMonitor.__init__(self, entity, name, clock, callback=callback)
         if log_lvl == DEBUG:
             self.log.setLevel(DEBUG)
