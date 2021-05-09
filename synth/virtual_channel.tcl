@@ -5,7 +5,7 @@ read_verilog -defer ../srcs/components/circ_fifo.v
 
 set top_module virtual_channel
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
-set params(0) FIFO_DEPTH_W
+set params(0) VC_DEPTH_W
 set params(1) DATA_W
 set params(2) ID_W
 
