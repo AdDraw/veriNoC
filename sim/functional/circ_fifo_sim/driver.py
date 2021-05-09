@@ -21,8 +21,8 @@ class FifoDriver(BusDriver):
             self.log.setLevel(DEBUG)
         else:
             self.log.setLevel(INFO)
-        self.fifo_depth_width = int(os.environ["FIFO_DEPTH_WIDTH"])
-        self.data_width = int(os.environ["DATA_WIDTH"])
+        self.fifo_depth_width = int(os.environ["FIFO_DEPTH_W"])
+        self.data_width = int(os.environ["DATA_W"])
         self.data_zero = BinaryValue(0, n_bits=self.data_width, bigEndian=False)
         self.bus.wr_en_i.setimmediatevalue(0)
         self.bus.rd_en_i.setimmediatevalue(0)

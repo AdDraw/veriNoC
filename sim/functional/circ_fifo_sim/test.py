@@ -2,7 +2,7 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.result import TestSuccess, TestError
 from cocotb.triggers import ClockCycles
-from cocotb.scoreboard import Scoreboard
+from cocotb_bus.scoreboard import Scoreboard
 
 from driver import FifoDriver
 from mon_i import FifoIMon

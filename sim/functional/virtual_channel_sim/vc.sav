@@ -1,0 +1,72 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Sun May  9 15:08:23 2021
+[*]
+[dumpfile] "/home/adam/studia/magiament/sim/functional/virtual_channel_sim/dump.vcd"
+[dumpfile_mtime] "Sun May  9 15:07:18 2021"
+[dumpfile_size] 4166
+[savefile] "/home/adam/studia/magiament/sim/functional/virtual_channel_sim/vc.sav"
+[timestart] 36
+[size] 3840 2098
+[pos] -1 -1
+*-4.000000 160 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb.
+[treeopen] tb.vc_inst.
+[sst_width] 201
+[signals_width] 254
+[sst_expanded] 1
+[sst_vpaned_height] 667
+@800200
+-BUFFER
+@28
+tb.vc_inst.buffer.clk_i
+tb.vc_inst.buffer.rst_ni
+@22
+tb.vc_inst.buffer.data_i[9:0]
+tb.vc_inst.buffer.data_o[9:0]
+@28
+tb.vc_inst.buffer.empty_o
+tb.vc_inst.buffer.full_o
+@420
+tb.vc_inst.buffer.i
+@28
+tb.vc_inst.buffer.overflow_o
+tb.vc_inst.buffer.rd_en_i
+tb.vc_inst.buffer.rd_ptr_v[1:0]
+tb.vc_inst.buffer.underflow_o
+tb.vc_inst.buffer.wr_en_i
+tb.vc_inst.buffer.wr_ptr_v[1:0]
+@1000200
+-BUFFER
+@800200
+-VC
+@28
+tb.vc_inst.chan_alloc_i
+tb.vc_inst.chan_rdy_i
+tb.vc_inst.clk_i
+tb.vc_inst.rst_ni
+@22
+tb.vc_inst.data_i[9:0]
+@28
+tb.vc_inst.wr_en_i
+@22
+tb.vc_inst.data_o[9:0]
+@28
+tb.vc_inst.data_vld_o
+tb.vc_inst.rd_en_v
+@22
+tb.vc_inst.header_o[9:0]
+@28
+tb.vc_inst.empty_w
+tb.vc_inst.full_w
+tb.vc_inst.rdy_o
+tb.vc_inst.nxt_fsm_state_v[1:0]
+@29
+tb.vc_inst.cur_fsm_state[1:0]
+@22
+tb.vc_inst.nxt_header_v[9:0]
+tb.vc_inst.cur_header[9:0]
+@1000200
+-VC
+[pattern_trace] 1
+[pattern_trace] 0
