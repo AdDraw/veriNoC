@@ -19,14 +19,15 @@ class VCTB:
         self.dut = dut
 
         self.config = {
-            "data_w": int(os.environ["DATA_W"]),
+            "flit_data_w": int(os.environ["FLIT_DATA_W"]),
             "vc_depth_w": int(os.environ["VC_DEPTH_W"]),
-            "id_w": int(os.environ["ID_W"]),
+            "flit_id_w": int(os.environ["FLIT_ID_W"]),
+            "flit_w": int(os.environ["FLIT_DATA_W"]) + int(os.environ["FLIT_ID_W"])
         }
 
-        assert self.dut.DATA_W == self.config["data_w"], "Bad Value"
+        assert self.dut.FLIT_DATA_W == self.config["flit_data_w"], "Bad Value"
         assert self.dut.VC_DEPTH_W == self.config["vc_depth_w"], "Bad Value"
-        assert self.dut.ID_W == self.config["id_w"], "Bad Value"
+        assert self.dut.FLIT_ID_W == self.config["flit_id_w"], "Bad Value"
 
         self.vc_drv = VCDriver(dut, "", dut.clk_i, self.config, log_lvl)
         # self.vc_i_mon = VCIMon(dut, "", dut.clk_i, log_lvl, callback=self.mon_callback)
@@ -44,6 +45,7 @@ async def basic_test(dut, log_lvl=INFO, cycles=10000):
     await ClockCycles(dut.clk_i, 10)
     await vctb.vc_drv.send_packet(0)
     await vctb.vc_drv.send_packet(0)
+    cocotb.log.info("Finished writing")
     if dut.header_o.value != 0:
         cocotb.log.info("1st packet")
         while dut.data_o.value != 0b1100000000:
