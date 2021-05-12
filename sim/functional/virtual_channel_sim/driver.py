@@ -11,9 +11,10 @@ class VCDriver(BusDriver):
     _signals = ["wr_en_i", "data_i", "chan_alloc_i", "chan_rdy_i", "rst_ni"]
 
     _default_config = {
-        "id_w": 2,
+        "flit_id_w": 2,
         "vc_depth_w": 2,
-        "data_w": 8
+        "flit_data_w": 8,
+        "flit_w": 10
     }
 
     def __init__(self, entity, name, clock, config=None, log_lvl=INFO):
@@ -32,7 +33,7 @@ class VCDriver(BusDriver):
         else:
             self.log.setLevel(INFO)
 
-        self.data_zero = BinaryValue(0, self.config["data_w"], bigEndian=False)
+        self.data_zero = BinaryValue(0, self.config["flit_w"], bigEndian=False)
         self.bus.wr_en_i.setimmediatevalue(0)
         self.bus.chan_alloc_i.setimmediatevalue(0)
         self.bus.chan_rdy_i.setimmediatevalue(0)
@@ -73,6 +74,7 @@ class VCDriver(BusDriver):
         self.bus.data_i.setimmediatevalue(self.data_zero)
 
     async def reset(self):
+        await ClockCycles(self.clock, 5)
         self.bus.rst_ni <= 0
         await ClockCycles(self.clock, 5)
         self.bus.rst_ni <= 1
