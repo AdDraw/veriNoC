@@ -29,23 +29,20 @@
   Outputs:
   - FIFO full output signal for the backward node (when it can send data)
 
-
-  // TODO: Move Rd_en to a wire/combinatorial assignment because it is too slow
-  // in reacting to empty_w
-
 */
 `timescale 1ns / 1ps
-// `include "../constants.v"
+`define FLIT_W (FLIT_DATA_W+FLIT_ID_W)
+`define FLIT_ID_RANGE `FLIT_W-1:`FLIT_W-FLIT_ID_W
 module virtual_channel
   # (
       `ifdef YS_VC_TOP
       parameter VC_DEPTH_W  = `YS_VC_DEPTH_W, // 4 flit buffer (for now)
-      parameter DATA_W      = `YS_DATA_W,
-      parameter ID_W        = `YS_ID_W
+      parameter FLIT_DATA_W = `YS_FLIT_DATA_W,
+      parameter FLIT_ID_W   = `YS_FLIT_ID_W
       `else
       parameter VC_DEPTH_W  = 2, // 4 flit buffer (for now)
-      parameter DATA_W      = 10,
-      parameter ID_W        = 2
+      parameter FLIT_DATA_W = 8,
+      parameter FLIT_ID_W   = 2
       `endif
       )
     (
@@ -53,7 +50,7 @@ module virtual_channel
       input                 rst_ni,
 
       // FIFO based input (data & wr_enable)
-      input   [DATA_W-1:0]  data_i,
+      input   [`FLIT_W-1:0] data_i,
       input                 wr_en_i,
 
       // Allocator info input
@@ -61,37 +58,39 @@ module virtual_channel
       input                 chan_rdy_i,   // BUFFER on the other side is not full
 
       // To Route
-      output  [DATA_W-1:0]  data_o,
+      output  [`FLIT_W-1:0] data_o,
       output                data_vld_o,
-      output  [DATA_W-1:0]  header_o,
+      output  [`FLIT_W-1:0] header_o,
 
       // FIFO based output
-      output                rdy_o         // backpressure signal
+      output                rdy_o,         // backpressure signal
+      output                overflow_o
       );
 
   // FSM
-  localparam  IDLE    = 0; // no data in the FIFO
-  localparam  WAITING = 1; // waiting for a channel
-  localparam  ACTIVE  = 2; // sends the data over an allocated channel
-  reg [$clog2(ACTIVE):0] fsm_state;
+  localparam  FSM_SIZE  = 3;
+  localparam  IDLE      = 3'b001; // no data in the FIFO
+  localparam  WAITING   = 3'b010; // waiting for a channel
+  localparam  ACTIVE    = 3'b100; // sends the data over an allocated channel
+  reg [FSM_SIZE-1:0]  cur_fsm_state;
+  reg [FSM_SIZE-1:0]  nxt_fsm_state_v;
 
-  reg [DATA_W-1:0] nxt_header_v, cur_header;
-  reg rd_en_v, rd_en;
-
-  // Wires
-  wire empty_w;
-  wire full_w;
-
-  reg [$clog2(ACTIVE):0] cur_fsm_state;
-  reg [$clog2(ACTIVE):0] nxt_fsm_state_v;
+  // Header
+  reg [`FLIT_W-1:0]   nxt_header_v, cur_header;
+  // FIFO signals
+  wire [`FLIT_W-1:0]  data_w;
+  wire                empty_w;
+  wire                full_w;
+  wire                underflow_w;
+  reg                 rd_en_v, rd_en;
 
   // updater
-  always @ ( posedge(clk_i), negedge(rst_ni) )begin
-    if (!rst_ni)
-    begin
+  always @ ( posedge(clk_i) or negedge(rst_ni))
+  begin: SYNC_UPDATE
+    if (!rst_ni) begin
       cur_fsm_state <= IDLE;
       cur_header    <= 0;
-      rd_en         <= 0;
+      rd_en         <= 1'b0;
     end
     else begin
       cur_fsm_state <= nxt_fsm_state_v;
@@ -101,103 +100,44 @@ module virtual_channel
   end
 
   // Finite State Machine
-  always @(*) begin
+  always @( * )
+  begin: FSM_COMBO
     nxt_fsm_state_v <= cur_fsm_state;
     case (cur_fsm_state)
-      IDLE    : begin
-                  // when do we switch from IDLE?
-                  // when HEADER FLIT appeared on the data_o port
-                  if (data_o[DATA_W-1: DATA_W-ID_W] == `HEADER_ID) begin
-                    nxt_fsm_state_v <= WAITING;
-                  end
-                end
-      WAITING : begin
-                  if (chan_alloc_i && chan_rdy_i) begin
-                    nxt_fsm_state_v <= ACTIVE;
-                  end
-                end
-      ACTIVE  : begin
-                  if (data_o[DATA_W-1: DATA_W-ID_W] == `TAIL_ID) begin
-                    nxt_fsm_state_v <= IDLE;
-                  end
-                end
-      default: nxt_fsm_state_v <= IDLE;
+      IDLE    : if (data_w[`FLIT_ID_RANGE] == `HEADER_ID) nxt_fsm_state_v <= WAITING;
+      WAITING : if (chan_alloc_i && chan_rdy_i)           nxt_fsm_state_v <= ACTIVE;
+      ACTIVE  : if (data_w[`FLIT_ID_RANGE] == `TAIL_ID)   nxt_fsm_state_v <= IDLE;
+      default :                                           nxt_fsm_state_v <= IDLE;
     endcase
   end
 
   // RD_EN & CURRENT_HEADER CONTROL
-  always @ ( * ) begin
-    rd_en_v       <= rd_en;
-    nxt_header_v  <= cur_header;
+  always @ ( * )
+  begin: LOGIC_COMBO
     case (nxt_fsm_state_v)
       IDLE    : begin
-                  if (!empty_w && !rd_en) rd_en_v <= 1'b1;
-                  else                    rd_en_v <= 1'b0;
+                  rd_en_v       <= ~empty_w & ~rd_en & !underflow_w;
                   nxt_header_v  <= 0;
                 end
       WAITING : begin
                   rd_en_v       <= 1'b0;
-                  nxt_header_v  <= data_o;
+                  nxt_header_v  <= data_w;
                 end
       ACTIVE  : begin
-                  rd_en_v <= ~empty_w & chan_rdy_i;
+                  rd_en_v       <= ~empty_w & chan_rdy_i & !underflow_w;
+                  nxt_header_v  <= cur_header;
                 end
       default : begin
-                  rd_en_v <= 1'b0;
+                  rd_en_v      <= 1'b0;
                   nxt_header_v <= 0;
                 end
     endcase
   end
 
-
-  // always @ ( posedge(clk_i), negedge(rst_ni) )begin
-  //   if (!rst_ni)
-  //   begin
-  //     fsm_state       <= IDLE;
-  //     rd_en           <= 1'b0;
-  //     cur_header  <= 0;
-  //   end
-  //   else begin
-  //     case (fsm_state)
-  //       IDLE    : begin
-  //                   cur_header  <= 0;
-  //                   if (data_o[DATA_W-1: DATA_W-ID_W] != `HEADER_ID) begin
-  //                     fsm_state <= IDLE;
-  //                     rd_en     <= 1'b0;
-  //                     if (!empty_w && !rd_en) begin // when it's not empty and rd_en is not HIGH
-  //                       rd_en <= 1'b1;
-  //                     end
-  //                   end
-  //                   else begin
-  //                     cur_header  <= data_o;
-  //                     fsm_state       <= WAITING;
-  //                     rd_en           <= 1'b0;
-  //                   end
-  //                 end
-  //       WAITING : begin // wait for allocator to allocate channel
-  //                   rd_en <= 1'b0;
-  //                   if (chan_alloc_i && chan_rdy_i) begin
-  //                     fsm_state <= ACTIVE;
-  //                     rd_en     <= 1'b1;
-  //                   end
-  //                 end
-  //       ACTIVE  : begin // Data should be read from the FIFO untill TAIL flit has arrived
-  //                   rd_en <= ~empty_w & chan_rdy_i;
-  //                   if (data_o[DATA_W-1: DATA_W-ID_W] == `TAIL_ID) begin
-  //                     fsm_state       <= IDLE;
-  //                     cur_header  <= 0;
-  //                     rd_en           <= 1'b0;
-  //                   end
-  //                 end
-  //       default : fsm_state <= IDLE;
-  //     endcase
-  //   end
-  // end
-
   // Circular FIFO
   circ_fifo
     #(
-      .DATA_W(DATA_W),
+      .DATA_W(`FLIT_W),
       .FIFO_DEPTH_W(VC_DEPTH_W)
       )
   buffer
@@ -207,28 +147,31 @@ module virtual_channel
       .wr_en_i( wr_en_i ),
       .rd_en_i( rd_en_v ),
       .data_i( data_i ),
-      .data_o( data_o ),
+      .data_o( data_w ),
       .full_o( full_w ),
-      .empty_o( empty_w )               // empty is used internally and indicates data to be routed
+      .empty_o( empty_w ),
+      .underflow_o( underflow_w ),
+      .overflow_o( overflow_o )
       );
 
+  assign data_o     = data_w;
   assign rdy_o      = ~full_w;
   assign header_o   = nxt_header_v; //cur_header;
   assign data_vld_o = rd_en;
 
-  `ifdef FORMAL
-    initial assume(!rst_ni); // inital RESET!
-
-    always @(posedge(clk_i)) begin
-      if (rst_ni) begin // RST not active
-
-        assert(fsm_state == IDLE || fsm_state == WAITING || fsm_state == ACTIVE);
-
-        if (fsm_state == WAITING) begin
-          assert(rd_en == 1'b0);
-        end
-      end
-    end
-  `endif
+  // `ifdef FORMAL
+  //   initial assume(!rst_ni); // inital RESET!
+  //
+  //   always @(posedge(clk_i)) begin
+  //     if (rst_ni) begin // RST not active
+  //
+  //       assert(fsm_state == IDLE || fsm_state == WAITING || fsm_state == ACTIVE);
+  //
+  //       if (fsm_state == WAITING) begin
+  //         assert(rd_en == 1'b0);
+  //       end
+  //     end
+  //   end
+  // `endif
 
 endmodule // virtual_channel
