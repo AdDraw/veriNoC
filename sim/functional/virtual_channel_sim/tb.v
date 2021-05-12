@@ -2,26 +2,28 @@
   Adam Drawc
   cocotb simulation Testbench wrapper for Virtual Channel module
 */
-
+`define FLIT_W (FLIT_DATA_W+FLIT_ID_W)
+`define FLIT_ID_RANGE `FLIT_W-1:`FLIT_W-FLIT_ID_W
+`timescale 1ns / 1ps
 module tb
   # (
       parameter VC_DEPTH_W  = 2, // 4 flit buffer (for now)
-      parameter DATA_W      = 10,
-      parameter ID_W        = 2,
+      parameter FLIT_DATA_W = 8,
+      parameter FLIT_ID_W   = 2,
       parameter CLK_PERIOD  = 10
       )
     (
       input                 rst_ni,
       // FIFO based input (data & wr_enable)
-      input   [DATA_W-1:0]  data_i,
+      input   [`FLIT_W-1:0] data_i,
       input                 wr_en_i,
       // Allocator info input
       input                 chan_alloc_i, // HEADER won the competition info
       input                 chan_rdy_i,   // BUFFER on the other side is not full
       // To Route
-      output  [DATA_W-1:0]  data_o,
+      output  [`FLIT_W-1:0] data_o,
       output                data_vld_o,
-      output  [DATA_W-1:0]  header_o,
+      output  [`FLIT_W-1:0] header_o,
 
       // FIFO based output
       output                rdy_o         // backpressure signal
@@ -29,9 +31,9 @@ module tb
 
     initial begin
       $display("TB SETUP:");
-      $display("\t- DATA_W     %0d", DATA_W);
-      $display("\t- VC_DEPTH_W %0d", VC_DEPTH_W);
-      $display("\t- ID_W       %0d", ID_W);
+      $display("\t- FLIT_DATA_W %0d", FLIT_DATA_W);
+      $display("\t- VC_DEPTH_W  %0d", VC_DEPTH_W);
+      $display("\t- FLIT_ID_W   %0d", FLIT_ID_W);
     end
 
     reg clk_i = 1'b0;
@@ -40,8 +42,8 @@ module tb
     virtual_channel
     #(
       .VC_DEPTH_W(VC_DEPTH_W),
-      .DATA_W(DATA_W),
-      .ID_W(ID_W)
+      .DATA_W(`FLIT_W),
+      .ID_W(FLIT_ID_W)
       )
     vc_inst
     (

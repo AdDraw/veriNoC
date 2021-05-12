@@ -6,13 +6,13 @@ read_verilog -defer ../srcs/components/circ_fifo.v
 set top_module virtual_channel
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
 set params(0) VC_DEPTH_W
-set params(1) DATA_W
-set params(2) ID_W
+set params(1) FLIT_DATA_W
+set params(2) FLIT_ID_W
 
 #default values for synth
 set values(0) 2
-set values(1) 10
-set values(2) 0
+set values(1) 8
+set values(2) 2
 
 chparam -list
 log "Parameters and their values:"
@@ -42,13 +42,13 @@ read_verilog  -DYS_VC_TOP=1 \
 hierarchy -check -top $top_module
 
 # the high-level stuff
-procs; opt; fsm; opt; memory; opt
-
-# mapping to internal cell library
-techmap; opt
-
+#procs;
+#opt; wreduce; share; opt; fsm;
+#procs;
+#opt;
+synth -top $top_module
 # cleanup
-clean
+#clean
 
 if { ![info exists ::env(NO_XDOT)] } {
   show  -enum -width -colors 3 $top_module
@@ -56,5 +56,4 @@ if { ![info exists ::env(NO_XDOT)] } {
 
 json -o $::env(JSON_PATH)/$top_module-$values(0)-$values(1).json
 write_verilog ../srcs/switch/virtual_channels/virtual_channel_synth.v
-
 stat
