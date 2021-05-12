@@ -1,6 +1,6 @@
 import cocotb
 from cocotb_bus.drivers import BusDriver
-from cocotb.triggers import RisingEdge, ClockCycles
+from cocotb.triggers import RisingEdge, ClockCycles, ReadOnly, FallingEdge, ReadWrite
 from cocotb.binary import BinaryValue
 
 from random import getrandbits
@@ -40,14 +40,14 @@ class VCDriver(BusDriver):
         self.bus.rst_ni.setimmediatevalue(1)
         self.bus.data_i.setimmediatevalue(self.data_zero)
 
-    async def send_packet(self, val):
-        header = 0b1001010000 # 10, row_addr 1, col 1, hops 0
-        body = 0b0100101010   # 01, data as 00101010
-        tail = 0b1100000000   # 11, dont care
+    async def send_simple_packet(self, val):
+        header  = 0b1001010000 # 10, row_addr 1, col 1, hops 0 ( 1 )
+        body    = 0b0100101010 # 01, data as 00101010          ( 0 or N)
+        tail    = 0b1100000000 # 11, dont care                 ( 1 )
 
         await RisingEdge(self.clock)
         self.bus.wr_en_i <= 1
-        self.bus.data_i <= header
+        self.bus.data_i  <= header
 
         self.log.info("HEJHEJ")
 
@@ -63,6 +63,22 @@ class VCDriver(BusDriver):
         self.bus.wr_en_i <= 0
         self.bus.data_i <= 0
         self.log.info("HEJHU")
+
+    async def send_packet(self, packet):
+        i = 0
+        while i != len(packet):
+            await RisingEdge(self.clock)
+            await ReadOnly()
+            if self.entity.rdy_o.value == 1:
+                await FallingEdge(self.clock)
+                self.bus.wr_en_i <= 1
+                self.bus.data_i <= packet[i]
+                i += 1
+            else:
+                await FallingEdge(self.clock)
+                self.bus.wr_en_i <= 0
+                self.bus.data_i <= 0
+
 
     async def clear_vc_input(self, sync: bool = True):
         if sync is True:
