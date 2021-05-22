@@ -70,18 +70,10 @@ read_verilog  -DYS_MESH_WORMHOLE_NODE_TOP=1 \
 
 echo off
 
-hierarchy -check -top $top_module
-# the high-level stuff
-procs; opt; fsm; opt; memory; opt
-
-# mapping to internal cell library
-techmap; opt
-
-# cleanup
-clean
+synth -top $top_module
 
 if { ![info exists ::env(NO_XDOT)] } {
-  show  -enum -width -colors 3 $top_module
+  show -enum -width -colors 3 -stretch $top_module
 }
 
 json -o $::env(JSON_PATH)/$top_module.json

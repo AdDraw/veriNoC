@@ -42,44 +42,34 @@ def get_logger(logger_name, log_lvl):
     return logger
 
 
-def simulate(log, tf=0, ps=0, synth=0, flit_id_w=2, flit_data_w=8, vc_depth_w=2,
-             row_cord=1, col_cord=1, row_addr_w=2, col_addr_w=2, hop_cnt_w=4,
-             out_n_w=3):
-    arguments = {"FLIT_DATA_W": flit_data_w,
-                 "FLIT_ID_W": flit_id_w,
-                 "ROW_CORD": row_cord,
-                 "COL_CORD": col_cord,
-                 "ROW_ADDR_W": row_addr_w,
-                 "COL_ADDR_W": col_addr_w,
-                 "HOP_CNT_W": hop_cnt_w,
-                 "OUT_N_W": out_n_w,
-                 "VC_DEPTH_W": vc_depth_w}
+def simulate(log, tf=0, ps=0, synth=0, in_n=5, out_m=5, flit_id_w=2, hop_cnt_w=4, out_chan_id=1):
+    arguments = {"tf": tf, "ps": ps,
+                 "synth": synth, "in_n": in_n, "out_m": out_m,
+                 "flit_id_w": flit_id_w, "hop_cnt_w": hop_cnt_w,
+                 "out_chan_id": out_chan_id}
 
     pwd = os.getcwd()
     git_root = get_git_root(os.getcwd())
-    tcl_script = "virtual_channel.tcl"
+    tcl_script = "allocator.tcl"
 
     failed_testcases = 0
     testcases = []
     if synth and ps:
         log.debug(f"ReSynthesize! {tcl_script}")
         os.chdir(f"{git_root}/synth")
-
-        synth_cmd = [f"{git_root}/synth/yosys_wrapper.sh", f"-sf", f"{tcl_script}",
-                     "--no-xdot"]
-        for arg in arguments.items():
-            synth_cmd.append(f"{arg[0]}={arg[1]}")
-
+        synth_cmd = [f"{git_root}/synth/yosys_wrapper.sh", f"-sf", f"{tcl_script}", f"IN_N={int(in_n)}",
+                     "--no-xdot", f"HOP_CNT_W={int(hop_cnt_w)}", f"FLIT_ID_W={int(flit_id_w)}",
+                    f"OUT_CHAN_ID={int(out_chan_id)}", f"OUT_M={int(out_m)}"]
         log.debug(f"Synth Command: {synth_cmd}")
         subprocess.run(synth_cmd)
         os.chdir(pwd)
 
-    cmd = ["make", "-j12", "-B", f"TESTFACTORY={tf}", f"SYNTH={ps}"]
-    for arg in arguments.items():
-        cmd.append(f"{arg[0]}={arg[1]}")
+    cmd = ["make", "-j12", "-B", f"TESTFACTORY={tf}", f"SYNTH={ps}",
+           f"IN_N={int(in_n)}", f"HOP_CNT_W={int(hop_cnt_w)}",
+           f"FLIT_ID_W={int(flit_id_w)}", f"OUT_CHAN_ID={int(out_chan_id)}",
+           f"OUT_M={int(out_m)}"]
 
     log.debug(f"Command {cmd}")
-
     subprocess.run(cmd)
     tree = ET.parse("results.xml")
     root = tree.getroot()
@@ -98,16 +88,12 @@ def simulate(log, tf=0, ps=0, synth=0, flit_id_w=2, flit_data_w=8, vc_depth_w=2,
         return [0, testcases, failed_testcases, arguments]
 
 
-def main(tf, ps, synth, flit_id_w, flit_data_w, vc_depth_w,
-             row_cord, col_cord, row_addr_w, col_addr_w, hop_cnt_w,
-             out_n_w, log_lvl) -> None:
+def main(tf, ps, synth, in_n, out_m, flit_id_w, hop_cnt_w, out_chan_id, log_lvl) -> None:
     log = get_logger(__name__, int(log_lvl))
     log.info(f"RUN {time.asctime()}")
     log.info("----------------------------------------------------------------------------------------------------"
              "-------")
-    run = simulate(log, tf, ps, synth, flit_id_w, flit_data_w, vc_depth_w,
-                 row_cord, col_cord, row_addr_w, col_addr_w, hop_cnt_w,
-                 out_n_w)
+    run = simulate(log, tf, ps, synth, in_n, out_m, flit_id_w, hop_cnt_w, out_chan_id)
     if run[0]:  # FAILED RUN
         log.error(f"Run FAILED")
         log.error(f"Config: {run[3]}")
@@ -130,33 +116,14 @@ if __name__ == '__main__':
     parser.add_argument('-synth', default=0, help='Set value to 1 if you want to rerun the synthesis using'
                                                   ' parameter values taken from arguments. Not enabled by Default')
 
-    parser.add_argument('-flit_id_w', default=2, help='Width of the Flit ID part(default=2)')
-    parser.add_argument('-flit_data_w', default=8, help='Width of the Data part of the FLIT(default=8)')
-    parser.add_argument('-vc_depth_w', default=2, help='Virtual Channel Depth Width(default=2)')
+    parser.add_argument('-in_n', default=5,         help='number of input channels(default=5)')
+    parser.add_argument('-out_m', default=5,        help='number of output channels(default=5)')
+    parser.add_argument('-flit_id_w', default=2,    help="Width of Flit's ID part(default=2)")
     parser.add_argument('-hop_cnt_w', default=4,    help='Hop Count width of the Header flit(default=4)')
-    parser.add_argument('-row_cord', default=1,     help='Row Coordinate of the NODE(def=1)')
-    parser.add_argument('-col_cord', default=1,     help='Cow Coordinate of the NODE(def=1)')
-    parser.add_argument('-row_addr_w', default=2,    help='Width of Row Address(def=2)')
-    parser.add_argument('-col_addr_w', default=2,    help='Width of Col Address(def=2)')
-    parser.add_argument('-out_n_w', default=3, help="$clog2(OUT_M)(def=3)")
+    parser.add_argument('-out_chan_id', default=1,  help='Id of the output channel associated with the Allocator(default=1)')
 
     parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
 
     args = parser.parse_args()
 
-    # if args.ps:
-    #     metrics_filename = f"vc_postsynth_{args.flit_id_w}_{args.data_w}" \
-    #                        f"_{args.vc_depth_w}.json"
-    # else:
-    #     metrics_filename = f"vc_presynth_{args.row_n}_{args.col_m}" \
-    #                        f"_{args.ff_depth}_{args.pckt_w}.json"
-
-    # if os.path.exists(metrics_filename):
-    #     os.remove(metrics_filename)
-
-    # os.environ['METRICS_FILENAME'] = metrics_filename
-
-    try:
-        main(**vars(parser.parse_args()))
-    except KeyboardInterrupt:
-        subprocess.run(["killall", "vvp"])
+    main(**vars(parser.parse_args()))

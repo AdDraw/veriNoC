@@ -78,6 +78,9 @@ class VCDriver(BusDriver):
                 await FallingEdge(self.clock)
                 self.bus.wr_en_i <= 0
                 self.bus.data_i <= 0
+        await FallingEdge(self.clock)
+        self.bus.wr_en_i <= 0
+        self.bus.data_i <= 0
 
 
     async def clear_vc_input(self, sync: bool = True):

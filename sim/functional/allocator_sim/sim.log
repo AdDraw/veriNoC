@@ -1,0 +1,5 @@
+2021-05-16 12:44:02,412 — __main__ — INFO — main — RUN Sun May 16 12:44:02 2021
+2021-05-16 12:44:02,412 — __main__ — INFO — main — -----------------------------------------------------------------------------------------------------------
+2021-05-16 12:44:02,417 — __main__ — DEBUG — simulate — Command ['make', '-j12', '-B', 'TESTFACTORY=0', 'SYNTH=0', 'IN_N=5', 'HOP_CNT_W=4', 'FLIT_ID_W=2', 'OUT_CHAN_ID=1', 'OUT_M=5']
+2021-05-16 12:44:03,938 — __main__ — INFO — main — RESULTS: 0/1 [failed runs / attempts]
+2021-05-16 12:44:03,938 — __main__ — INFO — main — Finished main() with exit_code=0

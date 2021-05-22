@@ -41,68 +41,42 @@ module hop_cnt_arbiter
     output                            not_conclusive_o  // set to HIGH when there are 2(or more) inputs that have the same value of HOP_COUNT
     );
 
-  reg [HOP_CNT_W-1:0]     comp_res_0_v;
-  reg [HOP_CNT_W-1:0]     comp_res_1_v;
-  reg [HOP_CNT_W-1:0]     comp_res_2_v;
-  reg [HOP_CNT_W-1:0]     max_hop_cnt_v;
   reg [$clog2(IN_N)-1:0]  arb_res_v;
   reg                     not_conclusive_v;
-
   wire [IN_N-1:0]         vld_input_w;
-  wire [HOP_CNT_W-1:0]    hop_cnt_w [IN_N - 1 : 0];
+  wire [HOP_CNT_W-1:0]    hop_cnt_w [IN_N-1:0];
+  wire [HOP_CNT_W-1:0]    max_hop_cnt_w;
+  wire [HOP_CNT_W-1:0]    comp_res_0_w, comp_res_1_w, comp_res_2_w;
   genvar gi;
   generate // package
-    for( gi = 0; gi < IN_N; gi = gi+ 1)
+    for( gi = 0; gi < IN_N; gi = gi+1)
     begin
-      assign hop_cnt_w[gi] = (vld_input_i[gi]) ? hop_cnt_i[HOP_CNT_W*(gi+1)-1 : HOP_CNT_W*gi] : 0;
+      assign hop_cnt_w[gi] = (vld_input_i[gi] == 1'b1) ? hop_cnt_i[`UNPACK(gi, HOP_CNT_W)] : 0;
+      assign vld_input_w[gi] = (hop_cnt_w[gi] == max_hop_cnt_w) ? 1'b1 : 1'b0;
     end
   endgenerate
 
-  always @ ( * ) begin
-    if (hop_cnt_w[0] > hop_cnt_w[1]) begin
-      comp_res_0_v  <= hop_cnt_w[0];
-    end else begin
-      comp_res_0_v  <= hop_cnt_w[1];
-    end
+  // Comparator Tree
+  assign comp_res_0_w  = (hop_cnt_w[0] >= hop_cnt_w[1]) ? hop_cnt_w[0] : hop_cnt_w[1];
+  assign comp_res_1_w  = (hop_cnt_w[2] >= hop_cnt_w[3]) ? hop_cnt_w[2] : hop_cnt_w[3];
+  assign comp_res_2_w  = (comp_res_0_w >= comp_res_1_w) ? comp_res_0_w : comp_res_1_w;
+  assign max_hop_cnt_w = (comp_res_2_w >= hop_cnt_w[4]) ? comp_res_2_w : hop_cnt_w[4];
 
-    if (hop_cnt_w[2] > hop_cnt_w[3]) begin
-      comp_res_0_v  <= hop_cnt_w[2];
-    end else begin
-      comp_res_0_v  <= hop_cnt_w[3];
-    end
-
-    if (comp_res_0_v > comp_res_1_v) begin
-      comp_res_2_v  <= comp_res_0_v;
-    end else begin
-      comp_res_2_v  <= comp_res_1_v;
-    end
-
-    if (comp_res_2_v > hop_cnt_w[4]) begin
-      max_hop_cnt_v <= comp_res_2_v;
-    end else begin
-      max_hop_cnt_v <= hop_cnt_w[4];
-    end
-  end
-
-  generate
-    for( gi = 0; gi < IN_N; gi = gi+ 1)
-    begin
-      assign vld_input_w[gi] = (hop_cnt_w[gi] == max_hop_cnt_v) ? 1'b1 : 1'b0;
-    end
-  endgenerate
-
-  // if we have 2 vld inputs -> unambigous :/ we need to choose in a different manner (static for example)
+  // if we have at least 2 vld inputs -> unambigous :/
+  // we need to choose in a different manner (static for example)
   // if we only have 1 vld output that's cool, this was successful.
   always @ ( * ) begin
-    not_conclusive_v <= 1'b0;
-    arb_res_v        <= 0;
+    not_conclusive_v = 1'b0;
     case (vld_input_w)
-      5'b00001 : arb_res_v <= 0;
-      5'b00010 : arb_res_v <= 1;
-      5'b00100 : arb_res_v <= 2;
-      5'b01000 : arb_res_v <= 3;
-      5'b10000 : arb_res_v <= 4;
-      default  : not_conclusive_v <= 1'b1;
+      5'b00001 : arb_res_v = 0;
+      5'b00010 : arb_res_v = 1;
+      5'b00100 : arb_res_v = 2;
+      5'b01000 : arb_res_v = 3;
+      5'b10000 : arb_res_v = 4;
+      default  : begin
+                  arb_res_v = 0;
+                  not_conclusive_v = 1'b1;
+                 end
     endcase
   end
 
