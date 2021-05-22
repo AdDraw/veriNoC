@@ -2,17 +2,30 @@ yosys -import
 
 read_verilog -defer ../srcs/switch/constants.v
 read_verilog -defer ../srcs/components/circ_fifo.v
+read_verilog -defer ../srcs/switch/routers/xy_router.v
 
 set top_module virtual_channel
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
 set params(0) VC_DEPTH_W
 set params(1) FLIT_DATA_W
 set params(2) FLIT_ID_W
+set params(3) ROW_CORD
+set params(4) COL_CORD
+set params(5) OUT_N_W
+set params(6) ROW_ADDR_W
+set params(7) COL_ADDR_W
+set params(8) HOP_CNT_W
 
 #default values for synth
 set values(0) 2
 set values(1) 8
 set values(2) 2
+set values(3) 1
+set values(4) 1
+set values(5) 3
+set values(6) 2
+set values(7) 2
+set values(8) 4
 
 chparam -list
 log "Parameters and their values:"
@@ -36,6 +49,12 @@ read_verilog  -DYS_VC_TOP=1 \
               -DYS_$params(0)=$values(0) \
               -DYS_$params(1)=$values(1) \
               -DYS_$params(2)=$values(2) \
+              -DYS_$params(3)=$values(3) \
+              -DYS_$params(4)=$values(4) \
+              -DYS_$params(5)=$values(5) \
+              -DYS_$params(6)=$values(6) \
+              -DYS_$params(7)=$values(7) \
+              -DYS_$params(8)=$values(8) \
               ../srcs/switch/virtual_channels/virtual_channel.v
 
 # elaborate design hierarchy

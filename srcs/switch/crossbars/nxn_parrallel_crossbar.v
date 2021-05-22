@@ -25,7 +25,7 @@ module nxn_parrallel_crossbar
   ( //N inputs N outputs
     input   [(IN_N*DATA_W)-1:0]         data_i, // data from input channels
     input   [(OUT_M*$clog2(OUT_M))-1:0] sel_i,  // controlled by routing & Flow Control
-    output  [(OUT_M*DATA_W)-1:0]        data_o, // data that goes into output channels
+    output  [(OUT_M*DATA_W)-1:0]        data_o  // data that goes into output channels
     );
 
     genvar gi;
@@ -37,15 +37,15 @@ module nxn_parrallel_crossbar
       // Inputs packaging
       for( gi=0; gi<IN_N; gi=gi+1)
       begin
-        assign mux_in[gi] = data_i[DATA_W*(gi+1)-1 : DATA_W*gi];
+        assign mux_in[gi] = data_i[`UNPACK(gi, DATA_W)];
       end
 
       for( gi=0; gi<OUT_M; gi=gi+1)
       begin
         // SEL packaging
-        assign mux_sel[gi] = sel_i[$clog2(OUT_M)*(gi+1)-1 : $clog2(OUT_M)*gi];
+        assign mux_sel[gi] = sel_i[`UNPACK(gi, $clog2(IN_N))];
         // Output assignment
-        assign data_o[DATA_W*(gi+1)-1 : DATA_W*gi] = mux_in[mux_sel[gi]];
+        assign data_o[`UNPACK(gi, DATA_W)] = mux_in[mux_sel[gi]];
       end
     endgenerate
 

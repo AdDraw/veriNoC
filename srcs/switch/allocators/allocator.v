@@ -55,13 +55,8 @@
   - info that let's us read the data from the VC (there is a possiblity to make it a single signal)
     - channel_alloc info (let's VCs know when it's ok to read data (1 bit from each outchan goes to each in_chan))
     - backpressure info for VCs to know when it's okay to read data
-
-
 */
 `timescale 1ns / 1ps
-`include "../constants.v"
-`define CHAN_SEL_W  $clog2(IN_N)
-`define RTR_RES_W   $clog2(OUT_M)
 module allocator
   #(
     `ifdef YS_ALLOCATOR_TOP
@@ -82,29 +77,33 @@ module allocator
     input                           clk_i,
     input                           rst_ni,
     // Routing result (states which signals want to use this output channel)
-    input [(IN_N*`RTR_RES_W)-1 : 0] rtr_res_i, // this could be a 1 bit signal that simply states that an input wants to use this output
-    input [(IN_N*HOP_CNT_W)-1:0]    hop_count_i, //used to decide initial priority
+    input [(IN_N*`RTR_RES_W)-1 : 0] rtr_res_i,    // this could be a 1 bit signal that simply states that an input
+    input [IN_N-1:0]                rtr_res_vld_i,
+
+    // wants to use this output
+    input [(IN_N*HOP_CNT_W)-1:0]    hop_count_i,  // used to decide initial priority
     input [(IN_N*FLIT_ID_W)-1 : 0]  flit_id_i,
+    input [IN_N-1:0]                data_vld_i,
     // Backpressure (information from the forward node connected to the channel)
-    input                           backpressure_fifo_full_i,
+    input                           forward_node_rdy_i,
     // Select the input to route
     output [`CHAN_SEL_W-1 : 0]      sel_o,     // answers which input (based on the input arbitration)
+    output                          out_vld_o,
     // output out_vld_o,                       //answers when the data is being routed(can be routed) (based on backpressure)
     // Data to send to VCs (Virtual Channel)
-    output                          buffer_space_available_o,
-    output [IN_N-1:0 ]              chan_alloc_o
+    output [IN_N-1:0]               chan_alloc_o
     );
 
   // REGS
   reg [IN_N-1:0 ]         chan_alloc;
   reg [`CHAN_SEL_W-1 : 0] sel;
-  // out_vld_o - do i need this || DONT CARE YET
 
   // WIRES
-  wire [IN_N-1:0] vld_input_w;
-  wire not_conclusive_w;
+  wire [IN_N-1:0]         vld_input_hop_w;
+  wire [IN_N-1:0]         vld_input_stat_w;
+  wire                    not_conclusive_w;
   wire [$clog2(IN_N)-1:0] static_arb_res_w;
-  wire [$clog2(IN_N)-1:0] hop_arb_res_w;            //specifies which input to choose
+  wire [$clog2(IN_N)-1:0] hop_arb_res_w;        //specifies which input to choose
   wire [FLIT_ID_W-1:0]    flit_id_w [IN_N-1:0];
   wire [IN_N-1:0]         rtr_res_w;            // transformed to 1bit ENABLE signals
   genvar gi;
@@ -112,9 +111,11 @@ module allocator
     for(gi=0; gi<IN_N; gi=gi+1)
     begin
       assign flit_id_w[gi] = flit_id_i[FLIT_ID_W*(gi+1)-1   : FLIT_ID_W*gi];
-      assign rtr_res_w[gi] = (rtr_res_i[`RTR_RES_W*(gi+1)-1 : `RTR_RES_W*gi] == OUT_CHAN_ID) ? 1'b1 : 1'b0;
+      assign rtr_res_w[gi] = (rtr_res_i[`RTR_RES_W*(gi+1)-1 : `RTR_RES_W*gi] == OUT_CHAN_ID) ? rtr_res_vld_i[gi] : 1'b0;
     end
   endgenerate
+
+  assign vld_input_hop_w = rtr_res_w & data_vld_i;
 
   always @ ( posedge(clk_i), negedge(rst_ni) ) begin
     if (!rst_ni) begin
@@ -122,23 +123,21 @@ module allocator
       sel         <= 0;
     end
     else begin
-      if (!chan_alloc) begin
+      if (|chan_alloc) begin
         if (flit_id_w[sel] == `TAIL_ID) begin
           chan_alloc <= 0;
         end
       end
       else begin
-        if (|rtr_res_w && !backpressure_fifo_full_i) begin
-          // do I need to add HEADER flit recognition here ?
-          // i don't think so -> because we should operate only on rtr_res_i
-          chan_alloc            <= 0;
-          if (not_conclusive_w) begin // static priority arbiter
+        if (|vld_input_hop_w && forward_node_rdy_i) begin
+          chan_alloc <= 0;
+          if (not_conclusive_w) begin                 // static priority arbiter
             chan_alloc[static_arb_res_w]  <= 1'b1;
             sel                           <= static_arb_res_w;
           end
-          else begin //hop cnt arbiter
-            chan_alloc[hop_arb_res_w] <= 1'b1;
-            sel                       <= hop_arb_res_w;
+          else begin                                  // hop cnt arbiter
+            chan_alloc[hop_arb_res_w]     <= 1'b1;
+            sel                           <= hop_arb_res_w;
           end
         end
       end
@@ -153,9 +152,9 @@ module allocator
       )
   hop_arb
     (
-      .vld_input_i(rtr_res_w),
+      .vld_input_i(vld_input_hop_w),
       .hop_cnt_i(hop_count_i),
-      .vld_input_o(vld_input_w),
+      .vld_input_o(vld_input_stat_w),
       .arb_res_o(hop_arb_res_w),
       .not_conclusive_o(not_conclusive_w)
       );
@@ -166,15 +165,13 @@ module allocator
       )
   priority_arb
     (
-      .vld_input_i(vld_input_w),
+      .vld_input_i(vld_input_stat_w),
       .arb_res_o(static_arb_res_w)
       );
 
-  // BACKPRESSURE HANDLING (right now it's quite easy)
-  assign buffer_space_available_o = backpressure_fifo_full_i; // My backpressure for now :)
-
   // Allocation of VC
   assign chan_alloc_o = chan_alloc;
-  assign sel_o = sel;
+  assign sel_o        = sel;
+  assign out_vld_o    = chan_alloc[sel] & data_vld_i[sel] & forward_node_rdy_i;
 
 endmodule // allocator

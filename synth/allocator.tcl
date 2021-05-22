@@ -1,5 +1,6 @@
 yosys -import
 
+read_verilog -defer ../srcs/switch/constants.v
 read_verilog -defer ../srcs/switch/arbiters/hop_cnt_arbiter.v
 read_verilog -defer ../srcs/switch/arbiters/static_priority_arbiter.v
 
@@ -16,7 +17,7 @@ set values(0) 5
 set values(1) 5
 set values(2) 2
 set values(3) 4
-set values(4) 0
+set values(4) 1
 
 chparam -list
 log "Parameters and their values:"
@@ -45,16 +46,19 @@ read_verilog  -DYS_ALLOCATOR_TOP=1 \
               ../srcs/switch/allocators/allocator.v
 
 # elaborate design hierarchy
-hierarchy -check -top $top_module
+#hierarchy -check -top $top_module
 
 # the high-level stuff
-procs; opt; fsm; opt; memory; opt
+#procs; opt; fsm; opt; memory; opt
 
 # mapping to internal cell library
-techmap; opt
+#techmap; opt
 
 # cleanup
-clean
+#clean
+
+# Dirty but easy
+synth -top $top_module
 
 if { ![info exists ::env(NO_XDOT)] } {
   show  -enum -width -colors 3 $top_module
