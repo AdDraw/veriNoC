@@ -13,23 +13,23 @@
 module xy_router
 # (
     `ifdef YS_ROUTER_TOP
-    parameter COL_CORD          = `YS_COL_CORD,
-    parameter ROW_CORD          = `YS_ROW_CORD,
-    parameter PACKET_ADDR_COL_W = `YS_PACKET_ADDR_COL_W,
-    parameter PACKET_ADDR_ROW_W = `YS_PACKET_ADDR_ROW_W,
-    parameter OUTPUT_N_W        = `YS_OUTPUT_N_W
+    parameter COL_CORD    = `YS_COL_CORD,
+    parameter ROW_CORD    = `YS_ROW_CORD,
+    parameter COL_ADDR_W  = `YS_COL_ADDR_W,
+    parameter ROW_ADDR_W  = `YS_ROW_ADDR_W,
+    parameter OUT_N_W     = `YS_OUT_N_W
     `else
-    parameter COL_CORD          = 4'd0,
-    parameter ROW_CORD          = 4'd0,
-    parameter PACKET_ADDR_COL_W = 4,
-    parameter PACKET_ADDR_ROW_W = 4,
-    parameter OUTPUT_N_W        = 3
+    parameter COL_CORD    = 4'd0,
+    parameter ROW_CORD    = 4'd0,
+    parameter COL_ADDR_W  = 4,
+    parameter ROW_ADDR_W  = 4,
+    parameter OUT_N_W     = 3
     `endif
     )
   (
-    input  [PACKET_ADDR_COL_W-1 : 0]  col_addr_i,
-    input  [PACKET_ADDR_ROW_W-1 : 0]  row_addr_i,
-    output [OUTPUT_N_W-1 : 0]         out_chan_sel_o
+    input  [COL_ADDR_W-1 : 0]  col_addr_i,
+    input  [ROW_ADDR_W-1 : 0]  row_addr_i,
+    output [OUT_N_W-1 : 0]     out_chan_sel_o
     );
 
     // Dimension-order / XY routing algorithm
@@ -37,18 +37,17 @@ module xy_router
       first X movement (at X = X_addr move in Y axis)
       next Y movement (stop at Y=Y_addr)
     */
-    reg [OUTPUT_N_W-1 : 0] out_chan_sel_v; //wire (indicated by _v)
-
+    reg  [OUT_N_W-1 : 0]    out_chan_sel_v; //wire (indicated by _v)
     // For YOSYS to truncate the values
-    wire [PACKET_ADDR_COL_W-1 : 0] col_cord_w = COL_CORD;
-    wire [PACKET_ADDR_ROW_W-1 : 0] row_cord_w = ROW_CORD;
+    wire [COL_ADDR_W-1 : 0] col_cord_w = COL_CORD;
+    wire [ROW_ADDR_W-1 : 0] row_cord_w = ROW_CORD;
 
     // mapped Directions to PORT IDs
-    wire  [OUTPUT_N_W-1 : 0]   RESOURCE = 0;
-    wire  [OUTPUT_N_W-1 : 0]   LEFT     = 1;
-    wire  [OUTPUT_N_W-1 : 0]   UP       = 2;
-    wire  [OUTPUT_N_W-1 : 0]   RIGHT    = 3;
-    wire  [OUTPUT_N_W-1 : 0]   DOWN     = 4;
+    wire  [OUT_N_W-1 : 0]   RESOURCE = 0;
+    wire  [OUT_N_W-1 : 0]   LEFT     = 1;
+    wire  [OUT_N_W-1 : 0]   UP       = 2;
+    wire  [OUT_N_W-1 : 0]   RIGHT    = 3;
+    wire  [OUT_N_W-1 : 0]   DOWN     = 4;
 
     always @(*) begin
       if (col_addr_i == col_cord_w) begin
@@ -79,7 +78,7 @@ module xy_router
 
     `ifdef LOG_DEBUG
       initial begin
-        $display("OUTPUT_N_W %d", OUTPUT_N_W);
+        $display("OUT_N_W %d", OUT_N_W);
         $display("LEFT    %d", LEFT);
         $display("UP      %d", UP);
         $display("RIGHT   %d", RIGHT);
