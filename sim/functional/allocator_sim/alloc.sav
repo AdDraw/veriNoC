@@ -1,0 +1,45 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Wed May 12 19:36:25 2021
+[*]
+[dumpfile] "/home/adam/studia/magiament/sim/functional/allocator_sim/dump.vcd"
+[dumpfile_mtime] "Wed May 12 19:27:38 2021"
+[dumpfile_size] 4726
+[savefile] "/home/adam/studia/magiament/sim/functional/allocator_sim/alloc.sav"
+[timestart] 76
+[size] 1920 2098
+[pos] -1 -1
+*-3.000000 102 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb.
+[sst_width] 201
+[signals_width] 315
+[sst_expanded] 1
+[sst_vpaned_height] 667
+@28
+tb.x_alloc.clk_i
+tb.x_alloc.rst_ni
+tb.x_alloc.backpressure_fifo_full_i
+tb.x_alloc.data_vld_i[4:0]
+@22
+tb.x_alloc.flit_id_i[9:0]
+@28
+tb.x_alloc.rtr_res_i[14:0]
+@22
+tb.x_alloc.hop_count_i[19:0]
+@28
+tb.x_alloc.rtr_res_w[4:0]
+tb.x_alloc.hop_arb_res_w[2:0]
+tb.x_alloc.vld_input_w[4:0]
+tb.x_alloc.not_conclusive_w
+@25
+tb.x_alloc.static_arb_res_w[2:0]
+@22
+tb.x_alloc.chan_alloc[4:0]
+@28
+tb.x_alloc.sel[2:0]
+tb.x_alloc.sel_o[2:0]
+tb.x_alloc.chan_alloc_o[4:0]
+tb.x_alloc.buffer_space_available_o
+tb.x_alloc.out_vld_o
+[pattern_trace] 1
+[pattern_trace] 0
