@@ -16,7 +16,7 @@ MODULE   := test
 SIM 		 ?= icarus
 
 # Depending on the Simulator we want to choose different sets of arguments to pass
-export FIFO_DEPTH_W	= 2
+export FIFO_DEPTH_W	= 4
 export DATA_W				= 8
 
 ifeq ($(SIM), verilator)
