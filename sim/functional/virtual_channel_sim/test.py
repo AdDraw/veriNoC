@@ -54,6 +54,7 @@ class VCTB:
         self.vc_drv = VCDriver(dut, "", dut.clk_i, self.config, log_lvl)
         self.packets_to_send = []
         self.packets_received = []
+        self.dut.chan_rdy_i.setimmediatevalue(0x1F)
 
     def populate_packets_to_send(self, packet_n=10, packet_length=4):
         for i in range(packet_n):
@@ -93,7 +94,6 @@ class VCTB:
                     if self.dut.data_o.value.binstr[0:2] == "10":  # header
                         packet = []
                         await FallingEdge(self.dut.clk_i)
-                        self.dut.chan_rdy_i <= 1
                         self.dut.chan_alloc_i <= 1
 
                     if self.dut.data_o.value.binstr[0:2] != "00":
@@ -102,7 +102,6 @@ class VCTB:
                     if self.dut.data_o.value.binstr[0:2] == "11": # tail
                         self.packets_received.append(packet)
                         await FallingEdge(self.dut.clk_i)
-                        self.dut.chan_rdy_i <= 0
                         self.dut.chan_alloc_i <= 0
                         break
 
