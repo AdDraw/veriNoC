@@ -14,9 +14,9 @@ set top_module xy_switch
 set params(0) ROW_CORD
 set params(1) COL_CORD
 set params(2) PORT_N
-set params(3) IN_FIFO_DEPTH_W
-set params(4) PCKT_COL_ADDR_W
-set params(5) PCKT_ROW_ADDR_W
+set params(3) FIFO_DEPTH_W
+set params(4) COL_ADDR_W
+set params(5) ROW_ADDR_W
 set params(6) PCKT_DATA_W
 
 set values(0) 1
