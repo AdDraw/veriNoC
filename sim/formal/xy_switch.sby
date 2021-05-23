@@ -11,6 +11,7 @@ bmc: mode bmc
 smtbmc --progress --nomem
 
 [script]
+read -formal constants.v
 read -formal switch_constants.v
 read -formal circ_fifo.v
 read -formal static_priority_arbiter.v
@@ -21,6 +22,7 @@ read -formal xy_switch.v
 prep -top xy_switch
 
 [files]
+../../srcs/switch/constants.v
 ../../srcs/switch/simple_mesh_xy/switch_constants.v
 ../../srcs/components/circ_fifo.v
 ../../srcs/switch/arbiters/static_priority_arbiter.v
