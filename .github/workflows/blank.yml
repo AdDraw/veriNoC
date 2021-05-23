@@ -93,6 +93,16 @@ jobs:
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf 1 -ff_depth 6 -pckt_w 14 -regression 1
 
+      - name: VC
+        run: |
+          cd sim/functional/virtual_channel_sim
+          python3 run_and_verify.py
+
+      - name: Wormhole XY Node
+        run: |
+          cd sim/functional/mesh_wormhole_node_sim
+          python3 run_and_verify.py
+
   functional_postsynth:
     # The type of runner that the job will run on
     runs-on: self-hosted
@@ -113,20 +123,20 @@ jobs:
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf 1 -ps 1 -synth 1 -ff_depth 4 -pckt_w 12 -row_n 2 -col_m 2
 
-      - name: Mesh XY 2x3
-        run: |
-          cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf 1 -ps 1 -synth 1 -ff_depth 4 -pckt_w 13 -row_n 2 -col_m 3
-
       - name: Mesh XY 3x3
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf 1 -ps 1 -synth 1 -ff_depth 4 -pckt_w 13 -row_n 3 -col_m 3
 
-      - name: Mesh XY 4x4
+      - name: VC
         run: |
-          cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf 1 -ps 1 -synth 1 -ff_depth 4 -pckt_w 14 -row_n 4 -col_m 4
+          cd sim/functional/virtual_channel_sim
+          python3 run_and_verify.py -ps 1 -synth 1
+
+      - name: Wormhole XY Node
+        run: |
+          cd sim/functional/mesh_wormhole_node_sim
+          python3 run_and_verify.py -ps 1 -synth 1
 
   synth:
     # The type of runner that the job will run on
@@ -136,22 +146,57 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Runs a set of commands using the runners shell
-      - name: fifo synth
+      - name: circ_fifo
         run: |
           cd synth
           ./yosys_wrapper.sh -sf fifo_synth.tcl --no-xdot
 
-      - name: mesh_xy noc synth
+      - name: mesh_xy noc
         run: |
           cd synth
           ./yosys_wrapper.sh -sf mesh_xy_noc.tcl --no-xdot
 
-      - name: sw_xy synth
+      - name: sw_xy
         run: |
           cd synth
           ./yosys_wrapper.sh -sf sw_xy_synth.tcl --no-xdot
 
-      - name: router synth
+      - name: router
         run: |
           cd synth
           ./yosys_wrapper.sh -sf router_synth.tcl --no-xdot
+
+      - name: vc
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf virtual_channel.tcl --no-xdot
+
+      - name: wormhole xy node
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf mesh_wormhole_node.tcl --no-xdot
+
+      - name: nxn_single_crossbar
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf nxn_single_crossbar.tcl --no-xdot
+
+      - name: nxn parrallel crossbar
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf nxn_parrallel_crossbar.tcl --no-xdot
+
+      - name: allocator
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf allocator.tcl --no-xdot
+
+      - name: hop_cnt_arbiter
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf hop_cnt_arb.tcl --no-xdot
+
+      - name: static_priority_arbiter
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf static_arb.tcl --no-xdot

@@ -1,6 +1,6 @@
 yosys -import
 
-read_verilog ../srcs/switch/simple_mesh_xy/switch_constants.v
+read_verilog -defer ../srcs/switch/constants.v
 
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
 set top_module xy_router
@@ -9,9 +9,9 @@ set top_module xy_router
 #TOP module param names when running with YOSYS
 set params(0) ROW_CORD
 set params(1) COL_CORD
-set params(2) OUTPUT_N_W
-set params(3) PACKET_ADDR_COL_W
-set params(4) PACKET_ADDR_ROW_W
+set params(2) OUT_N_W
+set params(3) COL_ADDR_W
+set params(4) ROW_ADDR_W
 
 #default values for synth
 set values(0) 1
