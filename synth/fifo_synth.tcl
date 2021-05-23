@@ -1,5 +1,7 @@
 yosys -import
 
+read_verilog -defer ../srcs/switch/constants.v
+
 set top_module circ_fifo
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
 set params(0) FIFO_DEPTH_W
