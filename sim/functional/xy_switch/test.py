@@ -257,11 +257,11 @@ async def test_rand_multi_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fif
 
 if int(os.environ["TESTFACTORY"]):
     tf = TestFactory(test_function=test_rand_single_input)
-    tf.add_option(name='transaction_w', optionlist=[*range(16)])
+    tf.add_option(name='transaction_w', optionlist=[*range(10)])
     tf.add_option(name='with_nxt_fifo_rand', optionlist=[True, False])
     tf.generate_tests()
     tf2 = TestFactory(test_function=test_rand_multi_input)
-    tf2.add_option(name='transaction_w', optionlist=[*range(16)])
+    tf2.add_option(name='transaction_w', optionlist=[*range(10)])
     tf2.add_option(name='with_nxt_fifo_rand', optionlist=[True, False])
     tf2.generate_tests()
 
