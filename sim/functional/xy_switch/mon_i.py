@@ -40,8 +40,6 @@ class SWIMon(BusMonitor):
             self.config = config
 
         self.port_n = self.config["neighbours_n"] - 1
-        # self.sw_type = None
-        # self.sw_type_config(self.config["sw_config"])
         self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": 4}
 
         # initialize INPUT FIFO cycle accurate tested models
@@ -136,35 +134,6 @@ class SWIMon(BusMonitor):
 
                         self.loss_packets.append(cycle_results)
 
-    # def reset(self):
-    #     self.acc_packets = []
-    #     self.acc_packets = []
-    #
-    # def sw_type_config(self, sw_config):
-    #     if sw_config == CENTER:
-    #         self.sw_type = "CENTER"
-    #         self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": 4}
-    #     elif sw_config == EDGE_LB:
-    #         self.sw_type = "EDGE_LB"
-    #         self.directions = {"resource": 0, "left": "error", "up": 1, "right": 2, "down": 0}
-    #     elif sw_config == EDGE_LT:
-    #         self.sw_type = "EDGE_LT"
-    #         self.directions = {"resource": 0, "left": "error", "up": "error", "right": 1, "down": 2}
-    #     elif sw_config == EDGE_RB:
-    #         self.sw_type = "EDGE_RB"
-    #         self.directions = {"resource": 0, "left": 1, "up": 2, "right": "error", "down": "error"}
-    #     elif sw_config == EDGE_RT:
-    #         self.sw_type = "EDGE_RT"
-    #         self.directions = {"resource": 0, "left": 1, "up": "error", "right": "error", "down": 2}
-    #     elif sw_config == SIDE_L:
-    #         self.sw_type = "SIDE_L"
-    #         self.directions = {"resource": 0, "left": "error", "up": 1, "right": 2, "down": 3}
-    #     elif sw_config == SIDE_R:
-    #         self.sw_type = "SIDE_R"
-    #         self.directions = {"resource": 0, "left": 1, "up": 2, "right": "error", "down": 3}
-    #     elif sw_config == SIDE_T:
-    #         self.sw_type = "SIDE_T"
-    #         self.directions = {"resource": 0, "left": 1, "up": "error", "right": 2, "down": 3}
-    #     elif sw_config == SIDE_B:
-    #         self.sw_type = "SIDE_B"
-    #         self.directions = {"resource": 0, "left": 1, "up": 2, "right": 3, "down": "error"}
+    def reset(self):
+        self.acc_packets = []
+        self.acc_packets = []

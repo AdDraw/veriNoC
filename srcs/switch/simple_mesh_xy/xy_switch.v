@@ -30,7 +30,7 @@
 
 
    PACKET :
-   |  ROW_addr    | [`PCKT_DATA_W + `PCKT_ROW_ADDR_W + `PCKT_COL_ADDR_W - 1 : `PCKT_DATA_W + `PCKT_ROW_ADDR_W ]
+   |  ROW_addr    | [`PCKT_DATA_W + `ROW_ADDR_W + `COL_ADDR_W - 1 : `PCKT_DATA_W + `ROW_ADDR_W ]
    |  COLUMN_addr | [`PCKT_DATA_W + `PCKT_YADDR_W - 1 : `PCKT_DATA_W ]
    |  DATA        | [`PCKT_DATA_W - 1 : 0 ]
 
@@ -39,23 +39,23 @@
 module xy_switch
 # (
     `ifdef YS_XY_SW_TOP // only For YOSYS parameter setting (it's not possible to override parameters for singular modules)
-      parameter COL_CORD        = `YS_COL_CORD,
-      parameter ROW_CORD        = `YS_ROW_CORD,
-      parameter PORT_N          = `YS_PORT_N, // 1 is minimum because of connection to RESOURCE,
-      parameter IN_FIFO_DEPTH_W = `YS_IN_FIFO_DEPTH_W,
-      parameter PCKT_COL_ADDR_W = `YS_PCKT_COL_ADDR_W,
-      parameter PCKT_ROW_ADDR_W = `YS_PCKT_ROW_ADDR_W,
-      parameter PCKT_DATA_W     = `YS_PCKT_DATA_W,
+      parameter COL_CORD      = `YS_COL_CORD,
+      parameter ROW_CORD      = `YS_ROW_CORD,
+      parameter PORT_N        = `YS_PORT_N, // 1 is minimum because of connection to RESOURCE,
+      parameter FIFO_DEPTH_W  = `YS_FIFO_DEPTH_W,
+      parameter COL_ADDR_W    = `YS_COL_ADDR_W,
+      parameter ROW_ADDR_W    = `YS_ROW_ADDR_W,
+      parameter PCKT_DATA_W   = `YS_PCKT_DATA_W,
     `else
-      parameter COL_CORD = 0,
-      parameter ROW_CORD = 0,
-      parameter PORT_N = 5, // 1 is minimum because of connection to RESOURCE,
-      parameter IN_FIFO_DEPTH_W = 3,
-      parameter PCKT_COL_ADDR_W = 4,
-      parameter PCKT_ROW_ADDR_W = 4,
-      parameter PCKT_DATA_W = 8,
+      parameter COL_CORD      = 0,
+      parameter ROW_CORD      = 0,
+      parameter PORT_N        = 5, // 1 is minimum because of connection to RESOURCE,
+      parameter FIFO_DEPTH_W  = 3,
+      parameter COL_ADDR_W    = 4,
+      parameter ROW_ADDR_W    = 4,
+      parameter PCKT_DATA_W   = 8,
     `endif
-    parameter PCKT_W = PCKT_COL_ADDR_W + PCKT_ROW_ADDR_W + PCKT_DATA_W
+    parameter PCKT_W = COL_ADDR_W + ROW_ADDR_W + PCKT_DATA_W
     )
   (
 
@@ -84,8 +84,8 @@ module xy_switch
     wire [PCKT_W - 1 : 0]           pckt_in_chosen_w;
 
     // Wires assignments
-    wire [PCKT_ROW_ADDR_W - 1 : 0] row_addr_w = pckt_in_chosen_w[ PCKT_W - 1 : PCKT_DATA_W + PCKT_COL_ADDR_W ];
-    wire [PCKT_COL_ADDR_W - 1 : 0] col_addr_w = pckt_in_chosen_w[ PCKT_W - PCKT_ROW_ADDR_W - 1 : PCKT_DATA_W ];
+    wire [ROW_ADDR_W - 1 : 0] row_addr_w = pckt_in_chosen_w[ PCKT_W - 1 : PCKT_DATA_W + COL_ADDR_W ];
+    wire [COL_ADDR_W - 1 : 0] col_addr_w = pckt_in_chosen_w[ PCKT_W - ROW_ADDR_W - 1 : PCKT_DATA_W ];
 
     // Module Instantatiation
     // Input BUFFERS
@@ -105,7 +105,7 @@ module xy_switch
         circ_fifo
           #(
             .DATA_W(PCKT_W),
-            .FIFO_DEPTH_W(IN_FIFO_DEPTH_W),
+            .FIFO_DEPTH_W(FIFO_DEPTH_W),
             .ID(i)
             )
         x_input_fifo
@@ -142,9 +142,9 @@ module xy_switch
     # (
         .COL_CORD(COL_CORD),
         .ROW_CORD(ROW_CORD),
-        .PACKET_ADDR_COL_W(PCKT_COL_ADDR_W),
-        .PACKET_ADDR_ROW_W(PCKT_ROW_ADDR_W),
-        .OUTPUT_N_W($clog2(PORT_N))
+        .COL_ADDR_W(COL_ADDR_W),
+        .ROW_ADDR_W(ROW_ADDR_W),
+        .OUT_N_W($clog2(PORT_N))
         )
     router
       (
