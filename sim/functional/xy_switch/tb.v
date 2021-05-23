@@ -3,11 +3,11 @@ module tb
     parameter COL_CORD = 0,
     parameter ROW_CORD = 0,
     parameter PORT_N = 5, // 1 is minimum cause RESOURCE,
-    parameter IN_FIFO_DEPTH_W = 3,
-    parameter PCKT_COL_ADDR_W = 4,
-    parameter PCKT_ROW_ADDR_W = 4,
+    parameter FIFO_DEPTH_W = 3,
+    parameter COL_ADDR_W = 4,
+    parameter ROW_ADDR_W = 4,
     parameter PCKT_DATA_W = 8,
-    parameter PCKT_W = PCKT_COL_ADDR_W + PCKT_ROW_ADDR_W + PCKT_DATA_W
+    parameter PCKT_W = COL_ADDR_W + ROW_ADDR_W + PCKT_DATA_W
     )
   (
 
@@ -42,9 +42,9 @@ module tb
       .COL_CORD(COL_CORD),
       .ROW_CORD(ROW_CORD),
       .PORT_N(PORT_N),
-      .IN_FIFO_DEPTH_W(IN_FIFO_DEPTH_W),
-      .PCKT_COL_ADDR_W(PCKT_COL_ADDR_W),
-      .PCKT_ROW_ADDR_W(PCKT_ROW_ADDR_W),
+      .FIFO_DEPTH_W(FIFO_DEPTH_W),
+      .COL_ADDR_W(COL_ADDR_W),
+      .ROW_ADDR_W(ROW_ADDR_W),
       .PCKT_DATA_W(PCKT_DATA_W),
       .PCKT_W(PCKT_W)
       )

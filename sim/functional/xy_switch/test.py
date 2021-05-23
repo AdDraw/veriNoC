@@ -38,12 +38,12 @@ class SWTB:
         self.log.setLevel(log_lvl)
 
         self.config = {
-            "packet_x_addr_w": int(os.environ["PACKET_COL_ADDR_W"]),
-            "packet_y_addr_w": int(os.environ["PACKET_ROW_ADDR_W"]),
-            "packet_data_w": int(os.environ["PACKET_DATA_W"]),
-            "packet_w": int(os.environ["PACKET_W"]),
+            "packet_x_addr_w": int(os.environ["COL_ADDR_W"]),
+            "packet_y_addr_w": int(os.environ["ROW_ADDR_W"]),
+            "packet_data_w": int(os.environ["PCKT_DATA_W"]),
+            "packet_w": int(os.environ["PCKT_W"]),
             "neighbours_n": int(os.environ["PORT_N"]),
-            "fifo_depth_w": int(os.environ["IN_FIFO_DEPTH_W"]),
+            "fifo_depth_w": int(os.environ["FIFO_DEPTH_W"]),
             "x_cord": int(os.environ["COL_CORD"]),
             "y_cord": int(os.environ["ROW_CORD"])
         }
