@@ -72,8 +72,6 @@ module control_unit
 
       integer fi = 0;
 
-      always @(posedge clk_i) assume(rst_ni);
-
       always @(*) begin
         if (rst_ni) begin
           for (fi=0; fi < PORT_N; fi++) begin
