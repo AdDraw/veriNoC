@@ -142,9 +142,9 @@ module mesh_xy_noc
             .COL_CORD(col_idx),
             .ROW_CORD(row_idx),
             .PORT_N(port_n(`CENTER)),
-            .IN_FIFO_DEPTH_W(FIFO_DEPTH_W),
-            .PCKT_COL_ADDR_W($clog2(COL_M)),
-            .PCKT_ROW_ADDR_W($clog2(ROW_N)),
+            .FIFO_DEPTH_W(FIFO_DEPTH_W),
+            .COL_ADDR_W($clog2(COL_M)),
+            .ROW_ADDR_W($clog2(ROW_N)),
             .PCKT_DATA_W(PCKT_DATA_W),
             .PCKT_W(`PACKET_W)
             )

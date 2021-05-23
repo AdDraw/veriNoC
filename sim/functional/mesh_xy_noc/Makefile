@@ -28,10 +28,10 @@ VERILOG_SOURCES += ./tb.sv
 # Specifies essentials of the DUT and the cocotb TB
 TOPLEVEL 	:= tb
 MODULE   	:= test
-SIM 		?= icarus
+SIM 			?= icarus
 
-export ROW_N		?= 4
-export COL_M		?= 4
+export ROW_N				?= 4
+export COL_M				?= 4
 export PCKT_DATA_W	?= 8
 export FIFO_DEPTH_W	?= 8
 
