@@ -124,12 +124,12 @@ module allocator
     end
     else begin
       if (|chan_alloc) begin
-        if (flit_id_w[sel] == `TAIL_ID) begin
+        if (flit_id_w[sel] == `TAIL_ID && forward_node_rdy_i) begin
           chan_alloc <= 0;
         end
       end
       else begin
-        if (|vld_input_hop_w && forward_node_rdy_i) begin
+        if (|vld_input_hop_w) begin
           chan_alloc <= 0;
           if (not_conclusive_w) begin                 // static priority arbiter
             chan_alloc[static_arb_res_w]  <= 1'b1;
