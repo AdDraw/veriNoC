@@ -1,5 +1,7 @@
 yosys -import
 
+read_verilog -defer ../srcs/switch/constants.v
+
 set top_module nxn_parrallel_crossbar
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
 set params(0) DATA_W
