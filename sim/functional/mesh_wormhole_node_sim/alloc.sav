@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sat May 22 11:39:00 2021
+[*] Sun May 23 15:46:41 2021
 [*]
 [dumpfile] "/home/adam/studia/magiament/sim/functional/mesh_wormhole_node_sim/dump.vcd"
-[dumpfile_mtime] "Sat May 22 11:37:27 2021"
-[dumpfile_size] 214831
+[dumpfile_mtime] "Sun May 23 15:45:58 2021"
+[dumpfile_size] 227624
 [savefile] "/home/adam/studia/magiament/sim/functional/mesh_wormhole_node_sim/alloc.sav"
-[timestart] 0
+[timestart] 4578100
 [size] 3840 2098
 [pos] -1 -1
-*-14.477892 140800 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.477892 4744600 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb.
 [treeopen] tb.dut_inst.
 [treeopen] tb.dut_inst.GEN_ALLOC[0].
@@ -153,7 +153,7 @@ tb.in_chan_vld_i[4:0]
 (4)tb.in_chan_vld_i[4:0]
 @1401200
 -group_end
-@c00022
+@c00028
 tb.out_chan_rdy_i[4:0]
 @28
 (0)tb.out_chan_rdy_i[4:0]
@@ -209,15 +209,13 @@ tb.dut_inst.vc_route_res_w[14:0]
 @28
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.chan_alloc_i
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.chan_rdy_i
+tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.data_vld_o
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.clk_i
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.cur_fsm_state[2:0]
 @22
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.cur_header[9:0]
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.data_i[9:0]
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.data_o[9:0]
-@28
-tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.data_vld_o
-@22
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.data_w[9:0]
 @28
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.empty_w
@@ -226,11 +224,11 @@ tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.nxt_fsm_state_v[2:0]
 @22
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.nxt_header_v[9:0]
 @28
-tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.rd_en
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.rd_en_v
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.rdy_o
-@29
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.route_res_o[2:0]
+@29
+tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.route_res_vld_o
 @28
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.rst_ni
 tb.dut_inst.GEN_INPUT_CHANNEL[0].x_vc.underflow_w
@@ -266,7 +264,7 @@ tb.dut_inst.GEN_ALLOC[1].x_alloc.vld_input_hop_w[4:0]
 tb.dut_inst.GEN_ALLOC[1].x_alloc.vld_input_stat_w[4:0]
 @1401200
 -ALLOC_1
-@800200
+@c00200
 -alloc_000
 @22
 tb.dut_inst.GEN_ALLOC[0].x_alloc.chan_alloc[4:0]
@@ -295,7 +293,7 @@ tb.dut_inst.GEN_ALLOC[0].x_alloc.static_arb_res_w[2:0]
 @22
 tb.dut_inst.GEN_ALLOC[0].x_alloc.vld_input_hop_w[4:0]
 tb.dut_inst.GEN_ALLOC[0].x_alloc.vld_input_stat_w[4:0]
-@1000200
+@1401200
 -alloc_000
 @800200
 -Allloc0
@@ -357,7 +355,7 @@ tb.dut_inst.GEN_ALLOC[3].x_alloc.vld_input_hop_w[4:0]
 tb.dut_inst.GEN_ALLOC[3].x_alloc.vld_input_stat_w[4:0]
 @1401200
 -ALLOC 3
-@800200
+@c00200
 -vc1
 @28
 tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.chan_alloc_i
@@ -379,7 +377,6 @@ tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.nxt_fsm_state_v[2:0]
 @22
 tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.nxt_header_v[9:0]
 @28
-tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.rd_en
 tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.rd_en_v
 tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.rdy_o
 tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.route_res_o[2:0]
@@ -387,7 +384,7 @@ tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.route_res_vld_o
 tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.rst_ni
 tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.underflow_w
 tb.dut_inst.GEN_INPUT_CHANNEL[1].x_vc.wr_en_i
-@1000200
+@1401200
 -vc1
 @c00200
 -VC2
@@ -411,7 +408,6 @@ tb.dut_inst.GEN_INPUT_CHANNEL[2].x_vc.nxt_fsm_state_v[2:0]
 @22
 tb.dut_inst.GEN_INPUT_CHANNEL[2].x_vc.nxt_header_v[9:0]
 @28
-tb.dut_inst.GEN_INPUT_CHANNEL[2].x_vc.rd_en
 tb.dut_inst.GEN_INPUT_CHANNEL[2].x_vc.rd_en_v
 tb.dut_inst.GEN_INPUT_CHANNEL[2].x_vc.rdy_o
 tb.dut_inst.GEN_INPUT_CHANNEL[2].x_vc.rst_ni
@@ -441,7 +437,6 @@ tb.dut_inst.GEN_INPUT_CHANNEL[3].x_vc.nxt_fsm_state_v[2:0]
 @22
 tb.dut_inst.GEN_INPUT_CHANNEL[3].x_vc.nxt_header_v[9:0]
 @28
-tb.dut_inst.GEN_INPUT_CHANNEL[3].x_vc.rd_en
 tb.dut_inst.GEN_INPUT_CHANNEL[3].x_vc.rd_en_v
 tb.dut_inst.GEN_INPUT_CHANNEL[3].x_vc.rdy_o
 tb.dut_inst.GEN_INPUT_CHANNEL[3].x_vc.rst_ni
@@ -471,7 +466,6 @@ tb.dut_inst.GEN_INPUT_CHANNEL[4].x_vc.nxt_fsm_state_v[2:0]
 @22
 tb.dut_inst.GEN_INPUT_CHANNEL[4].x_vc.nxt_header_v[9:0]
 @28
-tb.dut_inst.GEN_INPUT_CHANNEL[4].x_vc.rd_en
 tb.dut_inst.GEN_INPUT_CHANNEL[4].x_vc.rd_en_v
 tb.dut_inst.GEN_INPUT_CHANNEL[4].x_vc.rdy_o
 tb.dut_inst.GEN_INPUT_CHANNEL[4].x_vc.rst_ni

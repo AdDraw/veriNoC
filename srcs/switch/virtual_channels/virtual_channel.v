@@ -44,7 +44,7 @@ module virtual_channel
       parameter OUT_N_W       = `YS_OUT_N_W,
       parameter HOP_CNT_W     = `YS_HOP_CNT_W
       `else
-      parameter VC_DEPTH_W    = 2, 
+      parameter VC_DEPTH_W    = 2,
       parameter FLIT_DATA_W   = 8,
       parameter COL_CORD      = 1,
       parameter FLIT_ID_W     = 2,
@@ -93,7 +93,8 @@ module virtual_channel
   wire                  empty_w;
   wire                  full_w;
   wire                  underflow_w;
-  reg                   rd_en_v, rd_en;
+  reg                   rd_en_v;
+  reg                   data_vld, data_vld_v;
   // Router
   wire [OUT_N_W-1:0]    route_res_w;
 
@@ -103,12 +104,12 @@ module virtual_channel
     if (!rst_ni) begin
       cur_fsm_state <= IDLE;
       cur_header    <= 0;
-      rd_en         <= 1'b0;
+      data_vld      <= 0;
     end
     else begin
       cur_fsm_state <= nxt_fsm_state_v;
       cur_header    <= nxt_header_v;
-      rd_en         <= rd_en_v;
+      data_vld      <= data_vld_v;
     end
   end
 
@@ -122,7 +123,7 @@ module virtual_channel
       WAITING : if (chan_alloc_i && chan_rdy_i)           nxt_fsm_state_v <= ACTIVE;
                 else                                      nxt_fsm_state_v <= WAITING;
 
-      ACTIVE  : if (data_w[`FLIT_ID_RANGE] == `TAIL_ID)   nxt_fsm_state_v <= IDLE;
+      ACTIVE  : if (data_w[`FLIT_ID_RANGE] == `TAIL_ID && chan_rdy_i)   nxt_fsm_state_v <= IDLE;
                 else                                      nxt_fsm_state_v <= ACTIVE;
 
       default :                                           nxt_fsm_state_v <= IDLE;
@@ -134,7 +135,7 @@ module virtual_channel
   begin: LOGIC_COMBO
     case (nxt_fsm_state_v)
       IDLE    : begin
-                  rd_en_v       = ~empty_w & ~rd_en & !underflow_w;
+                  rd_en_v       = ~empty_w & ~data_vld & !underflow_w;
                   nxt_header_v  = cur_header;
                 end
       WAITING : begin
@@ -149,6 +150,17 @@ module virtual_channel
                   rd_en_v       = 1'b0;
                   nxt_header_v  = 0;
                 end
+    endcase
+  end
+
+  always @( * )
+  begin
+    case(cur_fsm_state)
+      IDLE:     data_vld_v <= 1'b0;
+      WAITING:  data_vld_v <= 1'b1;
+      ACTIVE:   if (!chan_rdy_i && data_vld) data_vld_v <= 1'b1;
+                else             data_vld_v <= rd_en_v;
+      default:  data_vld_v <= 0;
     endcase
   end
 
@@ -188,6 +200,6 @@ module virtual_channel
   assign rdy_o            = ~full_w;
   assign header_o         = cur_header;
   assign route_res_vld_o  = (cur_fsm_state == WAITING) ? 1'b1 : 1'b0;
-  assign data_vld_o       = (cur_fsm_state == WAITING) ? 1'b1 : rd_en;
+  assign data_vld_o       = (chan_rdy_i) ? data_vld : 1'b0;
 
 endmodule // virtual_channel

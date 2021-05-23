@@ -3,7 +3,7 @@ import os
 import time
 import xml.etree.ElementTree as ET
 import argparse
-from ..adam_logger import get_logger, get_git_root
+from adam_logger import get_logger, get_git_root
 
 
 def simulate(log, tf=0, ps=0, synth=0, in_n=5, out_m=5, flit_data_w=8, flit_id_w=2, row_cord=1,
