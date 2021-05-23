@@ -69,13 +69,6 @@ module mesh_wormhole_node
   wire [(OUT_M*$clog2(IN_N))-1:0] sel_w;                          // SEL from allocator to CROSSBAR
   wire [(OUT_M*IN_N)-1:0]         out_chan_alloc_w ; // FROM ALLOC to VC
 
-  initial begin
-    $display("%0d:%0d",`FLIT_W-1, `FLIT_W-FLIT_ID_W);
-    $display("%0d:%0d",(`FLIT_W-FLIT_ID_W)-1, (HOP_CNT_W+COL_ADDR_W));
-    $display("%0d:%0d",(HOP_CNT_W+COL_ADDR_W)-1,HOP_CNT_W);
-    $display("%0d:%0d",(HOP_CNT_W-1),0);
-  end
-
   // Generate Blocks
   genvar gi, gj;
   generate
@@ -111,8 +104,8 @@ module mesh_wormhole_node
         .rst_ni         (rst_ni),
         .data_i         (in_chan_data_i[`UNPACK(gi, `FLIT_W)]),
         .wr_en_i        (in_chan_vld_i[gi]),
-        .chan_alloc_i   (x_vc_chan_alloc_w[x_vc_route_res_w]),  // from allocator (from every )
-        .chan_rdy_i     (out_chan_rdy_i[x_vc_route_res_w]),     // from allocator
+        .chan_alloc_i   (x_vc_chan_alloc_w[x_vc_route_res_w]),
+        .chan_rdy_i     (out_chan_rdy_i[x_vc_route_res_w]),
         .data_vld_o     (vc_data_vld_w[gi]),
         .route_res_o    (x_vc_route_res_w),
         .header_o       (x_header_w),
@@ -151,8 +144,8 @@ module mesh_wormhole_node
         .forward_node_rdy_i(out_chan_rdy_i[gi]),
         .data_vld_i(vc_data_vld_w),
         .sel_o(x_alloc_sel_w),
-        .out_vld_o(out_chan_vld_w[gi]),
-        .chan_alloc_o(x_chan_alloc_w) // to VCs
+        .out_vld_o(out_chan_vld_o[gi]),
+        .chan_alloc_o(x_chan_alloc_w)
         );
 
         assign sel_w[`UNPACK(gi, $clog2(IN_N))]    = x_alloc_sel_w;
@@ -169,17 +162,8 @@ module mesh_wormhole_node
     (
       .data_i(vc_data_out_w),
       .sel_i(sel_w),
-      .data_o(out_chan_data_w)
+      .data_o(out_chan_data_o)
       );
-
-  // OUTPUT PIPELINE REG
-  always @ ( posedge(clk_i) ) begin
-    out_chan_data <= out_chan_data_w;
-    out_chan_vld <= out_chan_vld_w;
-  end
-
-  assign out_chan_data_o = out_chan_data;
-  assign out_chan_vld_o = out_chan_vld;
 
   endgenerate
 endmodule // mesh_wormhole_node
