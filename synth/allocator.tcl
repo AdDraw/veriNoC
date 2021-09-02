@@ -1,8 +1,9 @@
 yosys -import
 
 read_verilog -defer ../srcs/switch/constants.v
-read_verilog -defer ../srcs/switch/arbiters/hop_cnt_arbiter.v
-read_verilog -defer ../srcs/switch/arbiters/static_priority_arbiter.v
+#read_verilog -defer ../srcs/switch/arbiters/hop_cnt_arbiter.v
+#read_verilog -defer ../srcs/switch/arbiters/static_priority_arbiter.v
+read_verilog -defer ../srcs/switch/arbiters/matrix_arbiter.v
 
 set top_module allocator
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
