@@ -4,6 +4,7 @@ read_verilog  -defer ../srcs/switch/constants.v
 read_verilog  -defer ../srcs/components/circ_fifo.v
 read_verilog  -defer ../srcs/switch/simple_mesh_xy/switch_constants.v
 read_verilog  -defer ../srcs/switch/arbiters/static_priority_arbiter.v
+read_verilog  -defer ../srcs/switch/arbiters/matrix_arbiter.v
 read_verilog  -defer ../srcs/switch/routers/xy_router.v
 read_verilog  -defer ../srcs/switch/crossbars/nxn_single_crossbar.v
 read_verilog  -defer ../srcs/switch/simple_mesh_xy/control_unit.v
