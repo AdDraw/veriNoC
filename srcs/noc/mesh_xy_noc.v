@@ -56,22 +56,6 @@ module mesh_xy_noc
       input  [(ROW_N * COL_M) -1 : 0]   rsc_ovrflw_i
       );
 
-    function [3:0] sw_config;
-      input [$clog2(ROW_N)-1:0] row_idx;
-      input [$clog2(COL_M)-1:0] col_idx;
-      begin
-        if (row_idx == 0 && col_idx == 0)                                               sw_config = `EDGE_LT;
-        else if (row_idx == 0 && col_idx == (COL_M - 1))                                sw_config = `EDGE_LB;
-        else if (row_idx == (ROW_N - 1) && col_idx == (COL_M - 1))                      sw_config = `EDGE_RB;
-        else if (row_idx == 0 && col_idx == (COL_M - 1))                                sw_config = `EDGE_RT;
-        else if (((row_idx > 0) && (row_idx < (ROW_N - 1))) && col_idx == 0)            sw_config = `SIDE_L;
-        else if (((row_idx > 0) && (row_idx < (ROW_N - 1))) && col_idx == (COL_M-1))    sw_config = `SIDE_R;
-        else if (row_idx == 0 && ((col_idx > 0) && (col_idx < (COL_M - 1))))            sw_config = `SIDE_T;
-        else if (row_idx == (ROW_N - 1) && ((col_idx > 0) && (col_idx < (COL_M - 1))))  sw_config = `SIDE_B;
-        else                                                                            sw_config = `CENTER;
-      end
-    endfunction
-
     function [2 : 0] port_n;
       input [3 : 0] sw_config;
       begin

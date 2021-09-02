@@ -4,6 +4,7 @@ read_verilog -defer ../srcs/switch/constants.v
 read_verilog -defer ../srcs/components/circ_fifo.v
 read_verilog -defer ../srcs/switch/simple_mesh_xy/switch_constants.v
 read_verilog -defer ../srcs/switch/arbiters/static_priority_arbiter.v
+read_verilog -defer ../srcs/switch/arbiters/matrix_arbiter.v
 read_verilog -defer ../srcs/switch/routers/xy_router.v
 read_verilog -defer ../srcs/switch/crossbars/nxn_single_crossbar.v
 read_verilog -defer ../srcs/switch/simple_mesh_xy/control_unit.v
@@ -19,8 +20,8 @@ set params(2) PCKT_DATA_W
 set params(3) FIFO_DEPTH_W
 
 #default values for synth
-set values(0) 3
-set values(1) 3
+set values(0) 4
+set values(1) 4
 set values(2) 8
 set values(3) 4
 
@@ -52,11 +53,9 @@ read_verilog  -DYS_MESH_XY_TOP=1 \
 
 hierarchy -top $top_module -keep_portwidths -check
 
-# the high-level stuff
-procs; opt; fsm; opt; memory; opt
-
-# mapping to internal cell library
-techmap; opt
+synth -top $top_module -flatten
+dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
+abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
 
 # cleanup
 clean
@@ -69,3 +68,4 @@ json -o $::env(JSON_PATH)/$top_module-$values(0)-$values(1).json
 write_verilog ../srcs/noc/mesh_xy_noc_synth.v
 
 stat $top_module
+ltp

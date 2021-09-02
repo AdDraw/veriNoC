@@ -2,19 +2,24 @@
 import time
 
 import cocotb
-from cocotb.result import TestSuccess, TestFailure, TestError
-from cocotb.triggers import ClockCycles, RisingEdge, Join, Combine, First
+from cocotb.result import TestSuccess, TestFailure
+from cocotb.triggers import ClockCycles, RisingEdge
 from logging import INFO, DEBUG
 from cocotb.log import SimLog
-from cocotb.utils import get_sim_time
 from cocotb.regression import TestFactory
+from cocotb.binary import BinaryValue
 # Global Imports
 import os
-from random import sample, randint, getrandbits, random
+from random import sample, randint, random
 from math import log, ceil
+import math
+import numpy as np
 import json
-# Modules
-from Resource import Resource
+
+from utils.functions import *
+import utils.bit_permutation as bit_p
+import utils.digit_permutation as digit_p
+from utils.Resource import Resource
 
 CLK_PERIOD = int(os.environ["CLK_PERIOD"])
 METRICS_FILENAME = str(os.environ["METRICS_FILENAME"])
@@ -29,8 +34,6 @@ class NocTB:
         1)  check if everything correctly landed into the correct DESTINATION
             dst is defined by X_ADDR & Y_ADDR and those need to be equal to X_CORD & Y_CORD
             of the RESOURCE
-
-        TODO: 2) Check for DeadLocks & LiveLocks
 
         Mesh NoC has:
         - N Rows of switches
@@ -54,16 +57,26 @@ class NocTB:
             "col_m": int(os.environ["COL_M"]),
             "pckt_data_w": int(os.environ["PCKT_DATA_W"]),
             "fifo_depth_w": int(os.environ["FIFO_DEPTH_W"]),
+            "col_addr_w": ceil(log(int(os.environ["COL_M"]), 2)),
+            "row_addr_w": ceil(log(int(os.environ["ROW_N"]), 2)),
             "clk_period": int(os.environ["CLK_PERIOD"])
         }
 
         self.log.info(f"Created NocTB! {self.config}")
 
-        self.received = []
         self.sent = []
         self.rsc_list = []
+        self.last_warm_up_id = 0
         self.resource_n = self.config["row_n"] * self.config["col_m"]
         self.clk_period = self.config["clk_period"]
+        self.max_acc_traffic_ratio = 1
+        self.acc_traffic_ratio = 0
+        self.min_acc_traffic_ratio = 1
+        self.capture_period = 1000
+        self.injection_ratio = 1
+
+        self.received = []
+        self.received_separate = []
 
         for row_id in range(self.config["row_n"]):
             for col_id in range(self.config["col_m"]):
@@ -81,88 +94,141 @@ class NocTB:
                 }
 
                 self.rsc_list.append(Resource(dut, "", dut.clk_i, self.config_rsc, callback=self.mon_callback))
+                self.received_separate.append([])
 
     def mon_callback(self, t):
         self.received.append(t)
+        self.received_separate[t["sink"]].append(t)
 
-    def setup_dut(self):
-        cocotb.fork(self.reset_hdl())
-        self.dut.rst_ni <= 0
-        for i in range(self.rsc_list.__len__()):
-            self.dut.rsc_pckt_i[i] <= 0
-        self.dut.rsc_full_i <= 0
-        self.dut.rsc_ovrflw_i <= 0
-        self.dut.rsc_wren_i <= 0
-
-    def reset_swtb(self):
+    async def setup_dut(self):
+        await self.reset_hdl()
         for rsc in self.rsc_list:
-            rsc.clear_rsc_output(True)
+            await rsc.clear_rsc_output(sync=False)
+        await ClockCycles(self.dut.clk_i, 2)
 
-    async def reset_hdl(self):
-        await RisingEdge(self.dut.clk_i)
+    async def reset_hdl(self, cycle_n=5):
         self.dut.rst_ni <= 0
-
-        await ClockCycles(self.dut.clk_i, 5)
+        await ClockCycles(self.dut.clk_i, cycle_n)
         self.dut.rst_ni <= 1
+        await ClockCycles(self.dut.clk_i, cycle_n)
 
-    async def compare(self, testcase_name):
-        packets_dropped = 0
-        time_total = 0
+    async def network_0load_wait(self, timeout=1000, cycle_step=100):
+        self.log.info("...waiting...")
+        cycles_spent = 0
+        while True:
+            empty_ques = True
+            for rsc in self.rsc_list:
+                if rsc.que.__len__() != 0:
+                    empty_ques = False
+            if empty_ques:
+                await ClockCycles(self.dut.clk_i, cycle_step)
+                packets_sent = 0
+                for rsc in self.rsc_list:
+                    packets_sent += rsc.sent_packets.__len__()
+                self.log.info(f"{self.received.__len__()}/{packets_sent}")
+                cycles_spent += cycle_step
+                if packets_sent == self.received.__len__():
+                    break
+                else:
+                    if cycles_spent == timeout:
+                        raise TimeoutError
+            else:
+                await RisingEdge(self.dut.clk_i)
+
+    async def warm_up(self, warm_up_period=1000, injection_rate=0.5):
+        j = 1
+        for i in range(warm_up_period):
+            for rsc in self.rsc_list:
+                if bernouli(injection_rate):
+                    row = randint(0, self.config["row_n"] - 1)
+                    col = randint(0, self.config["col_m"] - 1)
+                    self.last_warm_up_id = j
+                    rsc.send_packet_to_xy(i, row, col)
+                    j += 1
+            await RisingEdge(self.dut.clk_i)
+
+    async def throughput(self, capture_period, injection_ratio):
+        # Wait for capture_period
+        # Calculate received/sent ratio
+        for i in range(capture_period):
+            await RisingEdge(self.dut.clk_i)
+
+        self.aggregate_packets(do_print=False)
+        sent_tmp = self.sent.copy()
+        rec_tmp = self.received.copy()
+        sent_sorted = sorted(sent_tmp, key=lambda k: k['data'])
+        rec_sorted = sorted(rec_tmp, key=lambda k: k['data'])
+
+        flow_arr_r = []
+        for rec_pckt in rec_sorted:
+            for sent_pckt in sent_sorted:
+                if rec_pckt['data'] == sent_pckt['data']:
+                    source = sent_pckt['source']
+                    sink = rec_pckt['sink']
+                    flow_arr_r.append([source, sink])
+                    break
+            else:
+                print(f"{rec_pckt['data']} not found!")
+
+        flow_arr_s = []
+        for packet_sent in sent_sorted:
+            source = packet_sent['source']
+            sink = packet_sent['sink']
+            flow_arr_s.append([source, sink])
+
+        flow_arr_r_occ = {}
+        flow_map = []
+        for flow in flow_arr_r:
+            if flow not in flow_map:
+                flow_map.append(flow)
+                flow_arr_r_occ.update({f"{flow}": flow_arr_r.count(flow)})
+
+        flow_arr_s_occ = {}
+        flow_map = []
+        for flow in flow_arr_s:
+            if flow not in flow_map:
+                flow_map.append(flow)
+                flow_arr_s_occ.update({f"{flow}": flow_arr_s.count(flow)})
+
+        flow_acc_traffic = {}
+        for flow in flow_arr_r_occ.keys():
+            flow_acc_traffic.update({f"{flow}": flow_arr_r_occ[flow]/flow_arr_s_occ[flow]})
+
+        accepted_traffic = []
+        for flow in flow_acc_traffic.items():
+            accepted_traffic.append(flow[1])
+
+        avg_acc_traffic = np.asarray(accepted_traffic).mean()
+        min_acc_traffic = np.asarray(accepted_traffic).min()
+        max_acc_traffic = np.asarray(accepted_traffic).max()
+
+        self.capture_period = capture_period
+        self.injection_ratio = injection_ratio
+        self.acc_traffic_ratio = avg_acc_traffic * injection_ratio
+        self.min_acc_traffic_ratio = min_acc_traffic * injection_ratio
+        self.max_acc_traffic_ratio = max_acc_traffic * injection_ratio
+
+        self.log.info(f"min_TRAFFIC {min_acc_traffic * injection_ratio} vs {injection_ratio}")
+        self.log.info(f"AVG_TRAFFIC {avg_acc_traffic * injection_ratio} vs {injection_ratio}")
+        self.log.info(f"max_TRAFFIC {max_acc_traffic * injection_ratio} vs {injection_ratio}")
+
+    def network_stats(self, received_pckts, sent_pckts):
+        total_time = 0
         total_hops = 0
         min_time = pow(2, 20)
         max_time = -1
         shortest_path = pow(2, 20)
         longest_path = -1
+
+        received_tmp = received_pckts.copy()
         sent_and_received = []
-
-        while True:
-            await ClockCycles(self.dut.clk_i, 10)
-            packets_sent = 0
-            for rsc in self.rsc_list:
-                packets_sent += rsc.sent_packets.__len__()
-
-            if packets_sent == self.received.__len__():
-                break
-
-        packets_sent = 0
-        for rsc in self.rsc_list:
-            packets_sent += rsc.sent_packets.__len__()
-            packets_dropped += rsc.dropped_packet_n
-
-            for sent_pckt in rsc.sent_packets:
-                self.sent.append(sent_pckt)
-                self.log.debug(sent_pckt)
-
-            for rec_pckt in rsc.received_pckts:
-                self.log.debug(rec_pckt)
-
-        self.log.info("------------------------------------------------------------------------- Final!")
-        packets_received = self.received.__len__()
-
-        if packets_dropped / packets_sent > 0.5:
-            raise TestFailure(
-                f"TB ERROR: Too many packets were dropped compared to sent! {packets_dropped}/{packets_sent}")
-
-        if packets_received != packets_sent:
-            self.log.error(f"Dropped packets {packets_dropped}")
-            raise TestFailure(f"Numbers of packets sent and received in the whole NOC is not the same "
-                              f"rec: {packets_received} != sent: {packets_sent}")
-
-        else:
-            self.log.error(f"Numbers of packets Dropped: {packets_dropped} (noc_full_o'HIGH)")
-            self.log.warning(f"Number of received packets matches the sent packet count rec/sent: "
-                             f"{packets_received}/{packets_sent}")
-
-            # check correctness (and what was sent and received)
-
-            received_tmp = self.received
-            for sent_pckt in self.sent:
-                s_col_dest = sent_pckt["col_dest"]
-                s_row_dest = sent_pckt["row_dest"]
-                s_data = sent_pckt["data"]
-                s_time = sent_pckt["time"]
-
-                checked = 0
+        for sent_pckt in sent_pckts:
+            s_col_dest = sent_pckt["col_dest"]
+            s_row_dest = sent_pckt["row_dest"]
+            s_data = sent_pckt["data"]
+            s_time = sent_pckt["time"]
+            checked = 0
+            if s_data >= self.last_warm_up_id:
                 for rp_idx, rec_pckt in enumerate(received_tmp):
                     r_col_dest = rec_pckt["col_dest"]
                     r_row_dest = rec_pckt["row_dest"]
@@ -172,13 +238,13 @@ class NocTB:
                         received_tmp.pop(rp_idx)
                         time_diff = r_time - s_time
 
+                        assert time_diff > 0, "badval"
+
                         s_row_cord, s_col_cord = divmod(sent_pckt["source"], self.config["col_m"])
                         r_row_cord, r_col_cord = divmod(rec_pckt["sink"], self.config["col_m"])
-
                         sent_and_received.append({"from": [sent_pckt["source"], s_row_cord, s_col_cord],
                                                   "to": [rec_pckt["sink"], r_row_cord, r_col_cord],
                                                   "time": time_diff})
-
                         if s_row_cord > r_row_cord:
                             vert_hops = s_row_cord - r_row_cord
                         else:
@@ -192,65 +258,116 @@ class NocTB:
                             shortest_path = hops_req
                         if hops_req > longest_path:
                             longest_path = hops_req
-
                         self.log.debug(sent_and_received[-1])
-
                         if time_diff < min_time:
                             min_time = time_diff
                         if time_diff > max_time:
                             max_time = time_diff
 
-                        time_total += time_diff
+                        total_time += time_diff
                         total_hops += hops_req
                         checked = 1
                         break
-
                 if not checked:
                     raise TestFailure(f"sent_packet not received {sent_pckt}")
 
-            if sent_and_received.__len__() == self.sent.__len__():
-                self.log.warning(f"All sent packets were properly received "
-                                 f"{sent_and_received.__len__()}/{self.sent.__len__()}")
+        avg_packet_latency = total_time / sent_and_received.__len__()
+        stats = {
+            "sr_len": sent_and_received.__len__(),
+            "avg_latency_ns": avg_packet_latency,
+            "avg_latency_cyc": avg_packet_latency / self.clk_period,
+            "min_latency": min_time,
+            "max_latency": max_time,
+            "total_time": total_time,
+            "total_hops": total_hops,
+            "avg_time_per_hop": total_time / total_hops,
+            "avg_cyc_per_hop": (total_time / total_hops) / self.clk_period,
+            "max_path": longest_path,
+            "min_path": shortest_path,
+            "avg_path": total_hops / len(sent_pckts)
+        }
+        return stats
 
-                mean_packet_life_ns = time_total / sent_and_received.__len__()
-                mean_packet_life_cyc = mean_packet_life_ns / self.clk_period
+    def aggregate_packets(self, do_print=True):
+        self.sent = []
 
-                self.log.warning("1. LifeTime:")
-                self.log.warning(f"   - Average packet lifetime: {mean_packet_life_ns:.2f} ns")
-                self.log.warning(f"   - Average packet lifetime: {mean_packet_life_cyc:.2f} cycles "
-                                 f"(CLK_PERIOD = {self.clk_period} ns)")
+        for rsc in self.rsc_list:
+            for sent_pckt in rsc.sent_packets:
+                self.sent.append(sent_pckt)
 
-                self.log.warning(f"   - Min packet lifetime    : {min_time} ns")
-                self.log.warning(f"   - Max packet lifetime    : {max_time} ns")
+        if do_print:
+            for rsc in self.rsc_list:
+                self.log.info(f"RSC {rsc.id} sent  {rsc.sent_packets.__len__()} /"
+                              f" {rsc.sent_packets.__len__() / self.sent.__len__() * 100} | "
+                              f"rec {rsc.received_pckts.__len__()/self.received.__len__() * 100}")
 
-                self.log.warning("2. Hops:")
-                self.log.warning(f"   - Total Hops             : {total_hops} "
-                                 f"(with included hops from Resource to Switch)")
-                self.log.warning(f"   - Mean Time per Hop      : {(time_total / total_hops):.2f} ns"
-                                 f"| {((time_total / total_hops) / self.clk_period):.2f} cyc")
-                self.log.warning(f"   - Longest packet path    : {longest_path} hops")
-                self.log.warning(f"   - Shortest packet path   : {shortest_path} hops")
-                self.log.warning(f"   - Average packet path    : {total_hops / self.sent.__len__():.2f} hops")
+    async def compare(self, testcase_name, add_to_json=True):
+        self.log.info(f"START COMPARISON")
+        await self.network_0load_wait()
+        self.log.info("------------------------------------------------------------------------- Final!")
 
-                self.log.info("Dumping Metrics")
-                metrics = {f"name": testcase_name,
-                           "packets_sent": packets_sent,
-                           "packets_received": packets_received,
-                           "packets_dropped": packets_dropped,
-                           "mean_packet_life_ns": mean_packet_life_ns,
-                           "mean_packet_life_cyc": mean_packet_life_cyc,
-                           "min_packet_life_ns": min_time,
-                           "max_packet_life_ns": max_time,
-                           "total_hops": total_hops,
-                           "mean_time_per_hop": (time_total / total_hops),
-                           "mean_cyc_per_hop": ((time_total / total_hops) / self.clk_period),
-                           "shortest_hop_path": shortest_path,
-                           "longest_hop_path": longest_path,
-                           "average_hop_path": total_hops / self.sent.__len__()
-                           }
+        self.aggregate_packets()
 
-                self.json_dump(metrics, METRICS_FILENAME)
+        packets_sent = self.sent.__len__() #- (self.last_warm_up_id+1)
+        packets_received = self.received.__len__() #- (self.last_warm_up_id+1)
+
+        if packets_received != packets_sent:
+            raise TestFailure(f"Numbers of packets sent and received in the whole NOC is not the same "
+                              f"rec: {packets_received} != sent: {packets_sent}")
+        else:
+            self.log.debug(f"Number of received packets matches the sent packet count rec/sent: "
+                           f"{packets_received}/{packets_sent}")
+
+            stats = self.network_stats(self.received, self.sent)
+
+            # check correctness (and what was sent and received)
+            if stats["sr_len"] == packets_sent:
+                self.log.debug(f"All sent packets were properly received "
+                               f"{stats['sr_len']}/{packets_sent}")
+
+                self.log.debug("1. LifeTime:")
+                self.log.info(f"   - Average packet lifetime: {stats['avg_latency_ns']:.2f} ns")
+                self.log.info(f"   - Average packet lifetime: {stats['avg_latency_cyc']:.2f} cycles "
+                               f"(CLK_PERIOD = {self.clk_period} ns)")
+
+                self.log.info(f"   - Min packet lifetime    : {stats['min_latency']} ns")
+                self.log.info(f"   - Max packet lifetime    : {stats['max_latency']} ns")
+
+                self.log.debug("2. Hops:")
+                self.log.debug(f"   - Total Hops             : {stats['total_time']} "
+                               f"(with included hops from Resource to Switch)")
+                self.log.debug(f"   - Average Time per Hop   : {stats['avg_time_per_hop']:.2f} ns"
+                               f"| {stats['avg_cyc_per_hop']:.2f} cyc")
+                self.log.debug(f"   - Longest packet path    : {stats['max_path']} hops")
+                self.log.debug(f"   - Shortest packet path   : {stats['min_path']} hops")
+                self.log.debug(f"   - Average packet path    : {stats['avg_path']:.2f} hops")
+
+                if add_to_json:
+                    self.log.debug("Dumping Metrics")
+                    metrics = {f"name": testcase_name,
+                               "packets_sent": packets_sent,
+                               "packets_received": packets_received,
+                               "avg_packet_latency_ns": stats['avg_latency_ns'],
+                               "avg_packet_latency_cyc": stats['avg_latency_cyc'],
+                               "min_packet_latency_ns": stats['min_latency'],
+                               "max_packet_latency_ns": stats['max_latency'],
+                               "total_hops": stats['total_hops'],
+                               "avg_time_per_hop": stats['avg_time_per_hop'],
+                               "avg_cyc_per_hop": stats['avg_cyc_per_hop'],
+                               "min_hop_path": stats['min_path'],
+                               "max_hop_path": stats['max_path'],
+                               "avg_hop_path": stats['avg_path'],
+                               "accepted_traffic": self.acc_traffic_ratio,
+                               "min_accepted_traffic": self.min_acc_traffic_ratio,
+                               "max_accepted_traffic": self.max_acc_traffic_ratio,
+                               "offered_traffic": self.injection_ratio,
+                               "capture_period": self.capture_period
+                               }
+
+                    self.json_dump(metrics, METRICS_FILENAME)
                 raise TestSuccess()
+            else:
+                self.log.error(f"Szto? {stats['sr_len']}/{packets_sent}, {self.last_warm_up_id}")
 
     def json_dump(self, metrics: dict, filename) -> None:
         if os.path.exists(filename):
@@ -271,208 +388,164 @@ class NocTB:
                 json.dump(json_file, outfile)
 
 
-@cocotb.test()
-async def smoke_test(dut, log_lvl=INFO, cycles=100000):
-    """
-    Testcase that tries to catch simple bold errors
-    Send the packet from LT switch to RB switch and reversed.
-
-    Args:
-        dut: top level HDL module
-        log_lvl: INFO or DEBUG
-        cycles: deprecated
-
-    Returns:
-        PASS or FAIL
-    """
-    log = SimLog("smoke_test")
+@cocotb.test(skip=True)
+async def smoke(dut, log_lvl=INFO, injection_rate=0.1):
+    log = SimLog("smoke")
     log.setLevel(log_lvl)
-    log.info("----------------------------------------------------------------------------- Setup!")
-    if int(os.environ['DEBUG_ATTACH']) > 0:
-        import pydevd_pycharm
-        pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
 
-    dut._discover_all()
-    log.debug(dut._sub_handles)
-    noctb = NocTB(dut, log_lvl)
-    noctb.setup_dut()
-    log.info("----------------------------------------------------------------------------- Simulation!")
-    await ClockCycles(dut.clk_i, 100)
-    timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() + noctb.config["fifo_depth_w"]) + 2))
-                          ._wait())
-    # Edge LT
-    # - send RT
-    await noctb.rsc_list[0].send_packet_to_xy(1, 0, noctb.config["col_m"] - 1)
-    await noctb.rsc_list[0].clear_rsc_output(True)
-
-    # - send LB
-    await noctb.rsc_list[0].send_packet_to_xy(2, noctb.config["row_n"] - 1, 0)
-    await noctb.rsc_list[0].clear_rsc_output(True)
-    # - send to Edge RB
-    await noctb.rsc_list[0].send_packet_to_xy(3, noctb.config["row_n"] - 1, noctb.config["col_m"] - 1)
-    await noctb.rsc_list[0].clear_rsc_output(True)
-
-    # Edge LT
-    # - send RT
-    await noctb.rsc_list[-1].send_packet_to_xy(4, 0, noctb.config["col_m"] - 1)
-    await noctb.rsc_list[-1].clear_rsc_output(True)
-    # - send LB
-    await noctb.rsc_list[-1].send_packet_to_xy(5, noctb.config["row_n"] - 1, 0)
-    await noctb.rsc_list[-1].clear_rsc_output(True)
-    # - send to Edge RB
-    await noctb.rsc_list[-1].send_packet_to_xy(6, 0, 0)
-    await noctb.rsc_list[-1].clear_rsc_output(True)
-
-    log.info("----------------------------------------------------------------------------- Results!")
-    comparison = cocotb.fork(noctb.compare("smoke"))
-    await First(timeout, comparison)
-    raise TimeoutError
-
-
-@cocotb.test()
-async def test_allpaths_1(dut, log_lvl=INFO, cycles=100000):
-    log = SimLog("test_all_paths_packet_doesnt_wait_in_fifo")
-    log.setLevel(log_lvl)
-    log.info("----------------------------------------------------------------------------- Setup!")
-    if int(os.environ['DEBUG_ATTACH']) > 0:
-        import pydevd_pycharm
-        pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
-
-    dut._discover_all()
-    log.debug(dut._sub_handles)
-    noctb = NocTB(dut, log_lvl)
-    noctb.setup_dut()
-    log.info("----------------------------------------------------------------------------- Simulation!")
-    await ClockCycles(dut.clk_i, 100)
+    tb = NocTB(dut, log_lvl)
+    await tb.setup_dut()
 
     # loop that goes over every reasource !
-    if pow(noctb.rsc_list.__len__(), 2) > pow(2, noctb.config["pckt_data_w"]):
-        raise TestError("Packet Data Width is not big enough to provide unique ID to each packet")
-
-    timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
-                                                         6) + 2))._wait())
-
-    multipliers = sample(range(pow(2, noctb.config["pckt_data_w"])), noctb.rsc_list.__len__() * noctb.resource_n)
-    for sending_rsc in noctb.rsc_list:
-        sources = sample(noctb.rsc_list, noctb.rsc_list.__len__())
+    if pow(tb.rsc_list.__len__(), 2) > pow(2, tb.config["pckt_data_w"]):
+        raise ValueError("Packet Data Width is not big enough to provide unique ID to each packet")
+    pid = list(range(pow(2, tb.config["pckt_data_w"])))
+    for sending_rsc in tb.rsc_list:
+        sources = tb.rsc_list.copy()
+        sources.pop(sending_rsc.id)
         for rec_rsc in sources:
-            await sending_rsc.send_packet_to_xy(multipliers[0],
-                                                rec_rsc.config["row_cord"],
-                                                rec_rsc.config["col_cord"])
-            multipliers.pop(0)
-            await sending_rsc.clear_rsc_output(True)
-            await ClockCycles(dut.clk_i, 1)
-
-    log.info("----------------------------------------------------------------------------- Results!")
-    comparison = cocotb.fork(noctb.compare("all_paths_1"))
-    await First(timeout, comparison)
-    raise TimeoutError
-
-
-@cocotb.test()
-async def test_allpaths_2(dut, log_lvl=INFO, cycles=100000):
-    log = SimLog("test_allpaths_pckt_waits_in_fifo")
-    log.setLevel(log_lvl)
-
-    log.info("----------------------------------------------------------------------------- Setup!")
-    if int(os.environ['DEBUG_ATTACH']) > 0:
-        import pydevd_pycharm
-        pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
-
-    dut._discover_all()
-    log.debug(dut._sub_handles)
-    noctb = NocTB(dut, log_lvl)
-    noctb.setup_dut()
-    log.info("----------------------------------------------------------------------------- Simulation!")
+            sending_rsc.send_packet_to_xy(pid[0], rec_rsc.config["row_cord"], rec_rsc.config["col_cord"])
+            pid.pop(0)
+            await ClockCycles(dut.clk_i, 5)
     await ClockCycles(dut.clk_i, 100)
-    timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
-                                                         6) + 2))._wait())
-    # loop that goes over every reasource !
-    if pow(noctb.rsc_list.__len__(), 2) > pow(2, noctb.config["pckt_data_w"]):
-        raise TestError("Packet Data Width is not big enough to provide unique ID to each packet")
-
-    multipliers = sample(range(pow(2, noctb.config["pckt_data_w"])), noctb.rsc_list.__len__() * noctb.resource_n)
-    for sending_rsc in noctb.rsc_list:
-        sources = sample(noctb.rsc_list, noctb.rsc_list.__len__())
+    pid = list(range(pow(2, tb.config["pckt_data_w"])))
+    for sending_rsc in tb.rsc_list:
+        sources = tb.rsc_list.copy()
+        sources.pop(sending_rsc.id)
         for rec_rsc in sources:
-            await sending_rsc.send_packet_to_xy(multipliers[0],
-                                                rec_rsc.config["row_cord"],
-                                                rec_rsc.config["col_cord"])
-            multipliers.pop(0)
-        await sending_rsc.clear_rsc_output(True)
-
-    log.info("----------------------------------------------------------------------------- Results!")
-    comparison = cocotb.fork(noctb.compare("allpaths_2"))
-    await First(timeout, comparison)
-    raise TimeoutError
+            sending_rsc.send_packet_to_xy(pid[0], rec_rsc.config["row_cord"], rec_rsc.config["col_cord"])
+            pid.pop(0)
+            await ClockCycles(dut.clk_i, 10)
+    await tb.compare("smoke", add_to_json=False)
 
 
-@cocotb.test()
-async def test_setload(dut, log_lvl=INFO, load_percentage=0.1, active_cycles_n=1000):
-    """
-    Testcase that enforces N% of resources each cycle that issue a packet in the NoC.
-
-    Args:
-        dut: toplevel module
-        log_lvl: logging.INFO or logging.DEBUG
-        load_percentage: How many resources(%) are active in each cycle
-        active_cycles_n: How many cycles are resources active
-
-    Returns:
-        PASS, ERROR, FAIL
-    """
-
-    log = SimLog("test_percentage_load")
+async def uniform_random(dut, log_lvl=INFO, injection_rate=0.1, capture_period=2000, warm_up_period=500):
+    log = SimLog("uniform_random")
     log.setLevel(log_lvl)
+    tb = NocTB(dut, log_lvl)
+    await tb.setup_dut()
+    assert (int(len(tb.rsc_list)*injection_rate*capture_period)) < pow(2, tb.config["pckt_data_w"]),\
+        "Pckt Data Width is not big enough to provide unique ID to each packet"
 
-    log.info("----------------------------------------------------------------------------- Setup!")
-    if int(os.environ['DEBUG_ATTACH']) > 0:
-        import pydevd_pycharm
-        pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
+    throughput = cocotb.fork(tb.throughput(capture_period, injection_rate))
 
-    dut._discover_all()
-    log.debug(dut._sub_handles)
-    noctb = NocTB(dut, log_lvl)
-    noctb.setup_dut()
-    log.info("----------------------------------------------------------------------------- Simulation!")
+    pid = list(range(tb.last_warm_up_id, pow(2, tb.config["pckt_data_w"])))
+    i = 0
+    while i < capture_period:
+        for sender in tb.rsc_list:
+            if bernouli(injection_rate):
+                row = randint(0, tb.config["row_n"] - 1)
+                col = randint(0, tb.config["col_m"] - 1)
+                while row == sender.config["row_cord"] and col == sender.config["col_cord"]:
+                    row = randint(0, tb.config["row_n"] - 1)
+                    col = randint(0, tb.config["col_m"] - 1)
+                sender.send_packet_to_xy(pid[0], row, col)
+                pid.pop(0)
 
-    active_resource_n = ceil(noctb.rsc_list.__len__() * load_percentage)
-    if active_resource_n > (noctb.rsc_list.__len__()):
-        active_resource_n = noctb.rsc_list.__len__()
+        await RisingEdge(dut.clk_i)
+        i += 1
 
-    await ClockCycles(dut.clk_i, 100)
-    timeout = cocotb.fork(ClockCycles(dut.clk_i, pow(2, (noctb.rsc_list.__len__() +
-                                                         6 +
-                                                         active_resource_n + 2)))._wait())
+    await throughput
+    await tb.compare(f"u_rand_{injection_rate}")
 
-    if (active_resource_n * active_cycles_n) > pow(2, noctb.config["pckt_data_w"]):
-        raise TestError("Pckt Data Width is not big enough to provide unique ID to each packet")
-    else:
-        log.error(f"active_resource_n {active_resource_n}")
 
-    multipliers = sample(range(pow(2, noctb.config["pckt_data_w"])), active_resource_n * active_cycles_n)
-    for i in range(active_cycles_n):
-        sources = sample(noctb.rsc_list, active_resource_n)
-        sender_forks = []
-        for sender in sources:
-            row = randint(0, noctb.config["row_n"] - 1)
-            col = randint(0, noctb.config["col_m"] - 1)
-            sender_forks.append(cocotb.fork(sender.send_packet_to_xy(multipliers[0], row, col)))
-            multipliers.pop(0)
-        await Combine(*sender_forks)
+async def bit_permutation(dut, log_lvl=INFO, permutation="complement", injection_rate=0.1, capture_period=2000):
+    # Different Types of bit permutation traffic
+    log = SimLog("bit_permutation")
+    log.setLevel(log_lvl)
+    tb = NocTB(dut, log_lvl)
+    await tb.setup_dut()
 
-        sender_forks = []
-        for sender in sources:
-            sender_forks.append(cocotb.fork(sender.clear_rsc_output(True)))
-        await Combine(*sender_forks)
+    # Destination node is calculated from the coordinates of the source node
+    assert (len(tb.rsc_list)*injection_rate*capture_period + 1000) < pow(2, tb.config["pckt_data_w"]), "Pckt Data Width is not big enough to provide unique ID to each packet"
 
-    log.info("----------------------------------------------------------------------------- Results!")
-    comparison = cocotb.fork(noctb.compare(f"{load_percentage*100}%_load"))
-    await First(timeout, comparison)
-    raise TimeoutError
+    throughput = cocotb.fork(tb.throughput(capture_period, injection_rate))
+    pid = sample(range(pow(2, tb.config["pckt_data_w"])), int(len(tb.rsc_list)*injection_rate*capture_period + 1000))
+    i = 0
+    while i < capture_period:
+        for sender in tb.rsc_list:
+            if bernouli(injection_rate):
+                row_cord = BinaryValue(sender.config["row_cord"], ceil(math.log(int(os.environ["ROW_N"]), 2)), bigEndian=False).binstr
+                col_cord = BinaryValue(sender.config["col_cord"], ceil(math.log(int(os.environ["COL_M"]), 2)), bigEndian=False).binstr
 
+                if permutation == "complement":
+                    dest = bit_p.invert(row_cord + col_cord)
+                elif permutation == "shuffle":
+                    dest = bit_p.shuffle(row_cord + col_cord)
+                elif permutation == "reverse":
+                    dest = bit_p.reverse(row_cord + col_cord)
+                elif permutation == "rotate":
+                    dest = bit_p.rotate(row_cord + col_cord)
+                else:
+                    raise ValueError(f"ERROR: Incorrect Bit permutation function '{permutation}'")
+
+                row_dest = BinaryValue(dest[0:tb.config["row_addr_w"]], ceil(math.log(int(os.environ["ROW_N"]), 2)),
+                                       bigEndian=False).value
+                col_dest = BinaryValue(dest[tb.config["row_addr_w"]::], ceil(math.log(int(os.environ["COL_M"]), 2)),
+                                       bigEndian=False).value
+
+                if row_dest >= tb.config["row_n"]:
+                    row_dest = tb.config["row_n"] - 1
+                if col_dest >= tb.config["col_m"]:
+                    col_dest = tb.config["col_m"] - 1
+
+                sender.send_packet_to_xy(pid[0], row_dest, col_dest)
+                pid.pop(0)
+        await RisingEdge(dut.clk_i)
+        i += 1
+    await throughput
+    await tb.compare(f"bp_{permutation[0:3]}_{injection_rate}")
+
+
+async def digit_permutation(dut, log_lvl=INFO, permutation="neighbour", injection_rate=0.1, capture_period=2000):
+    # Different Types of bit permutation traffic
+    log = SimLog("digit_permutation")
+    log.setLevel(log_lvl)
+    tb = NocTB(dut, log_lvl)
+    await tb.setup_dut()
+
+    # Destination node is calculated from the coordinates of the source node
+    assert (len(tb.rsc_list)*injection_rate*capture_period + 1000) < pow(2, tb.config["pckt_data_w"]),\
+            "Pckt Data Width is not big enough to provide unique ID to each packet"
+
+    throughput = cocotb.fork(tb.throughput(capture_period, injection_rate))
+    pid = sample(range(pow(2, tb.config["pckt_data_w"])), int(len(tb.rsc_list)*injection_rate*capture_period + 1000))
+    i = 0
+    while i < capture_period:
+        for sender in tb.rsc_list:
+            if bernouli(injection_rate):
+                row_cord = BinaryValue(sender.config["row_cord"], tb.config["row_addr_w"], bigEndian=False).value
+                col_cord = BinaryValue(sender.config["col_cord"], tb.config["col_addr_w"], bigEndian=False).value
+
+                if permutation == "neighbour":
+                    row_dest = digit_p.neighbour(row_cord, tb.config["row_n"])
+                    col_dest = digit_p.neighbour(col_cord, tb.config["col_m"])
+                elif permutation == "tornado":
+                    row_dest = digit_p.tornado(row_cord, tb.config["row_n"])
+                    col_dest = digit_p.tornado(col_cord, tb.config["col_m"])
+                else:
+                    raise ValueError(f"ERROR: Incorrect Digit permutation function '{permutation}'")
+
+                sender.send_packet_to_xy(pid[0], row_dest, col_dest)
+
+                pid.pop(0)
+        await RisingEdge(dut.clk_i)
+        i += 1
+
+    await throughput
+    await tb.compare(f"dp_{permutation[0:3]}_{injection_rate}")
 
 if int(os.environ["TESTFACTORY"]) == 1:
-    tf = TestFactory(test_setload)
-    tf.add_option("load_percentage", [0.3, 0.5, 0.7])
+    tf = TestFactory(uniform_random)
+    tf.add_option("injection_rate", [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325, 0.35])
     tf.generate_tests()
+
+    tf = TestFactory(bit_permutation)
+    tf.add_option("injection_rate", [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325, 0.35])
+    tf.add_option("permutation", ["complement"])
+    tf.generate_tests()
+
+    # tf = TestFactory(digit_permutation)
+    # tf.add_option("injection_rate", [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325])
+    # tf.add_option("permutation", ["neighbour"])
+    # tf.generate_tests()
