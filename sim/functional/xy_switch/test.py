@@ -1,7 +1,7 @@
 import cocotb
 from cocotb.clock import Clock
 from cocotb.result import TestSuccess, TestError, TestFailure
-from cocotb.triggers import ClockCycles, RisingEdge
+from cocotb.triggers import ClockCycles, RisingEdge, Combine
 from driver import SWPacketDriver
 from mon_i import SWIMon
 from mon_o import SWOMon
@@ -9,7 +9,7 @@ from logging import INFO, DEBUG
 from cocotb.log import SimLog
 from cocotb.regression import TestFactory
 import os
-from random import randint, getrandbits
+from random import randint, getrandbits, sample
 
 CLOCK_PERIOD_NS = 10
 
@@ -101,11 +101,11 @@ class SWTB:
         for rid, rd2 in enumerate(sorted_seen):
             if rid < self.expected_out.__len__():
                 if rd2["id"] == self.expected_out[rid]["id"]:
-                    self.log.debug(f"comapre {rd2}, {self.expected_out[rid]}")
+                    self.log.debug(f"compare {rd2}, {self.expected_out[rid]}")
                 else:
-                    self.log.debug(f"comapre {rd2}, {self.expected_out[rid]}")
+                    self.log.debug(f"compare {rd2}, {self.expected_out[rid]}")
             else:
-                self.log.error(f"comapre {rd2}, This packet was not expected")
+                self.log.error(f"compare {rd2}, This packet was not expected")
 
         dropped_pckt_n = self.sw_drv.sent_packets - self.sw_o_mon.packets_received
         if dropped_pckt_n == self.sw_i_mon.loss_packets.__len__():
@@ -144,38 +144,6 @@ class SWTB:
 
 
 @cocotb.test()
-async def test_255(dut, log_lvl=INFO, cycles=100000):
-    cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
-
-    if int(os.environ['DEBUG_ATTACH']) > 0:
-        import pydevd_pycharm
-        pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
-
-    swtb = SWTB(dut.xy_switch_inst, log_lvl)
-    swtb.setup_dut(cycle_n=cycles)
-
-    # Clear FIFO inputs
-    swtb.reset_swtb()
-    await swtb.sw_drv.clear_sw_input()
-    await swtb.reset_hdl()
-
-    await ClockCycles(dut.clk_i, 10)
-
-    cocotb.fork(swtb.sw_drv.gen_rand_full(255))
-
-    await send255(swtb)
-
-    await swtb.sw_drv.clear_sw_input(True)
-    dut.nxt_fifo_full_i <= 0
-
-    await ClockCycles(dut.clk_i, 10)
-
-    await ClockCycles(dut.clk_i, 100)
-
-    swtb.compare()
-
-
-@cocotb.test()
 async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fifo_rand=True, cycles=100000):
     cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
 
@@ -199,8 +167,8 @@ async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fi
     else:
         transaction_n = pow(2, swtb.config["packet_data_w"]) - 1
 
-    if with_nxt_fifo_rand is True:
-        cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
+    # if with_nxt_fifo_rand is True:
+    #     cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
 
     for i in range(transaction_n):
         src = randint(0, swtb.config["neighbours_n"]-1)
@@ -210,47 +178,6 @@ async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fi
 
     await swtb.sw_drv.clear_sw_input(True)
 
-    await ClockCycles(dut.clk_i, 10)
-
-    await ClockCycles(dut.clk_i, 100)
-
-    swtb.compare()
-
-
-@cocotb.test()
-async def test_rand_multi_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fifo_rand=True, cycles=100000):
-    cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
-
-    if int(os.environ['DEBUG_ATTACH']) > 0:
-        import pydevd_pycharm
-        pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
-
-    swtb = SWTB(dut.xy_switch_inst, log_lvl)
-    swtb.setup_dut(cycle_n=cycles)
-
-    # Clear FIFO inputs
-    swtb.reset_swtb()
-
-    await swtb.sw_drv.clear_sw_input()
-    await swtb.reset_hdl()
-
-    await ClockCycles(dut.clk_i, 10)
-
-    if transaction_w <= swtb.config["packet_data_w"]:
-        transaction_n = pow(2, transaction_w) - 1
-    else:
-        transaction_n = pow(2, swtb.config["packet_data_w"]) - 1
-
-    if with_nxt_fifo_rand is True:
-        cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
-
-    for i in range(transaction_n):
-        n = randint(0, swtb.config["neighbours_n"]-1)
-        await swtb.sw_drv.write_to_n_inputs(n)
-
-    await swtb.sw_drv.clear_sw_input(True)
-
-    await ClockCycles(dut.clk_i, 10)
     await ClockCycles(dut.clk_i, 100)
 
     swtb.compare()
@@ -258,29 +185,4 @@ async def test_rand_multi_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fif
 if int(os.environ["TESTFACTORY"]):
     tf = TestFactory(test_function=test_rand_single_input)
     tf.add_option(name='transaction_w', optionlist=[*range(10)])
-    tf.add_option(name='with_nxt_fifo_rand', optionlist=[True, False])
     tf.generate_tests()
-    tf2 = TestFactory(test_function=test_rand_multi_input)
-    tf2.add_option(name='transaction_w', optionlist=[*range(10)])
-    tf2.add_option(name='with_nxt_fifo_rand', optionlist=[True, False])
-    tf2.generate_tests()
-
-
-async def send255(swtb):
-    for i in range(10):
-        await send5way(swtb)
-        await send5way(swtb)
-        await send5way(swtb)
-        await send5way(swtb)
-        await send5way(swtb)
-    await send5way(swtb)
-
-
-async def send5way(swtb):
-    await swtb.sw_drv.write_to_single_input(0, 1, 1)  # from Reasource to Resource
-    await swtb.sw_drv.write_to_single_input(2, 0, 1)  # send left
-    await swtb.sw_drv.write_to_single_input(1, 2, 1)  # send right
-    if swtb.config["neighbours_n"] > 3:
-        await swtb.sw_drv.write_to_single_input(3, 1, 2)  # send down
-        if swtb.config["neighbours_n"] == 5:
-            await swtb.sw_drv.write_to_single_input(4, 1, 0)  # send up

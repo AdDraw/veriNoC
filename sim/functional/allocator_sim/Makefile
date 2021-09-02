@@ -8,6 +8,7 @@ SRC_DIR=$(shell git rev-parse --show-toplevel)/srcs
 VERILOG_SOURCES+= $(SRC_DIR)/switch/constants.v
 VERILOG_SOURCES+= $(SRC_DIR)/switch/arbiters/hop_cnt_arbiter.v
 VERILOG_SOURCES+= $(SRC_DIR)/switch/arbiters/static_priority_arbiter.v
+VERILOG_SOURCES+= $(SRC_DIR)/switch/arbiters/matrix_arbiter.v
 VERILOG_SOURCES+= $(SRC_DIR)/switch/allocators/allocator.v
 ifeq ($(SYNTH), 1)
 	VERILOG_SOURCES= $(SRC_DIR)/switch/allocators/allocator_synth.v

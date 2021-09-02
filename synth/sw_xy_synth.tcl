@@ -22,11 +22,15 @@ set params(6) PCKT_DATA_W
 
 set values(0) 1
 set values(1) 1
+
 set values(2) 5
-set values(3) 6
-set values(4) 3
-set values(5) 3
-set values(6) 8
+
+set values(3) 2
+
+set values(4) 2
+set values(5) 2
+
+set values(6) 64
 
 chparam -list
 log "Parameters and their values:(after they were overriden with arguments)"
@@ -60,12 +64,10 @@ read_verilog  -DYS_XY_SW_TOP=1 \
 
 echo off
 
-hierarchy -check -top $top_module
-# the high-level stuff
-procs; opt; fsm; opt; memory; opt
-
-# mapping to internal cell library
-techmap; opt
+hierarchy -top $top_module -keep_portwidths -check
+synth -top $top_module -flatten
+dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
+abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
 
 # cleanup
 clean
@@ -78,3 +80,4 @@ json -o $::env(JSON_PATH)/$top_module.json
 write_verilog ../srcs/switch/simple_mesh_xy/xy_synth.v
 
 stat
+ltp

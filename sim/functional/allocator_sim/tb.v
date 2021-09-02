@@ -17,18 +17,18 @@ module tb
     (
       input                           rst_ni,
       // Routing result (states which signals want to use this output channel)
-      input [(IN_N*`RTR_RES_W)-1 : 0] rtr_res_i,    // this could be a 1 bit signal that simply states that an input wants to use this output
-      input [(IN_N*HOP_CNT_W)-1:0]    hop_count_i,  // used to decide initial priority
+      input [(IN_N*`RTR_RES_W)-1 : 0] rtr_res_i,    // this could be a 1 bit signal that simply states that an
+      input [(IN_N*`RTR_RES_W)-1 : 0] rtr_res_vld_i,
+      //input wants to use this output
+      // input [(IN_N*HOP_CNT_W)-1:0]    hop_count_i,  // used to decide initial priority
       input [(IN_N*FLIT_ID_W)-1 : 0]  flit_id_i,
       input [IN_N-1:0]                data_vld_i,
-      // Backpressure (information from the forward node connected to the channel)
-      input                           backpressure_fifo_full_i,
       // Select the input to route
       output [`CHAN_SEL_W-1 : 0]      sel_o,     // answers which input (based on the input arbitration)
       output                          out_vld_o,
       // output out_vld_o,                       //answers when the data is being routed(can be routed) (based on backpressure)
       // Data to send to VCs (Virtual Channel)
-      output                          buffer_space_available_o,
+      output                          forward_node_rdy_i,
       output [IN_N-1:0 ]              chan_alloc_o
       );
 
@@ -57,12 +57,13 @@ module tb
       .clk_i(clk_i),
       .rst_ni(rst_ni),
       .rtr_res_i(rtr_res_i),
-      .hop_count_i(hop_count_i),
+      .rtr_res_vld_i(rtr_res_vld_i),
+      .hop_count_i(0),
       .flit_id_i(flit_id_i),
-      .backpressure_fifo_full_i(backpressure_fifo_full_i),
       .data_vld_i(data_vld_i),  //From VC
+      .forward_node_rdy_i(forward_node_rdy_i),
       .sel_o(sel_o),
-      .buffer_space_available_o(buffer_space_available_o),  // to VCs
+      .out_vld_o(out_vld_o),
       .chan_alloc_o(chan_alloc_o)                           // to VCs
       );
 
