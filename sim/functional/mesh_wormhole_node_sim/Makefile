@@ -7,8 +7,8 @@ SRC_DIR=$(shell git rev-parse --show-toplevel)/srcs
 # files
 VERILOG_SOURCES += $(SRC_DIR)/switch/constants.v
 VERILOG_SOURCES += $(SRC_DIR)/components/circ_fifo.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/hop_cnt_arbiter.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/static_priority_arbiter.v
+# VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/hop_cnt_arbiter.v
+VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/matrix_arbiter.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/allocators/allocator.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/routers/xy_router.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/virtual_channels/virtual_channel.v
@@ -16,6 +16,7 @@ VERILOG_SOURCES += $(SRC_DIR)/switch/crossbars/nxn_parrallel_crossbar.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/mesh_wormhole/mesh_wormhole_node.v
 ifeq ($(SYNTH), 1)
 	VERILOG_SOURCES = $(SRC_DIR)/switch/constants.v
+	VERILOG_SOURCES += $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
 	VERILOG_SOURCES += $(SRC_DIR)/switch/mesh_wormhole/mesh_wormhole_node_synth.v
 endif
 VERILOG_SOURCES += ./tb.sv

@@ -16,22 +16,24 @@ VERILOG_SOURCES += $(SWITCH_VER_DIR)/simple_mesh_xy/switch_constants.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/simple_mesh_xy/xy_switch.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/simple_mesh_xy/control_unit.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/static_priority_arbiter.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/matrix_arbiter.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/crossbars/nxn_single_crossbar.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/routers/xy_router.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/../components/circ_fifo.v
 VERILOG_SOURCES += $(NOC_VER_DIR)/mesh_xy_noc.v
 ifeq ($(SYNTH), 1)
-	VERILOG_SOURCES = $(NOC_VER_DIR)/mesh_xy_noc_synth.v
+	VERILOG_SOURCES = $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
+	VERILOG_SOURCES += $(NOC_VER_DIR)/mesh_xy_noc_synth.v
 endif
-VERILOG_SOURCES += ./tb.sv
+
 
 # Specifies essentials of the DUT and the cocotb TB
 TOPLEVEL 	:= tb
 MODULE   	:= test
-SIM 			?= icarus
+SIM 		?= icarus
 
-export ROW_N				?= 4
-export COL_M				?= 4
+export ROW_N		?= 4
+export COL_M		?= 4
 export PCKT_DATA_W	?= 8
 export FIFO_DEPTH_W	?= 8
 
@@ -41,16 +43,27 @@ export CLK_PERIOD   ?= 10
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
 
-COMPILE_ARGS+= -P $(TOPLEVEL).ROW_N=$(ROW_N)
-COMPILE_ARGS+= -P $(TOPLEVEL).COL_M=$(COL_M)
-COMPILE_ARGS+= -P $(TOPLEVEL).PCKT_DATA_W=$(PCKT_DATA_W)
-COMPILE_ARGS+= -P $(TOPLEVEL).FIFO_DEPTH_W=$(FIFO_DEPTH_W)
-COMPILE_ARGS+= -P $(TOPLEVEL).CLK_PERIOD=$(CLK_PERIOD)
-COMPILE_ARGS+= -D SIMULATION=1
-ifeq ($(LOG_DEBUG), 1)
-	COMPILE_ARGS+= -D LOG_DEBUG
+ifeq ($(SIM), verilator)
+	VERILOG_SOURCES += ./tb1.sv
+	COMPILE_ARGS+= -sv --stats --trace -j 6
+	COMPILE_ARGS+= -GROW_N=$(ROW_N)
+	COMPILE_ARGS+= -GCOL_M=$(COL_M)
+	COMPILE_ARGS+= -GPCKT_DATA_W=$(PCKT_DATA_W)
+	COMPILE_ARGS+= -GFIFO_DEPTH_W=$(FIFO_DEPTH_W)
+	COMPILE_ARGS+= -GCLK_PERIOD=$(CLK_PERIOD)
+	COMPILE_ARGS+= -DSIMULATION=1
+else
+	VERILOG_SOURCES += ./tb.sv
+	COMPILE_ARGS+= -P $(TOPLEVEL).ROW_N=$(ROW_N)
+	COMPILE_ARGS+= -P $(TOPLEVEL).COL_M=$(COL_M)
+	COMPILE_ARGS+= -P $(TOPLEVEL).PCKT_DATA_W=$(PCKT_DATA_W)
+	COMPILE_ARGS+= -P $(TOPLEVEL).FIFO_DEPTH_W=$(FIFO_DEPTH_W)
+	COMPILE_ARGS+= -P $(TOPLEVEL).CLK_PERIOD=$(CLK_PERIOD)
+	COMPILE_ARGS+= -D SIMULATION=1
+	ifeq ($(LOG_DEBUG), 1)
+		COMPILE_ARGS+= -D LOG_DEBUG
+	endif
 endif
-
 
 DOT_BINARY ?= dot
 test_profile.pstat: sim

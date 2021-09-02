@@ -3,11 +3,11 @@ module tb
     parameter COL_CORD = 0,
     parameter ROW_CORD = 0,
     parameter PORT_N = 5, // 1 is minimum cause RESOURCE,
-    parameter FIFO_DEPTH_W = 3,
-    parameter COL_ADDR_W = 4,
-    parameter ROW_ADDR_W = 4,
-    parameter PCKT_DATA_W = 8,
-    parameter PCKT_W = COL_ADDR_W + ROW_ADDR_W + PCKT_DATA_W
+    parameter IN_FIFO_DEPTH_W = 3,
+    parameter PACKET_COL_ADDR_W = 4,
+    parameter PACKET_ROW_ADDR_W = 4,
+    parameter PACKET_DATA_W = 8,
+    parameter PACKET_W = PCKT_COL_ADDR_W + PCKT_ROW_ADDR_W + PCKT_DATA_W
     )
   (
 
@@ -17,7 +17,7 @@ module tb
 
     // SWITCH INPUT BUFFER ports
     input   [PORT_N - 1 : 0]            wr_en_sw_i,
-    input   [PCKT_W * PORT_N - 1 : 0]   pckt_sw_i,
+    input   [PACKET_W * PORT_N - 1 : 0] pckt_sw_i,
     output  [PORT_N - 1 : 0]            in_fifo_full_o,
     output  [PORT_N - 1 : 0]            in_fifo_overflow_o,
 
@@ -25,7 +25,7 @@ module tb
     input   [PORT_N - 1 : 0]            nxt_fifo_full_i,
     input   [PORT_N - 1 : 0]            nxt_fifo_overflow_i,
     output  [PORT_N - 1 : 0]            wr_en_sw_o,
-    output  [PCKT_W * PORT_N - 1 : 0]   pckt_sw_o
+    output  [PACKET_W * PORT_N - 1 : 0] pckt_sw_o
     );
 
     initial begin
@@ -42,11 +42,11 @@ module tb
       .COL_CORD(COL_CORD),
       .ROW_CORD(ROW_CORD),
       .PORT_N(PORT_N),
-      .FIFO_DEPTH_W(FIFO_DEPTH_W),
-      .COL_ADDR_W(COL_ADDR_W),
-      .ROW_ADDR_W(ROW_ADDR_W),
-      .PCKT_DATA_W(PCKT_DATA_W),
-      .PCKT_W(PCKT_W)
+      .IN_FIFO_DEPTH_W(IN_FIFO_DEPTH_W),
+      .PCKT_COL_ADDR_W(PACKET_COL_ADDR_W),
+      .PCKT_ROW_ADDR_W(PACKET_ROW_ADDR_W),
+      .PCKT_DATA_W(PACKET_DATA_W),
+      .PCKT_W(PACKET_W)
       )
     xy_switch_inst
     (

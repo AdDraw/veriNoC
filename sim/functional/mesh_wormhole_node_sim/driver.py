@@ -14,11 +14,11 @@ class NodeVCDriver(BusDriver):
         "hop_cnt_w": 4
     }
 
-    def __init__(self, entity, name, clock, id, config=None, log_lvl=INFO):
+    def __init__(self, entity, name, clock, node_id, config=None, log_lvl=INFO):
         self.entity = entity
         self.name = name
         self.clock = clock
-        self.id = id
+        self.id = node_id
         if config is None:
             self.config = self._default_config
         else:

@@ -99,8 +99,7 @@ module allocator
   reg [`CHAN_SEL_W-1 : 0] sel;
 
   // WIRES
-  wire [IN_N-1:0]         vld_input_hop_w;
-  wire [IN_N-1:0]         vld_input_stat_w;
+  wire [IN_N-1:0]         vld_input_w;
   wire                    not_conclusive_w;
   wire [$clog2(IN_N)-1:0] static_arb_res_w;
   wire [$clog2(IN_N)-1:0] hop_arb_res_w;        //specifies which input to choose
@@ -115,7 +114,7 @@ module allocator
     end
   endgenerate
 
-  assign vld_input_hop_w = rtr_res_w & data_vld_i;
+  assign vld_input_w = rtr_res_w & data_vld_i;
 
   always @ ( posedge(clk_i), negedge(rst_ni) ) begin
     if (!rst_ni) begin
@@ -129,45 +128,24 @@ module allocator
         end
       end
       else begin
-        if (|vld_input_hop_w) begin
-          chan_alloc <= 0;
-          if (not_conclusive_w) begin                 // static priority arbiter
-            chan_alloc[static_arb_res_w]  <= 1'b1;
-            sel                           <= static_arb_res_w;
-          end
-          else begin                                  // hop cnt arbiter
-            chan_alloc[hop_arb_res_w]     <= 1'b1;
-            sel                           <= hop_arb_res_w;
-          end
+        if (|vld_input_w) begin
+          chan_alloc                    <= 0;
+          chan_alloc[static_arb_res_w]  <= 1'b1;
+          sel                           <= static_arb_res_w;
         end
       end
     end
   end
 
-  // Input Arbitration in case of COMPETING INPUTs
-  hop_cnt_arbiter //initial arbitration based on hop_cnt values
-  #(
-      .IN_N(IN_N),
-      .HOP_CNT_W(HOP_CNT_W)
-      )
-  hop_arb
-    (
-      .vld_input_i(vld_input_hop_w),
-      .hop_cnt_i(hop_count_i),
-      .vld_input_o(vld_input_stat_w),
-      .arb_res_o(hop_arb_res_w),
-      .not_conclusive_o(not_conclusive_w)
-      );
-
-  static_priority_arbiter // secondary arbitration if primary arb is not conclusive
-  #(
-      .IN_N(IN_N)
-      )
-  priority_arb
-    (
-      .vld_input_i(vld_input_stat_w),
-      .arb_res_o(static_arb_res_w)
-      );
+  matrix_arb #( // secondary arbitration if primary arb is not conclusive
+    .IN_N(IN_N)
+    )
+  arb(
+    .clk_i    (clk_i),
+    .rst_ni   (rst_ni),
+    .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : vld_input_w ),
+    .grant_o  (static_arb_res_w)
+    );
 
   // Allocation of VC
   assign chan_alloc_o = chan_alloc;

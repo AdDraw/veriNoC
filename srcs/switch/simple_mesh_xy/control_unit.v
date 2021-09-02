@@ -48,7 +48,7 @@ module control_unit
         if ( |wr_en_w )
         begin
           for (i = 0; i < PORT_N; i = i + 1) begin
-            if ( i == mux_in_sel_i )
+            if ( i[$clog2(PORT_N)-1 : 0] == mux_in_sel_i )
             begin
               vld_input_v[i] <= 1'b0; // CLEAN !
             end
