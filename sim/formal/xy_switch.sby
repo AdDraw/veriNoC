@@ -15,6 +15,7 @@ read -formal constants.v
 read -formal switch_constants.v
 read -formal circ_fifo.v
 read -formal static_priority_arbiter.v
+read -formal matrix_arbiter.v
 read -formal xy_router.v
 read -formal nxn_single_crossbar.v
 read -formal control_unit.v
@@ -26,6 +27,7 @@ prep -top xy_switch
 ../../srcs/switch/simple_mesh_xy/switch_constants.v
 ../../srcs/components/circ_fifo.v
 ../../srcs/switch/arbiters/static_priority_arbiter.v
+../../srcs/switch/arbiters/matrix_arbiter.v
 ../../srcs/switch/routers/xy_router.v
 ../../srcs/switch/crossbars/nxn_single_crossbar.v
 ../../srcs/switch/simple_mesh_xy/control_unit.v
