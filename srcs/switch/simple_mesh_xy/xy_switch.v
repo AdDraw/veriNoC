@@ -35,6 +35,7 @@
    |  DATA        | [`PCKT_DATA_W - 1 : 0 ]
 
 */
+// `define STATIC
 `timescale 1ns / 1ps
 module xy_switch
 # (
@@ -127,15 +128,29 @@ module xy_switch
     endgenerate
 
     // ARBITER - chooses input port
+    `ifdef STATIC
     static_priority_arbiter
     # (
         .IN_N(PORT_N)
         )
-    arb
+    st_arb
       (
         .vld_input_i(vld_input_w),
         .arb_res_o(mux_in_sel_w)
         );
+    `else
+    matrix_arb
+    # (
+        .IN_N(PORT_N)
+        )
+    m_arb
+      (
+        .clk_i      (clk_i),
+        .rst_ni     (rst_ni),
+        .req_i      (vld_input_w),
+        .grant_o    (mux_in_sel_w)
+        );
+    `endif
 
     // ROUTER - chooses output port
     xy_router

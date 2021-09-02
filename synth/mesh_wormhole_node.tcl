@@ -3,7 +3,7 @@ yosys -import
 read_verilog  -defer ../srcs/components/circ_fifo.v
 read_verilog  -defer ../srcs/switch/constants.v
 read_verilog  -defer ../srcs/switch/virtual_channels/virtual_channel.v
-read_verilog  -defer ../srcs/switch/arbiters/static_priority_arbiter.v
+read_verilog  -defer ../srcs/switch/arbiters/matrix_arbiter.v
 read_verilog  -defer ../srcs/switch/arbiters/hop_cnt_arbiter.v
 read_verilog  -defer ../srcs/switch/routers/xy_router.v
 read_verilog  -defer ../srcs/switch/crossbars/nxn_parrallel_crossbar.v
@@ -69,8 +69,13 @@ read_verilog  -DYS_MESH_WORMHOLE_NODE_TOP=1 \
               ../srcs/switch/mesh_wormhole/mesh_wormhole_node.v
 
 echo off
+hierarchy -top $top_module -keep_portwidths -check
 
-synth -top $top_module
+synth -top $top_module -flatten
+abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
+
+# cleanup
+clean
 
 if { ![info exists ::env(NO_XDOT)] } {
   show -enum -width -colors 3 -stretch $top_module
@@ -80,3 +85,4 @@ json -o $::env(JSON_PATH)/$top_module.json
 write_verilog ../srcs/switch/mesh_wormhole/mesh_wormhole_node_synth.v
 
 stat
+ltp

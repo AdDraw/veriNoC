@@ -142,10 +142,10 @@ if __name__ == '__main__':
                                                ' run simulation using a post-synth netlist. Not enabled by Default')
     parser.add_argument('-synth', default=0, help='Set value to 1 if you want to rerun the synthesis using'
                                                   ' parameter values taken from arguments. Not enabled by Default')
-    parser.add_argument('-row_n', default=2, help='ROW_N parameter')
-    parser.add_argument('-col_m', default=2, help='COL_M parameter')
-    parser.add_argument('-ff_depth', default=4, help='FIFO_DEPTH_W parameter')
-    parser.add_argument('-pckt_w', default=12, help='PCKT_DATA_W parameter')
+    parser.add_argument('-row_n', default=3, help='ROW_N parameter')
+    parser.add_argument('-col_m', default=3, help='COL_M parameter')
+    parser.add_argument('-ff_depth', default=2, help='FIFO_DEPTH_W parameter')
+    parser.add_argument('-pckt_w', default=15, help='PCKT_DATA_W parameter')
     parser.add_argument('-regression', default=0, help="IF '1' RUNS NOC simulations from 2x2 to 4x4"
                                                        " to check size problems")
     parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
@@ -164,4 +164,9 @@ if __name__ == '__main__':
 
     os.environ['METRICS_FILENAME'] = metrics_filename
 
-    main(**vars(parser.parse_args()))
+    try:
+        main(**vars(parser.parse_args()))
+    except KeyboardInterrupt:
+        print("ERROR: KEYBOARD INTERRUPT OCCURED, KILLING VVPs")
+        subprocess.run(["killall", "vvp"])
+        exit(0)
