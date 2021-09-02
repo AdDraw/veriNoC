@@ -388,7 +388,7 @@ class NocTB:
                 json.dump(json_file, outfile)
 
 
-@cocotb.test(skip=True)
+@cocotb.test(skip=False)
 async def smoke(dut, log_lvl=INFO, injection_rate=0.1):
     log = SimLog("smoke")
     log.setLevel(log_lvl)
