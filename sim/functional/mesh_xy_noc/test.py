@@ -112,7 +112,7 @@ class NocTB:
         self.dut.rst_ni <= 1
         await ClockCycles(self.dut.clk_i, cycle_n)
 
-    async def network_0load_wait(self, timeout=1000, cycle_step=100):
+    async def network_0load_wait(self, timeout=4000, cycle_step=500):
         self.log.info("...waiting...")
         cycles_spent = 0
         while True:
