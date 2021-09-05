@@ -11,8 +11,8 @@ def main(tf, ps, synth, row_n, col_m, ff_depth, pckt_w, regression, log_lvl) -> 
     tcl_script = "mesh_xy_noc.tcl"
     arguments = {"ROW_N": row_n,
                  "COL_M": col_m,
-                 "FF_DEPTH": ff_depth,
-                 "PCKT_W": pckt_w}
+                 "FIFO_DEPTH_W": ff_depth,
+                 "PCKT_DATA_W": pckt_w}
 
     if regression:
         runs = []
