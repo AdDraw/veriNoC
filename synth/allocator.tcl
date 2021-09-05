@@ -10,7 +10,7 @@ set top_module allocator
 set params(0) IN_N
 set params(1) OUT_M
 set params(2) FLIT_ID_W
-set params(4) OUT_CHAN_ID
+set params(3) OUT_CHAN_ID
 
 #default values for synth
 set values(0) 5
