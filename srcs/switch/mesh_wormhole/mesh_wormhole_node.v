@@ -15,33 +15,29 @@
 
 */
 `timescale 1ns / 1ps
-module mesh_wormhole_node
-  #(
-    `ifdef YS_MESH_WORMHOLE_NODE_TOP
-      parameter IN_N            = `YS_IN_N,
-      parameter OUT_M           = `YS_OUT_M,
-      parameter FLIT_DATA_W     = `YS_FLIT_DATA_W,
-      parameter FLIT_ID_W       = `YS_FLIT_ID_W,
-      parameter HOP_CNT_W       = `YS_HOP_CNT_W,
-      parameter ROW_ADDR_W      = `YS_ROW_ADDR_W,
-      parameter COL_ADDR_W      = `YS_COL_ADDR_W,
-      parameter ROW_CORD        = `YS_ROW_CORD,
-      parameter COL_CORD        = `YS_COL_CORD,
-      parameter BUFFER_DEPTH_W  = `YS_BUFFER_DEPTH_W
-    `else
-      parameter IN_N            = 5,
-      parameter OUT_M           = 5,
-      parameter FLIT_DATA_W     = 8,
-      parameter FLIT_ID_W       = 2,
-      parameter HOP_CNT_W       = 4,
-      parameter ROW_ADDR_W      = 2,
-      parameter COL_ADDR_W      = 2,
-      parameter ROW_CORD        = 1,
-      parameter COL_CORD        = 1,
-      parameter BUFFER_DEPTH_W  = 2
-    `endif
-    )
-  (
+module mesh_wormhole_node #(
+  `ifdef YS_MESH_WORMHOLE_NODE_TOP
+    parameter IN_N            = `YS_IN_N,
+    parameter OUT_M           = `YS_OUT_M,
+    parameter FLIT_DATA_W     = `YS_FLIT_DATA_W,
+    parameter FLIT_ID_W       = `YS_FLIT_ID_W,
+    parameter ROW_ADDR_W      = `YS_ROW_ADDR_W,
+    parameter COL_ADDR_W      = `YS_COL_ADDR_W,
+    parameter ROW_CORD        = `YS_ROW_CORD,
+    parameter COL_CORD        = `YS_COL_CORD,
+    parameter BUFFER_DEPTH_W  = `YS_BUFFER_DEPTH_W
+  `else
+    parameter IN_N            = 5,
+    parameter OUT_M           = 5,
+    parameter FLIT_DATA_W     = 8,
+    parameter FLIT_ID_W       = 2,
+    parameter ROW_ADDR_W      = 2,
+    parameter COL_ADDR_W      = 2,
+    parameter ROW_CORD        = 1,
+    parameter COL_CORD        = 1,
+    parameter BUFFER_DEPTH_W  = 2
+  `endif
+  ) (
     input clk_i,
     input rst_ni,
     // INPUT CHANNEL signals
@@ -53,7 +49,7 @@ module mesh_wormhole_node
     output  [(OUT_M*`FLIT_W)-1:0]  out_chan_data_o, // data out
     output  [OUT_M-1:0]            out_chan_vld_o,  // FIFO out wr_en
     input   [OUT_M-1:0]            out_chan_rdy_i   // FIFO out backpressure
-    );
+  );
 
   wire [OUT_M-1:0]                out_chan_vld_w;
   wire [(OUT_M*`FLIT_W)-1:0]      out_chan_data_w;
@@ -61,13 +57,12 @@ module mesh_wormhole_node
   reg  [(OUT_M*`FLIT_W)-1:0]      out_chan_data;
   // Wires
   wire [IN_N-1:0]                 vc_data_vld_w;
-  wire [(HOP_CNT_W*IN_N)-1:0]     vc_hop_cnt_w;                   // sends hop_counts from input VCs to allocators
-  wire [(`FLIT_W*IN_N)-1:0]       vc_data_out_w;                  // sends Data from VCs to the crossbar
-  wire [($clog2(OUT_M)*IN_N)-1:0] vc_route_res_w;                 // sends Routing result from ROUTER to ALLOCATOR
+  wire [(`FLIT_W*IN_N)-1:0]       vc_data_out_w;      // sends Data from VCs to the crossbar
+  wire [($clog2(OUT_M)*IN_N)-1:0] vc_route_res_w;     // sends Routing result from ROUTER to ALLOCATOR
   wire [IN_N-1:0]                 vc_route_res_vld_w;
-  wire [(IN_N*FLIT_ID_W)-1:0]     flit_type_w;                    // Sends FLIT_TYPE to ALLOCATOR from VC
-  wire [(OUT_M*$clog2(IN_N))-1:0] sel_w;                          // SEL from allocator to CROSSBAR
-  wire [(OUT_M*IN_N)-1:0]         out_chan_alloc_w ; // FROM ALLOC to VC
+  wire [(IN_N*FLIT_ID_W)-1:0]     flit_type_w;        // Sends FLIT_TYPE to ALLOCATOR from VC
+  wire [(OUT_M*$clog2(IN_N))-1:0] sel_w;              // SEL from allocator to CROSSBAR
+  wire [(OUT_M*IN_N)-1:0]         out_chan_alloc_w;   // FROM ALLOC to VC
 
   // Generate Blocks
   genvar gi, gj;
@@ -86,8 +81,7 @@ module mesh_wormhole_node
       end
 
       // INPUT VIRTUAL CHANNELS (for WORMHOLE act as Physical Channels)
-      virtual_channel
-      #(
+      virtual_channel #(
         .VC_DEPTH_W   (BUFFER_DEPTH_W),
         .FLIT_DATA_W  (FLIT_DATA_W),
         .FLIT_ID_W    (FLIT_ID_W),
@@ -95,11 +89,9 @@ module mesh_wormhole_node
         .ROW_CORD     (ROW_CORD),
         .COL_ADDR_W   (COL_ADDR_W),
         .ROW_ADDR_W   (ROW_ADDR_W),
-        .OUT_N_W      ($clog2(OUT_M)),
-        .HOP_CNT_W    (HOP_CNT_W)
+        .OUT_N_W      ($clog2(OUT_M))
         )
-      x_vc
-      (
+      x_vc (
         .clk_i          (clk_i),
         .rst_ni         (rst_ni),
         .data_i         (in_chan_data_i[`UNPACK(gi, `FLIT_W)]),
@@ -115,7 +107,6 @@ module mesh_wormhole_node
         );
 
       assign vc_data_out_w[`UNPACK(gi, `FLIT_W)]        = x_data_out_w;
-      assign vc_hop_cnt_w[`UNPACK(gi, HOP_CNT_W)]       = x_header_w[`HOP_CNT_RANGE];
       assign flit_type_w[`UNPACK(gi, FLIT_ID_W)]        = x_data_out_w[`FLIT_ID_RANGE];
       assign vc_route_res_w[`UNPACK(gi, $clog2(OUT_M))] = x_vc_route_res_w;
     end
@@ -125,21 +116,17 @@ module mesh_wormhole_node
       wire [IN_N-1:0]         x_chan_alloc_w;
       wire [$clog2(IN_N)-1:0] x_alloc_sel_w;
 
-      allocator
-      #(
+      allocator #(
         .IN_N(IN_N),
         .OUT_M(OUT_M),
         .FLIT_ID_W(FLIT_ID_W),
-        .HOP_CNT_W(HOP_CNT_W),
         .OUT_CHAN_ID(gi)
         )
-      x_alloc
-      (
+      x_alloc (
         .clk_i(clk_i),
         .rst_ni(rst_ni),
         .rtr_res_i(vc_route_res_w),
         .rtr_res_vld_i(vc_route_res_vld_w),
-        .hop_count_i(vc_hop_cnt_w),
         .flit_id_i(flit_type_w),
         .forward_node_rdy_i(out_chan_rdy_i[gi]),
         .data_vld_i(vc_data_vld_w),
@@ -152,14 +139,12 @@ module mesh_wormhole_node
         assign out_chan_alloc_w[`UNPACK(gi, IN_N)] = x_chan_alloc_w;
     end
 
-    nxn_parrallel_crossbar
-    #(
+    nxn_parrallel_crossbar #(
       .IN_N(IN_N),
       .OUT_M(OUT_M),
       .DATA_W(`FLIT_W)
       )
-    crossbar
-    (
+    crossbar (
       .data_i(vc_data_out_w),
       .sel_i(sel_w),
       .data_o(out_chan_data_o)

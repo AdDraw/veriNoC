@@ -1,13 +1,18 @@
 import subprocess
-import os
 import time
-import xml.etree.ElementTree as ET
 import argparse
-from adam_logger import get_logger, get_git_root
+from utils.adam_logger import get_logger
+from utils.rav import simulate
 
 
-def simulate(log, tf=0, ps=0, synth=0, in_n=5, out_m=5, flit_data_w=8, flit_id_w=2, row_cord=1,
-             col_cord=1, hop_cnt_w=4, row_addr_w=2, col_addr_w=2, buffer_depth_w=2):
+def main(tf, ps, synth, in_n, out_m, flit_data_w, flit_id_w, row_cord,
+         col_cord, hop_cnt_w, row_addr_w, col_addr_w, buffer_depth_w, log_lvl) -> None:
+    log = get_logger(__name__, int(log_lvl))
+    log.info(f"RUN {time.asctime()}")
+    log.info("----------------------------------------------------------------------------------------------------"
+             "-------")
+
+    tcl_script = "mesh_wormhole_node.tcl"
     arguments = {"IN_N": in_n,
                  "OUT_M": out_m,
                  "FLIT_DATA_W": flit_data_w,
@@ -19,56 +24,7 @@ def simulate(log, tf=0, ps=0, synth=0, in_n=5, out_m=5, flit_data_w=8, flit_id_w
                  "HOP_CNT_W": hop_cnt_w,
                  "BUFFER_DEPTH_W": buffer_depth_w}
 
-    pwd = os.getcwd()
-    git_root = get_git_root(os.getcwd())
-    tcl_script = "mesh_wormhole_node.tcl"
-
-    failed_testcases = 0
-    testcases = []
-    if synth and ps:
-        log.debug(f"ReSynthesize! {tcl_script}")
-        os.chdir(f"{git_root}/synth")
-
-        synth_cmd = [f"{git_root}/synth/yosys_wrapper.sh", f"-sf", f"{tcl_script}",
-                     "--no-xdot"]
-        for arg in arguments.items():
-            synth_cmd.append(f"{arg[0]}={arg[1]}")
-
-        log.debug(f"Synth Command: {synth_cmd}")
-        subprocess.run(synth_cmd)
-        os.chdir(pwd)
-
-    cmd = ["make", "-j12", "-B", f"TESTFACTORY={tf}", f"SYNTH={ps}"]
-    for arg in arguments.items():
-        cmd.append(f"{arg[0]}={arg[1]}")
-
-    log.debug(f"Command {cmd}")
-    subprocess.run(cmd)
-    tree = ET.parse("results.xml")
-    root = tree.getroot()
-    for testsuite in root:
-        for testcase in testsuite:
-            if testcase.attrib["name"] != "random_seed":
-                if testcase.__len__() > 0:
-                    testcases.append({"result": "FAIL", "testcase": testcase.attrib})
-                    failed_testcases += 1
-                else:
-                    testcases.append({"result": "PASS", "testcase": testcase.attrib})
-
-    if failed_testcases > 0:
-        return [1, testcases, failed_testcases, args]
-    else:
-        return [0, testcases, failed_testcases, args]
-
-
-def main(tf, ps, synth, in_n, out_m, flit_data_w, flit_id_w, row_cord,
-         col_cord, hop_cnt_w, row_addr_w, col_addr_w, buffer_depth_w, log_lvl) -> None:
-    log = get_logger(__name__, int(log_lvl))
-    log.info(f"RUN {time.asctime()}")
-    log.info("----------------------------------------------------------------------------------------------------"
-             "-------")
-    run = simulate(log, tf, ps, synth, in_n, out_m, flit_data_w, flit_id_w, row_cord,
-                   col_cord, hop_cnt_w, row_addr_w, col_addr_w, buffer_depth_w)
+    run = simulate(log, tf, ps, synth, arguments, tcl_script)
     if run[0]:  # FAILED RUN
         log.error(f"Run FAILED")
         log.error(f"Config: {run[3]}")
