@@ -88,10 +88,10 @@ jobs:
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf 1 -ff_depth 6 -pckt_w 14
 
-      - name: Mesh XY Regression
-        run: |
-          cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf 1 -ff_depth 6 -pckt_w 14 -regression 1
+      # - name: Mesh XY Regression
+      #   run: |
+      #     cd sim/functional/mesh_xy_noc
+      #     python3 run_and_verify.py -tf 1 -ff_depth 6 -pckt_w 14 -regression 1
 
       - name: VC
         run: |
@@ -102,6 +102,11 @@ jobs:
         run: |
           cd sim/functional/mesh_wormhole_node_sim
           python3 run_and_verify.py
+
+      - name: Wormhole XY NoC
+        run: |
+          cd sim/functional/mesh_wh_xy_noc
+          python3 run_and_verify.py -tf 1 -ff_depth 3
 
   functional_postsynth:
     # The type of runner that the job will run on
@@ -138,6 +143,11 @@ jobs:
           cd sim/functional/mesh_wormhole_node_sim
           python3 run_and_verify.py -ps 1 -synth 1
 
+      - name: Wormhole XY NoC
+        run: |
+          cd sim/functional/mesh_wh_xy_noc
+          python3 run_and_verify.py -ps 1 -synth 1 -tf 1
+
   synth:
     # The type of runner that the job will run on
     runs-on: self-hosted
@@ -150,31 +160,6 @@ jobs:
         run: |
           cd synth
           ./yosys_wrapper.sh -sf fifo_synth.tcl --no-xdot
-
-      - name: mesh_xy noc
-        run: |
-          cd synth
-          ./yosys_wrapper.sh -sf mesh_xy_noc.tcl --no-xdot
-
-      - name: sw_xy
-        run: |
-          cd synth
-          ./yosys_wrapper.sh -sf sw_xy_synth.tcl --no-xdot
-
-      - name: router
-        run: |
-          cd synth
-          ./yosys_wrapper.sh -sf router_synth.tcl --no-xdot
-
-      - name: vc
-        run: |
-          cd synth
-          ./yosys_wrapper.sh -sf virtual_channel.tcl --no-xdot
-
-      - name: wormhole xy node
-        run: |
-          cd synth
-          ./yosys_wrapper.sh -sf mesh_wormhole_node.tcl --no-xdot
 
       - name: nxn_single_crossbar
         run: |
@@ -200,3 +185,33 @@ jobs:
         run: |
           cd synth
           ./yosys_wrapper.sh -sf static_arb.tcl --no-xdot
+
+      - name: router
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf router_synth.tcl --no-xdot
+
+      - name: vc
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf virtual_channel.tcl --no-xdot
+
+      - name: wormhole xy node
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf mesh_wormhole_node.tcl --no-xdot
+
+      - name: sw_xy
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf sw_xy_synth.tcl --no-xdot
+
+      - name: mesh_xy noc
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf mesh_xy_noc.tcl --no-xdot
+
+      - name: wormhole xy noc
+        run: |
+          cd synth
+          ./yosys_wrapper.sh -sf mesh_wh_xy_noc.tcl --no-xdot
