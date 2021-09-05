@@ -14,7 +14,6 @@ set params(4) COL_CORD
 set params(5) OUT_N_W
 set params(6) ROW_ADDR_W
 set params(7) COL_ADDR_W
-set params(8) HOP_CNT_W
 
 #default values for synth
 set values(0) 2
@@ -25,7 +24,6 @@ set values(4) 1
 set values(5) 3
 set values(6) 2
 set values(7) 2
-set values(8) 4
 
 chparam -list
 log "Parameters and their values:"
@@ -54,7 +52,6 @@ read_verilog  -DYS_VC_TOP=1 \
               -DYS_$params(5)=$values(5) \
               -DYS_$params(6)=$values(6) \
               -DYS_$params(7)=$values(7) \
-              -DYS_$params(8)=$values(8) \
               ../srcs/switch/virtual_channels/virtual_channel.v
 
 # elaborate design hierarchy
