@@ -10,15 +10,13 @@ set top_module allocator
 set params(0) IN_N
 set params(1) OUT_M
 set params(2) FLIT_ID_W
-set params(3) HOP_CNT_W
 set params(4) OUT_CHAN_ID
 
 #default values for synth
 set values(0) 5
 set values(1) 5
 set values(2) 2
-set values(3) 4
-set values(4) 1
+set values(3) 1
 
 chparam -list
 log "Parameters and their values:"
@@ -43,7 +41,6 @@ read_verilog  -DYS_ALLOCATOR_TOP=1 \
               -DYS_$params(1)=$values(1) \
               -DYS_$params(2)=$values(2) \
               -DYS_$params(3)=$values(3) \
-              -DYS_$params(4)=$values(4) \
               ../srcs/switch/allocators/allocator.v
 
 # elaborate design hierarchy
