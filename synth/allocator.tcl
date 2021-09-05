@@ -62,7 +62,7 @@ if { ![info exists ::env(NO_XDOT)] } {
   show  -enum -width -colors 3 $top_module
 }
 
-json -o $::env(JSON_PATH)/$top_module-$values(0)-$values(1)-$values(2)-$values(3)-$values(4).json
+json -o $::env(JSON_PATH)/$top_module-$values(0)-$values(1)-$values(2)-$values(3).json
 write_verilog ../srcs/switch/allocators/allocator_synth.v
 
 stat
