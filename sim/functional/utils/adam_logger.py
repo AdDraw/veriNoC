@@ -1,7 +1,7 @@
 import git
 import logging
 import sys
-from logging.handlers import TimedRotatingFileHandler, RotatingFileHandler
+from logging.handlers import RotatingFileHandler
 FORMATTER = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s — %(funcName)s — %(message)s")
 LOG_FILE = "sim.log"
 
@@ -32,6 +32,5 @@ def get_logger(logger_name, log_lvl):
     logger.setLevel(logging.INFO)
   logger.addHandler(get_console_handler())
   logger.addHandler(get_file_handler())
-  # with this pattern, it's rarely necessary to propagate the error up to parent
   logger.propagate = False
   return logger

@@ -1,18 +1,20 @@
 import subprocess
+import os
 import time
 import argparse
 from utils.rav import *
+from utils.adam_logger import *
 
 
-def main(tf, ps, synth, row_n, col_m, ff_depth, pckt_w, regression, log_lvl) -> None:
+def main(tf, ps, synth, row_n, col_m, ff_depth, channel_w, regression, log_lvl) -> None:
     log = get_logger(__name__, int(log_lvl))
     log.info(f"RUN {time.asctime()}")
 
-    tcl_script = "mesh_xy_noc.tcl"
+    tcl_script = "mesh_wh_xy_noc.tcl"
     arguments = {"ROW_N": row_n,
                  "COL_M": col_m,
-                 "FF_DEPTH": ff_depth,
-                 "PCKT_W": pckt_w}
+                 "NODE_BUFFER_DEPTH_W": ff_depth,
+                 "CHANNEL_W": channel_w}
 
     if regression:
         runs = []
@@ -21,6 +23,9 @@ def main(tf, ps, synth, row_n, col_m, ff_depth, pckt_w, regression, log_lvl) -> 
         col_max = 4
         for ri in range(2, row_max + 1):
             for ci in range(2, col_max + 1):
+                arguments = {"ROW_N": row_n,
+                             "COL_M": col_m, "NODE_BUFFER_DEPTH_W": ff_depth,
+                             "CHANNEL_W": channel_w}
                 runs.append(simulate(log, tf, ps, synth, arguments, tcl_script))
                 failed_runs += runs[-1][0]
 
@@ -71,7 +76,7 @@ if __name__ == '__main__':
     parser.add_argument('-row_n', default=3, help='ROW_N parameter')
     parser.add_argument('-col_m', default=3, help='COL_M parameter')
     parser.add_argument('-ff_depth', default=2, help='FIFO_DEPTH_W parameter')
-    parser.add_argument('-pckt_w', default=15, help='PCKT_DATA_W parameter')
+    parser.add_argument('-channel_w', default=10, help='CHANNEL_W parameter')
     parser.add_argument('-regression', default=0, help="IF '1' RUNS NOC simulations from 2x2 to 4x4"
                                                        " to check size problems")
     parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
@@ -79,11 +84,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.ps:
-        metrics_filename = f"mesh_noc_xy_postsynth_{args.row_n}_{args.col_m}" \
-                           f"_{args.ff_depth}_{args.pckt_w}.json"
+        metrics_filename = f"mesh_noc_wh_xy_postsynth_{args.row_n}_{args.col_m}" \
+                           f"_{args.ff_depth}_{args.channel_w}.json"
     else:
-        metrics_filename = f"mesh_noc_xy_presynth_{args.row_n}_{args.col_m}" \
-                           f"_{args.ff_depth}_{args.pckt_w}.json"
+        metrics_filename = f"mesh_noc_wh_xy_presynth_{args.row_n}_{args.col_m}" \
+                           f"_{args.ff_depth}_{args.channel_w}.json"
 
     if os.path.exists(metrics_filename):
         os.remove(metrics_filename)

@@ -21,8 +21,7 @@ set params(4) COL_ADDR_W
 set params(5) ROW_ADDR_W
 set params(6) FLIT_ID_W
 set params(7) FLIT_DATA_W
-set params(8) HOP_CNT_W
-set params(9) BUFFER_DEPTH_W
+set params(8) BUFFER_DEPTH_W
 
 set values(0) 1
 set values(1) 1
@@ -32,8 +31,7 @@ set values(4) 2
 set values(5) 2
 set values(6) 2
 set values(7) 8
-set values(8) 4
-set values(9) 2
+set values(8) 2
 
 chparam -list
 log "Parameters and their values:(after they were overriden with arguments)"
@@ -65,7 +63,6 @@ read_verilog  -DYS_MESH_WORMHOLE_NODE_TOP=1 \
               -DYS_$params(6)=$values(6) \
               -DYS_$params(7)=$values(7) \
               -DYS_$params(8)=$values(8) \
-              -DYS_$params(9)=$values(9) \
               ../srcs/switch/mesh_wormhole/mesh_wormhole_node.v
 
 echo off

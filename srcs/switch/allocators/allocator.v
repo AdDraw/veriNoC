@@ -57,23 +57,19 @@
     - backpressure info for VCs to know when it's okay to read data
 */
 `timescale 1ns / 1ps
-module allocator
-  #(
-    `ifdef YS_ALLOCATOR_TOP
+module allocator #(
+  `ifdef YS_ALLOCATOR_TOP
     parameter IN_N        = `YS_IN_N,
     parameter OUT_M       = `YS_OUT_M,
     parameter FLIT_ID_W   = `YS_FLIT_ID_W,
-    parameter HOP_CNT_W   = `YS_HOP_CNT_W,
     parameter OUT_CHAN_ID = `YS_OUT_CHAN_ID
-    `else
+  `else
     parameter IN_N        = 5,  // to specify from how many inputs we should choose
     parameter OUT_M       = 5,  // for route result inputs
     parameter FLIT_ID_W   = 2,  // how many bits are taken for ID in each FLIT
-    parameter HOP_CNT_W   = 4,  // for hopcount
     parameter OUT_CHAN_ID = 0   // which output channel is this Alloc assigned to
-    `endif
-    )
-   (
+  `endif
+  ) (
     input                           clk_i,
     input                           rst_ni,
     // Routing result (states which signals want to use this output channel)
@@ -81,7 +77,6 @@ module allocator
     input [IN_N-1:0]                rtr_res_vld_i,
 
     // wants to use this output
-    input [(IN_N*HOP_CNT_W)-1:0]    hop_count_i,  // used to decide initial priority
     input [(IN_N*FLIT_ID_W)-1 : 0]  flit_id_i,
     input [IN_N-1:0]                data_vld_i,
     // Backpressure (information from the forward node connected to the channel)
@@ -92,19 +87,17 @@ module allocator
     // output out_vld_o,                       //answers when the data is being routed(can be routed) (based on backpressure)
     // Data to send to VCs (Virtual Channel)
     output [IN_N-1:0]               chan_alloc_o
-    );
+  );
 
   // REGS
   reg [IN_N-1:0 ]         chan_alloc;
   reg [`CHAN_SEL_W-1 : 0] sel;
 
   // WIRES
-  wire [IN_N-1:0]         vld_input_w;
-  wire                    not_conclusive_w;
-  wire [$clog2(IN_N)-1:0] static_arb_res_w;
-  wire [$clog2(IN_N)-1:0] hop_arb_res_w;        //specifies which input to choose
-  wire [FLIT_ID_W-1:0]    flit_id_w [IN_N-1:0];
-  wire [IN_N-1:0]         rtr_res_w;            // transformed to 1bit ENABLE signals
+  wire [IN_N-1:0]           req_w;
+  wire [$clog2(OUT_M)-1:0]  grant_w;
+  wire [FLIT_ID_W-1:0]      flit_id_w [IN_N-1:0];
+  wire [IN_N-1:0]           rtr_res_w;            // transformed to 1bit ENABLE signals
   genvar gi;
   generate
     for(gi=0; gi<IN_N; gi=gi+1)
@@ -114,7 +107,7 @@ module allocator
     end
   endgenerate
 
-  assign vld_input_w = rtr_res_w & data_vld_i;
+  assign req_w = rtr_res_w & data_vld_i;
 
   always @ ( posedge(clk_i), negedge(rst_ni) ) begin
     if (!rst_ni) begin
@@ -128,10 +121,10 @@ module allocator
         end
       end
       else begin
-        if (|vld_input_w) begin
-          chan_alloc                    <= 0;
-          chan_alloc[static_arb_res_w]  <= 1'b1;
-          sel                           <= static_arb_res_w;
+        if (|req_w) begin
+          chan_alloc           <= 0;
+          chan_alloc[grant_w]  <= 1'b1;
+          sel                  <= grant_w;
         end
       end
     end
@@ -140,11 +133,11 @@ module allocator
   matrix_arb #( // secondary arbitration if primary arb is not conclusive
     .IN_N(IN_N)
     )
-  arb(
+  arb (
     .clk_i    (clk_i),
     .rst_ni   (rst_ni),
-    .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : vld_input_w ),
-    .grant_o  (static_arb_res_w)
+    .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
+    .grant_o  (grant_w)
     );
 
   // Allocation of VC
