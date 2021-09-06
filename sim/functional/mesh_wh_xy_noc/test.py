@@ -19,8 +19,9 @@ async def simple_test(dut, log_lvl=INFO, bp=False):
       dest_addr = tb.id_to_addr(j)
       if j != i:
         packet = tb.packet.gen_packet(dest=dest_addr, lenght=10)
-        tb.packets_to_send.append({"node": j, "packet": packet})
-        await tb.drv.send_packet_from(i, packet)
+        x = tb.drv.send_packet_from(i, packet)
+        tb.packets_to_send.append({"node": j, "packet": x["packet"]})
+
   await tb.compare()
   raise TestSuccess("Sim finished sucessfully")
 
@@ -35,9 +36,8 @@ async def competetive_test(dut, log_lvl=INFO, bp=False):
       if j != i:
         dest_addr = tb.id_to_addr(j)
         packet = tb.packet.gen_packet(dest=dest_addr, lenght=10)
+        x = tb.drv.send_packet_from(i, packet)
         tb.packets_to_send.append({"node": j, "packet": packet})
-        waiters.append(cocotb.fork(tb.drv.send_packet_from(i, packet)))
-    await Combine(*waiters)
   await tb.compare()
   raise TestSuccess("Sim finished sucessfully")
 
@@ -57,7 +57,7 @@ async def random_single_input_at_a_time(dut, log_lvl=INFO, packet_n=30, packet_l
 
   for packet in tb.packets_to_send:
     driver_id = randint(0, tb.client_n-1)
-    await tb.drv.send_packet_from(driver_id, packet["packet"])
+    x = tb.drv.send_packet_from(driver_id, packet["packet"])
   await tb.compare()
   raise TestSuccess("Sim finished sucessfully")
 
@@ -66,7 +66,6 @@ async def random_multi_input_at_a_time(dut, log_lvl=INFO, packet_n=10, packet_le
   tb = WHNoCTB(dut, log_lvl)
   tb.setup_dut(cycle_n=5)
   await ClockCycles(dut.clk_i, 10)
-
   in_n = tb.client_n
   for i in range(packet_n * in_n):
     x = randint(0, tb.config["row_n"]-1)
@@ -75,22 +74,15 @@ async def random_multi_input_at_a_time(dut, log_lvl=INFO, packet_n=10, packet_le
     packet = tb.packet.gen_packet(dest, lenght=packet_length, tail_with_payload=False)
     dest_id = tb.addr_to_id(dest)
     tb.packets_to_send.append({"node": dest_id, "packet": packet})
-
-  pckt_size = packet_n
-  pckts = tb.packets_to_send
-
   if bp:
     bp = []
     for in_id in range(tb.client_n):
       bp.append(cocotb.fork(tb.backpressure_gen(in_id)))
-
-  for packet_id in range(pckt_size):
-    waiters = []
+      
+  for packet_id in range(packet_n):
     for in_id in range(tb.client_n):
-
-      packet_for_input_i = pckts[(packet_id*in_n) + in_id]["packet"]
-      waiters.append(cocotb.fork(tb.drv.send_packet_from(in_id, packet_for_input_i)))
-    await Combine(*waiters)
+      packet_for_input_i = tb.packets_to_send[(packet_id*in_n) + in_id]["packet"]
+      x = tb.drv.send_packet_from(in_id, packet_for_input_i)
   await tb.compare()
   raise TestSuccess("Sim finished sucessfully")
 
