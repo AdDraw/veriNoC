@@ -78,7 +78,6 @@ class WHNoCTB:
         bp.append(cocotb.fork(self.backpressure_gen(cycle_n=cycle_n*2)))
 
   async def node_out_chan_reader(self, i, cycle_n=10):
-
     await ClockCycles(self.dut.clk_i, cycle_n)
     packet = []
     while True:
@@ -109,6 +108,27 @@ class WHNoCTB:
     else:
       rst_sig <= 1
 
+  async def network_0load_wait(self, timeout=4000, cycle_step=500):
+    self.log.info("...waiting...")
+    cycles_spent = 0
+    while True:
+      empty_ques = True
+      for i_id in range(self.client_n):
+        if self.drv.que[i_id].__len__() != 0:
+          empty_ques = False
+          break
+      if empty_ques:
+        await ClockCycles(self.dut.clk_i, cycle_step)
+        self.log.warning(f"{self.packets_received.__len__()}/{len(self.packets_to_send)}")
+        cycles_spent += cycle_step
+        if len(self.packets_to_send) == self.packets_received.__len__():
+          break
+        else:
+          if cycles_spent == timeout:
+            raise TimeoutError
+      else:
+        await ClockCycles(self.dut.clk_i, 100)
+
   def addr_to_id(self, addr, alg_route="xy"):
     if alg_route == "xy":
       row_id = addr[0]
@@ -125,26 +145,11 @@ class WHNoCTB:
       self.log.error("This Topology is not yet supported")
 
   async def compare(self, timeout=4000, cycle_step=500):
+    await self.network_0load_wait(timeout=timeout, cycle_step=cycle_step)
     mismatches = 0
     sent = sorted(self.packets_to_send, key=lambda k: k['node'])
     received = sorted(self.packets_received, key=lambda k: k['node'])
     temp_sent = sent.copy()
-
-    cycles_waited = 0
-    while received.__len__() != sent.__len__():
-      self.log.warning(f"{received.__len__()}/{sent.__len__()} received, WAITING...")
-      if cycles_waited == timeout:
-        self.log.error(f"Timeout Error: Not enough packets were received {received.__len__()}/{sent.__len__()}!")
-        for p in sent:
-          if p in received:
-            self.log.info(f"{p}:\t V")
-          else:
-            self.log.info(f"{p}:\t X")
-        raise TestFailure
-      else:
-        await ClockCycles(self.dut.clk_i, cycle_step)
-        cycles_waited += cycle_step
-        received = sorted(self.packets_received, key=lambda k: k['node'])
 
     for pr_id, packet_r in enumerate(received):
       if packet_r not in temp_sent:
