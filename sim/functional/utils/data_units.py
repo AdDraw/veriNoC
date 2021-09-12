@@ -1,30 +1,7 @@
 from cocotb.binary import BinaryValue
 from random import getrandbits, randint
 from math import ceil, log
-
-
-def null_string(lenght):
-  null = ""
-  if lenght > 0:
-    null = BinaryValue(0, lenght, bigEndian=False).binstr
-  return null
-
-
-def all_ones(lenght):
-  tmp = ""
-  for i in range(lenght):
-    tmp += "1"
-  return BinaryValue(tmp, lenght, bigEndian=False).integer
-
-
-def rand_string(lenght):
-  return BinaryValue(getrandbits(lenght), lenght, bigEndian=False).binstr
-
-
-def value_2_string(val, lenght):
-  assert val is not None, "Val for conversion is None"
-  assert 0 > val or val <= 2 ** lenght - 1, f"Data is too big for the Width provided ({val}, {lenght})"
-  return BinaryValue(val, lenght, bigEndian=False).binstr
+from utils.functions import *
 
 
 class Flit(object):
@@ -99,9 +76,9 @@ class Packet(object):
       col_id = dest[1]
     packet = [self.flit.gen_header(row_id, col_id)]
     if tail_with_payload:
-      body_len = lenght - 1
+      body_len = lenght - 2
     else:
-      body_len = lenght
+      body_len = lenght - 1
     for i in range(body_len):
         packet.append(self.flit.gen_payload_flit(randomize=rand_data))
     packet.append(self.flit.gen_tail(payload=tail_with_payload))

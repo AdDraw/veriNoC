@@ -62,12 +62,12 @@ def main(tf, ps, synth, row_n, col_m, ff_depth, pckt_w, regression, log_lvl) -> 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Mesh XY NOC Testbench Run & Verify.')
-    parser.add_argument('-tf', default=0, help='Set value to 1 if you want to enable'
-                                               ' TestFactory() for some testcases. Not enabled by Default')
-    parser.add_argument('-ps', default=0, help='Set value to 1 if you want to enable'
-                                               ' run simulation using a post-synth netlist. Not enabled by Default')
-    parser.add_argument('-synth', default=0, help='Set value to 1 if you want to rerun the synthesis using'
-                                                  ' parameter values taken from arguments. Not enabled by Default')
+    parser.add_argument('-tf', default=0, action="store_const", const=1,
+                        help='TestFactory() for some testcases. Not enabled by Default')
+    parser.add_argument('-ps', default=0, action="store_const", const=1,
+                        help='run simulation using a post-synth netlist. Not enabled by Default')
+    parser.add_argument('-synth', default=0, action="store_const", const=1,
+                        help='rerun the synthesis using parameter values taken from arguments. Not enabled by Default')
     parser.add_argument('-row_n', default=3, help='ROW_N parameter')
     parser.add_argument('-col_m', default=3, help='COL_M parameter')
     parser.add_argument('-ff_depth', default=2, help='FIFO_DEPTH_W parameter')
@@ -85,8 +85,10 @@ if __name__ == '__main__':
         metrics_filename = f"mesh_noc_xy_presynth_{args.row_n}_{args.col_m}" \
                            f"_{args.ff_depth}_{args.pckt_w}.json"
 
-    if os.path.exists(metrics_filename):
-        os.remove(metrics_filename)
+
+    if args.tf is False:
+      if os.path.exists(metrics_filename):
+          os.remove(metrics_filename)
 
     os.environ['METRICS_FILENAME'] = metrics_filename
 
