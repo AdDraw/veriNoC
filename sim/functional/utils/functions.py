@@ -5,6 +5,27 @@ from cocotb.triggers import ClockCycles, RisingEdge, ReadOnly, Combine, FallingE
 from cocotb.binary import BinaryValue
 from random import getrandbits, randint
 
+def null_string(lenght):
+  null = ""
+  if lenght > 0:
+    null = BinaryValue(0, lenght, bigEndian=False).binstr
+  return null
+
+
+def all_ones(lenght):
+  tmp = ""
+  for i in range(lenght):
+    tmp += "1"
+  return BinaryValue(tmp, lenght, bigEndian=False).integer
+
+
+def rand_string(lenght):
+  return BinaryValue(getrandbits(lenght), lenght, bigEndian=False).binstr
+
+def value_2_string(val, lenght):
+  assert val is not None, "Val for conversion is None"
+  assert 0 > val or val <= 2 ** lenght - 1, f"Data is too big for the Width provided ({val}, {lenght})"
+  return BinaryValue(val, lenght, bigEndian=False).binstr
 
 def bernouli(r):
     if random() < r:
