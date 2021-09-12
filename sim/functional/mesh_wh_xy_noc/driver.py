@@ -35,14 +35,15 @@ class ChanDriver(BusDriver):
     for i in range(self.client_n):
       fork(self.input_que(i))
 
-  def send_packet_from(self, input_id, packet):
+  def send_packet_from(self, input_id, packet, warmup=False):
     assert 0 <= input_id < self.client_n, "Input ID is too big"
     assert len(packet) > 1, f"Packet is not long enough, needs to have 2 flit, this has only {len(packet)}"
     self.que[input_id].append(packet)
-    time = get_sim_time(units = "ns")
-    return {"source": input_id,
-            "time": time,
-            "packet": packet}
+    packet_stats = {"source": input_id,
+                    "packet": packet}
+    if warmup is False:
+      packet_stats["time"] = get_sim_time(units = "ns")
+    return packet_stats
 
   async def input_que(self, in_n):
     while True:
