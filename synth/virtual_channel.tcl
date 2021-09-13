@@ -54,17 +54,14 @@ read_verilog  -DYS_VC_TOP=1 \
               -DYS_$params(7)=$values(7) \
               ../srcs/switch/virtual_channels/virtual_channel.v
 
-# elaborate design hierarchy
-hierarchy -check -top $top_module
+echo off
+hierarchy -top $top_module -keep_portwidths -check
+synth -top $top_module -flatten
+dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
+abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
 
-# the high-level stuff
-#procs;
-#opt; wreduce; share; opt; fsm;
-#procs;
-#opt;
-synth -top $top_module
 # cleanup
-#clean
+clean
 
 if { ![info exists ::env(NO_XDOT)] } {
   show  -enum -width -colors 3 $top_module

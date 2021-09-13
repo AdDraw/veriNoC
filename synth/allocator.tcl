@@ -43,20 +43,14 @@ read_verilog  -DYS_ALLOCATOR_TOP=1 \
               -DYS_$params(3)=$values(3) \
               ../srcs/switch/allocators/allocator.v
 
-# elaborate design hierarchy
-#hierarchy -check -top $top_module
-
-# the high-level stuff
-#procs; opt; fsm; opt; memory; opt
-
-# mapping to internal cell library
-#techmap; opt
+echo off
+hierarchy -top $top_module -keep_portwidths -check
+synth -top $top_module -flatten
+dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
+abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
 
 # cleanup
-#clean
-
-# Dirty but easy
-synth -top $top_module
+clean
 
 if { ![info exists ::env(NO_XDOT)] } {
   show  -enum -width -colors 3 $top_module
