@@ -222,10 +222,20 @@ def parse_and_plot(json_file, loop_json=False, buff_size_en=False):
         # Offered vs Accepted traffic
         testcase_names = []
         for row in df_fp.iterrows():
-            if "_0" or "_1" in row[1]["name"]:
+          print(row[1]["name"])
+          if "_0" in row[1]["name"]:
+            print("YESs")
+          if "_0" or "_1" in row[1]["name"]:
+
+              if len(row[1]["name"].split("_")) == 2:
+                name = row[1]["name"].split("_")[0]
+              else:
                 name = row[1]["name"].split("_")[0] + "_" + row[1]["name"].split("_")[1]
-                if name not in testcase_names:
-                    testcase_names.append(name)
+              
+              if name not in testcase_names:
+                  testcase_names.append(name)
+          else:
+            print("not fouundo")
 
         for name in testcase_names:
             df = extract_rows(df_fp, str(name))

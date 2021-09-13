@@ -43,7 +43,7 @@ class NoCMetrics(object):
     self.log.info(f"   - Max throughput : {self.max_accepted_traffic:.4f} | {self.offered_traffic:.4f}")
 
   def json_gen(self):
-    json = {"name": self.name}
+    json = {"name": self.name + "_" + str(self.offered_traffic)}
     json["offered_traffic"] = self.offered_traffic
     json["packet_lenght"] = self.plen
     json["warmup_period"] = self.warmup_period

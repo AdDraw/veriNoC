@@ -145,6 +145,6 @@ else:
   # tf.add_option("bp", [False, True])
   # tf.generate_tests()
   tf = TestFactory(measure)
-  tf.add_option("traffic_pattern", ["u_rand", "inverse"])
+  tf.add_option("traffic_pattern", ["locality", "hotspot", "nearest_neighbor"])
   tf.add_option("injection_rate", [0.05, 0.1, 0.2, 0.3, 0.4, 0.46, 0.5, 0.55, 0.6, 0.65])
   tf.generate_tests()
