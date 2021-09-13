@@ -7,6 +7,7 @@ from cocotb.log import SimLog
 from cocotb.regression import TestFactory
 
 from driver import VCDriver
+from utils.functions import *
 
 import os
 from collections import Counter
@@ -31,7 +32,6 @@ class VCTB:
             "col_cord": int(os.environ["COL_CORD"]),
             "col_addr_w": int(os.environ["COL_ADDR_W"]),
             "row_addr_w": int(os.environ["ROW_ADDR_W"]),
-            "hop_cnt_w": int(os.environ["HOP_CNT_W"]),
             "out_n_w":int(os.environ["OUT_N_W"]),
             "flit_w": int(os.environ["FLIT_DATA_W"]) + int(os.environ["FLIT_ID_W"])
         }
@@ -39,7 +39,6 @@ class VCTB:
         # header FLIT parameters
         self.row_addr_w = self.config["row_addr_w"]
         self.col_addr_w = self.config["col_addr_w"]
-        self.hop_cnt_w = self.config["hop_cnt_w"]
 
         assert self.dut.FLIT_DATA_W == self.config["flit_data_w"], "Bad Value"
         assert self.dut.VC_DEPTH_W == self.config["vc_depth_w"], "Bad Value"
@@ -48,7 +47,6 @@ class VCTB:
         assert self.dut.COL_CORD == self.config["col_cord"], "Bad Value"
         assert self.dut.COL_ADDR_W == self.config["col_addr_w"], "Bad Value"
         assert self.dut.ROW_ADDR_W == self.config["row_addr_w"], "Bad Value"
-        assert self.dut.HOP_CNT_W == self.config["hop_cnt_w"], "Bad Value"
         assert self.dut.OUT_N_W == self.config["out_n_w"], "Bad Value"
 
         self.vc_drv = VCDriver(dut, "", dut.clk_i, self.config, log_lvl)
@@ -58,18 +56,19 @@ class VCTB:
 
     def populate_packets_to_send(self, packet_n=10, packet_length=4):
         for i in range(packet_n):
-            packet = [self.random_header_flit(self.row_addr_w, self.col_addr_w, self.hop_cnt_w)]
+            packet = [self.random_header_flit(self.row_addr_w, self.col_addr_w)]
             for j in range(packet_length-1):
                 packet.append(self.random_body_flit(self.config["flit_data_w"]))  # body / payload
             packet.append(self.random_body_flit(self.config["flit_data_w"], flit_id="11"))  # tail
             self.packets_to_send.append(packet)
 
-    def random_header_flit(self, row_addr_w, col_addr_w, hop_cnt_w, header_id="10"):
-        assert (row_addr_w + col_addr_w + hop_cnt_w + len(header_id)) == self.config["flit_w"], "Total lenght of Header Flit != FLIT_W"
+    def random_header_flit(self, row_addr_w, col_addr_w, header_id="10"):
+        assert (row_addr_w + col_addr_w + len(header_id)) <= self.config["flit_w"], "Total lenght of Header Flit != FLIT_W"
         row_addr = BinaryValue(getrandbits(row_addr_w), row_addr_w, bigEndian=False).binstr
         col_addr = BinaryValue(getrandbits(col_addr_w), col_addr_w, bigEndian=False).binstr
-        hop_cnt = BinaryValue(getrandbits(hop_cnt_w), hop_cnt_w, bigEndian=False).binstr
-        header_flit = header_id + row_addr + col_addr + hop_cnt
+
+        nuller = null_string(self.config["flit_w"] - len(header_id) - row_addr_w - col_addr_w)
+        header_flit = header_id + row_addr + col_addr + nuller
         return BinaryValue(header_flit, len(header_flit), bigEndian=False).integer
 
     def random_body_flit(self, data_w, flit_id="01"):

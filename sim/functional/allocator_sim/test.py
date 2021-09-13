@@ -28,7 +28,6 @@ class AllocTB:
             "in_n": int(os.environ["IN_N"]),
             "out_m": int(os.environ["OUT_M"]),
             "flit_id_w": int(os.environ["FLIT_ID_W"]),
-            "hop_cnt_w": int(os.environ["HOP_CNT_W"]),
             "out_chan_id": int(os.environ["OUT_CHAN_ID"]),
             "rtr_res_w": log(int(os.environ["OUT_M"]), 2),
             "chan_sel_w": log(int(os.environ["IN_N"]), 2)
@@ -37,7 +36,6 @@ class AllocTB:
         assert self.dut.IN_N == self.config["in_n"], "Bad Value"
         assert self.dut.OUT_M == self.config["out_m"], "Bad Value"
         assert self.dut.FLIT_ID_W == self.config["flit_id_w"], "Bad Value"
-        assert self.dut.HOP_CNT_W == self.config["hop_cnt_w"], "Bad Value"
         assert self.dut.OUT_CHAN_ID == self.config["out_chan_id"], "Bad Value"
 
         self.drv = AllocDriver(dut, "", dut.clk_i, self.config, log_lvl)
@@ -46,18 +44,17 @@ class AllocTB:
 
     def populate_packets_to_send(self, packet_n=10, packet_length=4):
         for i in range(packet_n):
-            packet = [self.random_header_flit(self.row_addr_w, self.col_addr_w, self.hop_cnt_w)]
+            packet = [self.random_header_flit(self.row_addr_w, self.col_addr_w)]
             for j in range(packet_length-1):
                 packet.append(self.random_body_flit(self.config["flit_data_w"]))  # body / payload
             packet.append(self.random_body_flit(self.config["flit_data_w"], flit_id="11"))  # tail
             self.packets_to_send.append(packet)
 
-    def random_header_flit(self, row_addr_w, col_addr_w, hop_cnt_w, header_id="10"):
-        assert (row_addr_w + col_addr_w + hop_cnt_w + len(header_id)) == self.config["flit_w"], "Total lenght of Header Flit != FLIT_W"
+    def random_header_flit(self, row_addr_w, col_addr_w, header_id="10"):
+        assert (row_addr_w + col_addr_w + len(header_id)) == self.config["flit_w"], "Total lenght of Header Flit != FLIT_W"
         row_addr = BinaryValue(getrandbits(row_addr_w), row_addr_w, bigEndian=False).binstr
         col_addr = BinaryValue(getrandbits(col_addr_w), col_addr_w, bigEndian=False).binstr
-        hop_cnt = BinaryValue(getrandbits(hop_cnt_w), hop_cnt_w, bigEndian=False).binstr
-        header_flit = header_id + row_addr + col_addr + hop_cnt
+        header_flit = header_id + row_addr + col_addr
         return BinaryValue(header_flit, len(header_flit), bigEndian=False).integer
 
     def random_body_flit(self, data_w, flit_id="01"):

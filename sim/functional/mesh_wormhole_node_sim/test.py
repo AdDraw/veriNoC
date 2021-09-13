@@ -28,7 +28,6 @@ class WormholeNodeTB:
       "out_m": int(os.environ["OUT_M"]),
       "flit_id_w": int(os.environ["FLIT_ID_W"]),
       "flit_data_w": int(os.environ["FLIT_DATA_W"]),
-      "hop_cnt_w": int(os.environ["HOP_CNT_W"]),
       "row_cord":int(os.environ["ROW_CORD"]),
       "row_addr_w":int(os.environ["ROW_ADDR_W"]),
       "col_cord":int(os.environ["COL_CORD"]),
@@ -40,7 +39,6 @@ class WormholeNodeTB:
     assert self.dut.IN_N == self.config["in_n"], "Bad Value"
     assert self.dut.OUT_M == self.config["out_m"], "Bad Value"
     assert self.dut.FLIT_ID_W == self.config["flit_id_w"], "Bad Value"
-    assert self.dut.HOP_CNT_W == self.config["hop_cnt_w"], "Bad Value"
     assert self.dut.FLIT_DATA_W == self.config["flit_data_w"], "Bad Value"
     assert self.dut.ROW_CORD == self.config["row_cord"], "Bad Value"
     assert self.dut.ROW_ADDR_W == self.config["row_addr_w"], "Bad Value"
