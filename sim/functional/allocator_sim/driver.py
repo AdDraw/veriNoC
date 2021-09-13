@@ -17,7 +17,6 @@ class AllocDriver(BusDriver):
         "in_n": 5,
         "out_m": 5,
         "flit_id_w": 2,
-        "hop_cnt_w": 4,
         "out_chan_id": 1,
         "rtr_res_w": log(5, 2),
         "chan_sel_w": log(5, 2)
@@ -64,7 +63,6 @@ class AllocDriver(BusDriver):
         if sync is True:
             await RisingEdge(self.clock)
         self.bus.flit_id_i.setimmediatevalue(0)
-        # self.bus.hop_count_i.setimmediatevalue(0)
         self.bus.rtr_res_i.setimmediatevalue(0)
         self.bus.rst_ni.setimmediatevalue(1)
         self.bus.data_vld_i.setimmediatevalue(0)

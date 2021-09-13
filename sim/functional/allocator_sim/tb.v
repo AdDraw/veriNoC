@@ -10,7 +10,6 @@ module tb
       parameter IN_N        = 5,  // to specify from how many inputs we should choose
       parameter OUT_M       = 5,  // for route result inputs
       parameter FLIT_ID_W   = 2,  // how many bits are taken for ID in each FLIT
-      parameter HOP_CNT_W   = 4,  // for hopcount
       parameter OUT_CHAN_ID = 0,  // which output channel is this Alloc assigned to
       parameter CLK_PERIOD  = 10
       )
@@ -37,7 +36,6 @@ module tb
       $display("\t- IN_N        %0d", IN_N);
       $display("\t- OUT_M       %0d", OUT_M);
       $display("\t- FLIT_ID_W   %0d", FLIT_ID_W);
-      $display("\t- HOP_CNT_W   %0d", HOP_CNT_W);
       $display("\t- OUT_CHAN_ID %0d", OUT_CHAN_ID);
     end
 
@@ -49,7 +47,6 @@ module tb
       .IN_N(IN_N),
       .OUT_M(OUT_M),
       .FLIT_ID_W(FLIT_ID_W),
-      .HOP_CNT_W(HOP_CNT_W),
       .OUT_CHAN_ID(OUT_CHAN_ID)
       )
     x_alloc
@@ -58,7 +55,6 @@ module tb
       .rst_ni(rst_ni),
       .rtr_res_i(rtr_res_i),
       .rtr_res_vld_i(rtr_res_vld_i),
-      .hop_count_i(0),
       .flit_id_i(flit_id_i),
       .data_vld_i(data_vld_i),  //From VC
       .forward_node_rdy_i(forward_node_rdy_i),

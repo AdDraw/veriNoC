@@ -37,7 +37,6 @@ def gen_packet(tb, row, col, packet_length=4):
     packet = [gen_header_flit(tb,
                               tb.config["row_addr_w"],
                               tb.config["col_addr_w"],
-                              tb.config["hop_cnt_w"],
                               row=row, col=col, random=False)]
     for j in range(packet_length - 1):
         packet.append(gen_body_flit(tb, tb.config["flit_data_w"]))  # body / payload
@@ -96,8 +95,7 @@ def populate_packets_to_send(tb, packet_n=10, packet_length=4):
 
         header = gen_header_flit(tb,
                                  tb.config["row_addr_w"],
-                                 tb.config["col_addr_w"],
-                                 tb.config["hop_cnt_w"])
+                                 tb.config["col_addr_w"])
         packet = [header[0]]
         out_chan = xy_route(tb, row=header[1], col=header[2])
 
@@ -107,22 +105,21 @@ def populate_packets_to_send(tb, packet_n=10, packet_length=4):
 
         tb.packets_to_send.append({"out_chan": out_chan, "packet": packet})
 
-def gen_header_flit(tb, row_addr_w, col_addr_w, hop_cnt_w, row=0, col=0, hop_cnt=0, header_id="10", random=True):
-    assert (row_addr_w + col_addr_w + hop_cnt_w + len(header_id)) == tb.config["flit_w"], f"Total lenght of Header Flit != FLIT_W"
+def gen_header_flit(tb, row_addr_w, col_addr_w, row=0, col=0, header_id="10", random=True):
+    assert (row_addr_w + col_addr_w + len(header_id)) <= tb.config["flit_w"], f"Total lenght of Header Flit != FLIT_W"
 
     if random:
         row_addr = BinaryValue(getrandbits(row_addr_w), row_addr_w, bigEndian=False).binstr
         col_addr = BinaryValue(getrandbits(col_addr_w), col_addr_w, bigEndian=False).binstr
-        hop_cnt = BinaryValue(getrandbits(hop_cnt_w), hop_cnt_w, bigEndian=False).binstr
     else:
         assert 0 > row or row <= 2**tb.config["row_addr_w"]-1, "Row Destination Address is too big for the Width provided"
         row_addr = BinaryValue(row, row_addr_w, bigEndian=False).binstr
         assert 0 > col or col <= 2 ** tb.config["col_addr_w"] - 1, "Col Destination Address is too big for the Width provided"
         col_addr = BinaryValue(col, col_addr_w, bigEndian=False).binstr
-        assert 0 > hop_cnt or hop_cnt <= 2 ** tb.config["hop_cnt_w"] - 1, "HopCount is too big for the Width provided"
-        hop_cnt = BinaryValue(hop_cnt, hop_cnt_w, bigEndian=False).binstr
 
-    header_flit = header_id + row_addr + col_addr + hop_cnt
+    nuller = null_string(tb.config["flit_w"] - len(header_id) - row_addr_w - col_addr_w)
+
+    header_flit = header_id + row_addr + col_addr + nuller
     if random:
         return [BinaryValue(header_flit, len(header_flit), bigEndian=False).integer,
                 BinaryValue(row_addr, len(row_addr), bigEndian=False).integer,
