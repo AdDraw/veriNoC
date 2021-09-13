@@ -310,10 +310,14 @@ class WHNoCTB:
           if bernouli(packet_injection_rate):
             if traffic_pattern == "u_rand":
               dest_node = self.tp.uniform_random(input_i)
-            elif traffic_pattern == "inverse":
-              source_node = NodeAddr([0,0], self.dim)
-              source_node.update(input_i)
-              dest_node = self.tp.bit_permutation(source_node, "inverse")
+            elif traffic_pattern == "complement":
+              dest_node = self.tp.bit_permutation(input_i)
+            elif traffic_pattern == "hotspot":
+              dest_node = self.tp.hotspot(input_i)
+            elif traffic_pattern == "nearest_neighbor":
+              dest_node = self.tp.nearest_neighbor(input_i)
+            elif traffic_pattern == "locality":
+              dest_node = self.tp.locality(input_i)
             else:
               print("This traffic pattern is not supported")
               raise ValueError
@@ -326,10 +330,14 @@ class WHNoCTB:
           if bernouli(packet_injection_rate):
             if traffic_pattern == "u_rand":
               dest_node = self.tp.uniform_random(input_i)
-            elif traffic_pattern == "inverse":
-              source_node = NodeAddr([0,0], self.dim)
-              source_node.update(input_i)
-              dest_node = self.tp.bit_permutation(source_node, "inverse")
+            elif traffic_pattern == "complement":
+              dest_node = self.tp.bit_permutation(input_i)
+            elif traffic_pattern == "hotspot":
+              dest_node = self.tp.hotspot(input_i)
+            elif traffic_pattern == "nearest_neighbor":
+              dest_node = self.tp.nearest_neighbor(input_i)
+            elif traffic_pattern == "locality":
+              dest_node = self.tp.locality(input_i)
             else:
               print("This traffic pattern is not supported")
               raise ValueError
