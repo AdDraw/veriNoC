@@ -46,16 +46,12 @@ read_verilog  -DYS_ROUTER_TOP=1 \
               -DYS_$params(3)=$values(3) \
               -DYS_$params(4)=$values(4) \
               ../srcs/switch/routers/xy_router.v
+
 echo off
-
-# elaborate design hierarchy
-hierarchy -check -top $top_module
-
-# the high-level stuff
-procs; opt; fsm; opt; memory; opt
-
-# mapping to internal cell library
-techmap; opt
+hierarchy -top $top_module -keep_portwidths -check
+synth -top $top_module -flatten
+dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
+abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
 
 # cleanup
 clean
