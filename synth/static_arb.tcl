@@ -31,15 +31,11 @@ read_verilog  -DYS_STATIC_PRIORITY_ARBITER_TOP=1 \
               -DYS_$params(0)=$values(0) \
               ../srcs/switch/arbiters/static_priority_arbiter.v
 
-# elaborate design hierarchy
-hierarchy -check -top $top_module
-
-# the high-level stuff
-procs; opt; fsm; opt; memory; opt
-
-# mapping to internal cell library
-techmap; opt
-
+echo off
+hierarchy -top $top_module -keep_portwidths -check
+synth -top $top_module -flatten
+dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
+abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
 # cleanup
 clean
 

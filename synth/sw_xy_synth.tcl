@@ -64,7 +64,6 @@ read_verilog  -DYS_XY_SW_TOP=1 \
               ../srcs/switch/simple_mesh_xy/xy_switch.v
 
 echo off
-
 hierarchy -top $top_module -keep_portwidths -check
 synth -top $top_module -flatten
 dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib

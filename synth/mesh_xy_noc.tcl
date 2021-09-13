@@ -51,8 +51,8 @@ read_verilog  -DYS_MESH_XY_TOP=1 \
               -DYS_$params(3)=$values(3) \
               ../srcs/noc/mesh_xy_noc.v
 
+echo off
 hierarchy -top $top_module -keep_portwidths -check
-
 synth -top $top_module -flatten
 dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
 abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
