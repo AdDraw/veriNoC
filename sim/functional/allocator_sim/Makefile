@@ -6,8 +6,6 @@ SRC_DIR=$(shell git rev-parse --show-toplevel)/srcs
 
 # files
 VERILOG_SOURCES+= $(SRC_DIR)/switch/constants.v
-VERILOG_SOURCES+= $(SRC_DIR)/switch/arbiters/hop_cnt_arbiter.v
-VERILOG_SOURCES+= $(SRC_DIR)/switch/arbiters/static_priority_arbiter.v
 VERILOG_SOURCES+= $(SRC_DIR)/switch/arbiters/matrix_arbiter.v
 VERILOG_SOURCES+= $(SRC_DIR)/switch/allocators/allocator.v
 ifeq ($(SYNTH), 1)
@@ -23,7 +21,6 @@ SIM 		 ?= icarus
 export IN_N 	     	= 5
 export OUT_M		   	= 5
 export FLIT_ID_W 	 	= 2
-export HOP_CNT_W	 	= 4
 export OUT_CHAN_ID 	= 1
 export CLK_PERIOD 	= 10
 
@@ -31,7 +28,6 @@ ifeq ($(SIM), icarus)
 		COMPILE_ARGS += -P $(TOPLEVEL).IN_N=$(IN_N)
 		COMPILE_ARGS += -P $(TOPLEVEL).OUT_M=$(OUT_M)
 		COMPILE_ARGS += -P $(TOPLEVEL).FLIT_ID_W=$(FLIT_ID_W)
-		COMPILE_ARGS += -P $(TOPLEVEL).HOP_CNT_W=$(HOP_CNT_W)
 		COMPILE_ARGS += -P $(TOPLEVEL).OUT_CHAN_ID=$(OUT_CHAN_ID)
 		COMPILE_ARGS += -P $(TOPLEVEL).CLK_PERIOD=$(CLK_PERIOD)
 endif
