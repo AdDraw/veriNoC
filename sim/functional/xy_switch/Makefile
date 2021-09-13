@@ -17,10 +17,11 @@ VERILOG_SOURCES += $(VER_DIR)/simple_mesh_xy/control_unit.v
 VERILOG_SOURCES += $(VER_DIR)/arbiters/matrix_arbiter.v
 VERILOG_SOURCES += $(VER_DIR)/crossbars/nxn_single_crossbar.v
 VERILOG_SOURCES += $(VER_DIR)/routers/xy_router.v
-# ifeq ($(SYNTH), 1)
-#   VERILOG_SOURCES = $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
-#   VERILOG_SOURCES += $(VER_DIR)/simple_mesh_xy/xy_synth.v
-# endif
+ifeq ($(SYNTH), 1)
+  VERILOG_SOURCES = $(VER_DIR)/constants.v
+  VERILOG_SOURCES += $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
+  VERILOG_SOURCES += $(VER_DIR)/simple_mesh_xy/xy_synth.v
+endif
 
 VERILOG_SOURCES += ./tb.v
 

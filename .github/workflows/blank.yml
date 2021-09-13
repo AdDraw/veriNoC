@@ -118,10 +118,8 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: FIFO
         run: |
-          cd synth/
-          ./yosys_wrapper.sh -sf fifo_synth.tcl FIFO_DEPTH_WIDTH=2 DATA_WIDTH=8 --no-xdot
           cd ../sim/functional/circ_fifo_sim
-          python3 run_and_verify.py -ps
+          python3 run_and_verify.py -ps -synth
 
       - name: Mesh XY 2x2
         run: |

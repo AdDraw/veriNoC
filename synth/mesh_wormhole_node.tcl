@@ -67,8 +67,8 @@ read_verilog  -DYS_MESH_WORMHOLE_NODE_TOP=1 \
 
 echo off
 hierarchy -top $top_module -keep_portwidths -check
-
 synth -top $top_module -flatten
+dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
 abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
 
 # cleanup

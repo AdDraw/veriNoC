@@ -11,6 +11,7 @@ VERILOG_SOURCES += $(SRC_DIR)/switch/routers/xy_router.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/virtual_channels/virtual_channel.v
 ifeq ($(SYNTH), 1)
   VERILOG_SOURCES = $(SRC_DIR)/switch/constants.v
+  VERILOG_SOURCES += $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
   VERILOG_SOURCES += $(SRC_DIR)/switch/virtual_channels/virtual_channel_synth.v
 endif
 VERILOG_SOURCES+= ./tb.v
