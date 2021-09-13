@@ -10,8 +10,7 @@ class NodeVCDriver(BusDriver):
         "in_n": 5,
         "out_m": 5,
         "flit_id_w": 2,
-        "flit_data_w": 8,
-        "hop_cnt_w": 4
+        "flit_data_w": 8
     }
 
     def __init__(self, entity, name, clock, node_id, config=None, log_lvl=INFO):

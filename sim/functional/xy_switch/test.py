@@ -167,9 +167,6 @@ async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fi
     else:
         transaction_n = pow(2, swtb.config["packet_data_w"]) - 1
 
-    # if with_nxt_fifo_rand is True:
-    #     cocotb.fork(swtb.sw_drv.gen_rand_full(transaction_n))
-
     for i in range(transaction_n):
         src = randint(0, swtb.config["neighbours_n"]-1)
         x_dest = getrandbits(swtb.config["packet_x_addr_w"])

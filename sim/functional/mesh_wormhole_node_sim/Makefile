@@ -7,7 +7,6 @@ SRC_DIR=$(shell git rev-parse --show-toplevel)/srcs
 # files
 VERILOG_SOURCES += $(SRC_DIR)/switch/constants.v
 VERILOG_SOURCES += $(SRC_DIR)/components/circ_fifo.v
-# VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/hop_cnt_arbiter.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/matrix_arbiter.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/allocators/allocator.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/routers/xy_router.v
@@ -34,8 +33,7 @@ export COL_ADDR_W     ?= 2 # 5
 export ROW_ADDR_W     ?= 2 # 6
 export FLIT_ID_W 	 	  ?= 2 # 7
 export FLIT_DATA_W 	  ?= 8 # 8
-export HOP_CNT_W	 	  ?= 4 # 9
-export BUFFER_DEPTH_W ?= 2 # 10
+export BUFFER_DEPTH_W ?= 2 # 9
 
 export CLK_PERIOD 		?= 10
 
@@ -48,7 +46,6 @@ ifeq ($(SIM), icarus)
 		COMPILE_ARGS += -P $(TOPLEVEL).ROW_ADDR_W=$(ROW_ADDR_W)					# 6
 		COMPILE_ARGS += -P $(TOPLEVEL).COL_ADDR_W=$(COL_ADDR_W)					# 7
 		COMPILE_ARGS += -P $(TOPLEVEL).COL_CORD=$(COL_CORD)							# 8
-		COMPILE_ARGS += -P $(TOPLEVEL).HOP_CNT_W=$(HOP_CNT_W)						# 9
 		COMPILE_ARGS += -P $(TOPLEVEL).BUFFER_DEPTH_W=$(BUFFER_DEPTH_W)	# 10
 		COMPILE_ARGS += -P $(TOPLEVEL).CLK_PERIOD=$(CLK_PERIOD)
 endif

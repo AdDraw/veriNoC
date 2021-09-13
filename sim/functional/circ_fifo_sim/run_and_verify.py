@@ -1,48 +1,53 @@
 import subprocess
-import xml.etree.ElementTree as ET
-import argparse
 import os
+import time
+import argparse
+from utils.rav import *
+from utils.adam_logger import *
 
-parser = argparse.ArgumentParser(description='FIFO Testbench Run & Verify.')
-parser.add_argument('-ps', default=0, help='Set value to 1 if you want to enable'
-                                           ' run simulation using a post-synth netlist by default = 0')
 
-args = parser.parse_args()
-print(f"Arguments: {args}")
+def main(tf, ps, synth, log_lvl, ff_depth, data_w) -> None:
+  log = get_logger(__name__, int(log_lvl))
+  log.info(f"RUN {time.asctime()}")
 
-failed_testcases = 0
-testcases = []
-subprocess.run(["make", "-j12", "-B", f"SYNTH={args.ps}"])
-tree = ET.parse("results.xml")
-root = tree.getroot()
-for testsuite in root:
-    for testcase in testsuite:
-        if testcase.attrib["name"] != "random_seed":
-            if testcase.__len__() > 0:
-                testcases.append({"result": "FAIL", "testcase": testcase.attrib})
-                failed_testcases += 1
-            else:
-                testcases.append({"result": "PASS", "testcase": testcase.attrib})
+  tcl_script = "fifo_synth.tcl"
+  arguments = {"FIFO_DEPTH_W": ff_depth,
+               "DATA_W": data_w}
 
-print("-----------------------------------------------------------------------------------------------------------")
-if failed_testcases > 0:
-    print(f"------------------------------- Run & Verify"
-          f" {failed_testcases}/{testcases.__len__()} runs have failed"
-          f" :( -------------------------------------")
-    for ftc_id, failed_tc in enumerate(testcases):
-        if failed_tc["result"] == "FAIL":
-            print(f"{ftc_id}: {failed_tc}")
-    print("-----------------------------------------------------------------------------------------------------------")
-    print("Exit Code 1")
-    exit(1)
-else:
-    print(f"-------------------------------- REGRESSION.PY Every run succedded!"
-          f" {testcases.__len__()}/{testcases.__len__()}"
-          f" ---------------------------------------")
+  log.info("----------------------------------------------------------------------------------------------------"
+           "-------")
+  run = simulate(log, tf, ps, synth, arguments, tcl_script)
+  if run[0]:  # FAILED RUN
+    log.error(f"Run FAILED")
+    log.error(f"Config: {run[3]}")
+    for tc_id, tc in enumerate(run[1]):
+        if tc["result"] == "FAIL":
+            log.error(f"TC {tc_id + 1}/{run[1].__len__()}. {tc}")
+    log.info("-----------------------------------------------------------------------------------------"
+             "------------------")
+  log.info(f"RESULTS: {run[2]}/{run[1].__len__()} [failed runs / attempts]")
+  log.info(f"Finished main() with exit_code={run[0]}")
+  exit(run[0])
 
-    for tc in testcases:
-        print(tc)
 
-    print("-----------------------------------------------------------------------------------------------------------")
-    print("Exit Code 0")
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser(description='Mesh XY NOC Testbench Run & Verify.')
+  parser.add_argument('-tf', default=0, action="store_const", const=1,
+                      help='TestFactory() for some testcases. Not enabled by Default')
+  parser.add_argument('-ps', default=0, action="store_const", const=1,
+                      help='run simulation using a post-synth netlist. Not enabled by Default')
+  parser.add_argument('-synth', default=0, action="store_const", const=1,
+                      help='rerun the synthesis using parameter values taken from arguments. Not enabled by Default')
+  parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
+
+  parser.add_argument('-ff_depth', default=2, help='FIFO_DEPTH_W parameter')
+  parser.add_argument('-data_w', default=10, help='DATA_W parameter')
+
+  args = parser.parse_args()
+
+  try:
+    main(**vars(parser.parse_args()))
+  except KeyboardInterrupt:
+    print("ERROR: KEYBOARD INTERRUPT OCCURED, KILLING VVPs")
+    subprocess.run(["killall", "vvp"])
     exit(0)
