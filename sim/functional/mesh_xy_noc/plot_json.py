@@ -195,34 +195,15 @@ def parse_and_plot(json_file, loop_json=False, buff_size_en=False):
     ps_dict = ["PRESYN", "POSTSYN"]
     title = f"noc: {name}, row_n: {row_n}, col_m: {col_m}, ff_depth_w: {ff_depth}, pckt_data_w: {pckt_data_w}"
 
-  # Plot metrics
-  # - Hops [N]
-  # shortest
-  # plot_df(df_fp, "name", ["shortest_hop_path"],
-  #         f"testcase", f"Hops [N]", title, f'{json_no_suffix}/packet_hops_short.png')
-  # plot_df(df_fp, "name", [ "average_hop_path"],
-  #         f"testcase", f"Hops [N]", title, f'{json_no_suffix}/packet_hops_avg.png')
-  # plot_df(df_fp, "name", ["longest_hop_path"],
-  #         f"testcase", f"Hops [N]", title, f'{json_no_suffix}/packet_hops_long.png')
-  #
-  # plot_df(df_fp, "name", ["shortest_hop_path", "average_hop_path", "longest_hop_path"],
-  #         f"testcase", f"Hops [N]", title, f'{json_no_suffix}/packet_hops_comp.png')
-  #
-  # # - PACKET LIFETIME [ns]
-  # plot_df(df_fp, "name", ["min_packet_life_ns"],
-  #         f"testcase", f"time [ns]", title, f'{json_no_suffix}/packet_life_min.png')
-  # plot_df(df_fp, "name", ["mean_packet_life_ns"],
-  #         f"testcase", f"time [ns]", title, f'{json_no_suffix}/packet_life_avg.png')
-  # plot_df(df_fp, "name", ["max_packet_life_ns"],
-  #         f"testcase", f"time [ns]", title, f'{json_no_suffix}/packet_life_max.png')
-  # plot_df(df_fp, "name", ["min_packet_life_ns", "mean_packet_life_ns", "max_packet_life_ns"],
-  #         f"testcase", f"time [ns]", title, f'{json_no_suffix}/packet_life_comp.png')
-
     # Offered vs Accepted traffic
     testcase_names = []
     for row in df_fp.iterrows():
       if "_0" or "_1" in row[1]["name"]:
-        name = row[1]["name"].split("_")[0] + "_" + row[1]["name"].split("_")[1]
+
+        if len(row[1]["name"].split("_")) == 2:
+          name = row[1]["name"].split("_")[0]
+        else:
+          name = row[1]["name"].split("_")[0] + "_" + row[1]["name"].split("_")[1]
         if name not in testcase_names:
           testcase_names.append(name)
 

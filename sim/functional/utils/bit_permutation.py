@@ -53,10 +53,3 @@ assert shuffle("1110") == "1101", "Shuffle Error"
 assert reverse("1000") == "0001", "Reverse Error"
 assert complement("1110") == "0001", "Inv Error"
 assert transpose("10", "11") == "1101", "Transpose Error"
-
-
-# print(f"INPUT 0001")
-# print(f"      {invert('0001')} - complement bitwise not")
-# print(f"      {reverse('0001')} - reverse 1..N-1 -> N-1..1")
-# print(f"      {shuffle('0001')} - shuffle move to left by 1")
-# print(f"      {rotate('0001')} - rotate move to right by 1")
