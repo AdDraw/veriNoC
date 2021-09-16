@@ -89,7 +89,7 @@ async def random_multi_input_at_a_time(dut, log_lvl=INFO, packet_n=10, packet_le
   raise TestSuccess("Sim finished sucessfully")
 
 
-async def measure(dut, log_lvl=INFO, warm_up_period=1000, meas_period=8000,
+async def measure(dut, log_lvl=INFO, warm_up_period=4000, meas_period=4000,
                   injection_rate=0.3, plen=4, traffic_pattern="uniform_random"):
 
   tb = WHNoCTB(dut, log_lvl)
