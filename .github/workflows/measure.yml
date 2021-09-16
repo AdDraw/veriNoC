@@ -19,72 +19,51 @@ jobs:
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 2 -row_n 3 -col_m 3
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_xy_noc/*.json
       - name: XY NoC FF_D 3
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 3 -row_n 3 -col_m 3
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_xy_noc/*.json
 
       - name: XY NoC FF_D 4
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 4 -row_n 3 -col_m 3
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_xy_noc/*.json
 
       - name: XY NoC 4x4 FF_D 2
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 2 -row_n 4 -col_m 4
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_xy_noc/*.json
 
       - name: XY NoC 4x4 FF_D 3
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 3 -row_n 4 -col_m 4
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_xy_noc/*.json
 
       - name: XY NoC 4x4 FF_D 4
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 4 -row_n 4 -col_m 4
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_xy_noc/*.json
 
       - name: XY NoC 5x5
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 2 -row_n 5 -col_m 5
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_xy_noc/*.json
 
       - name: XY NoC 5x5 FF_D 3
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 3 -row_n 5 -col_m 5
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_xy_noc/*.json
 
       - name: XY NoC 5x5 FF_D 4
         run: |
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 4 -row_n 5 -col_m 5
+
+      - name: Upload JSONs
         uses: actions/upload-artifact@v2
         with:
-          path: sim/functional/mesh_xy_noc/*.json
+          name: mesh_wh_xy_noc
+          path: sim/functional/mesh_xy_noc/*.json 
 
   mesh_wh_xy_noc:
     # The type of runner that the job will run on
@@ -95,70 +74,49 @@ jobs:
         run: |
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 2 -row_n 3 -col_m 3
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_wh_xy_noc/*.json
 
       - name: Wormhole XY NoC FF_D 3
         run: |
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 3 -row_n 3 -col_m 3
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_wh_xy_noc/*.json
 
       - name: Wormhole XY NoC FF_D 4
         run: |
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 4 -row_n 3 -col_m 3
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_wh_xy_noc/*.json
 
       - name: Wormhole XY NoC 4x4 FF_D 2
         run: |
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 2 -row_n 4 -col_m 4
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_wh_xy_noc/*.json
 
       - name: Wormhole XY NoC 4x4 FF_D 3
         run: |
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 3 -row_n 4 -col_m 4
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_wh_xy_noc/*.json
 
       - name: Wormhole XY NoC 4x4 FF_D 4
         run: |
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 4 -row_n 4 -col_m 4
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_wh_xy_noc/*.json
 
       - name: Wormhole XY NoC 5x5
         run: |
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 2 -row_n 5 -col_m 5
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_wh_xy_noc/*.json
 
       - name: Wormhole XY NoC 5x5 FF_D 3
         run: |
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 3 -row_n 5 -col_m 5
-        uses: actions/upload-artifact@v2
-        with:
-          path: sim/functional/mesh_wh_xy_noc/*.json
 
       - name: Wormhole XY NoC 5x5 FF_D 4
         run: |
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 4 -row_n 5 -col_m 5
+
+      - name: Upload JSONs
         uses: actions/upload-artifact@v2
         with:
+          name: mesh_wh_xy_noc
           path: sim/functional/mesh_wh_xy_noc/*.json
