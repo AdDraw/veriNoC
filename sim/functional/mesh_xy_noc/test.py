@@ -24,6 +24,10 @@ from utils.Resource import Resource
 CLK_PERIOD = int(os.environ["CLK_PERIOD"])
 METRICS_FILENAME = str(os.environ["METRICS_FILENAME"])
 
+from utils.traffic_pattern import *
+from utils.address import NodeAddr
+
+HOT_SPOTS = None
 
 class NocTB:
     """
@@ -67,7 +71,7 @@ class NocTB:
         self.sent = []
         self.rsc_list = []
         self.last_warm_up_id = 0
-        self.resource_n = self.config["row_n"] * self.config["col_m"]
+        self.client_n = self.config["row_n"] * self.config["col_m"]
         self.clk_period = self.config["clk_period"]
         self.max_acc_traffic_ratio = 1
         self.acc_traffic_ratio = 0
@@ -429,17 +433,17 @@ async def uniform_random(dut, log_lvl=INFO, injection_rate=0.1, capture_period=2
 
     throughput = cocotb.fork(tb.throughput(capture_period, injection_rate))
 
+    noc_dim = [tb.config["row_n"], tb.config["col_m"]]
+    tp = TrafficPattern(noc_dim)
+
     pid = list(range(tb.last_warm_up_id, pow(2, tb.config["pckt_data_w"])))
     i = 0
     while i < capture_period:
         for sender in tb.rsc_list:
             if bernouli(injection_rate):
-                row = randint(0, tb.config["row_n"] - 1)
-                col = randint(0, tb.config["col_m"] - 1)
-                while row == sender.config["row_cord"] and col == sender.config["col_cord"]:
-                    row = randint(0, tb.config["row_n"] - 1)
-                    col = randint(0, tb.config["col_m"] - 1)
-                sender.send_packet_to_xy(pid[0], row, col)
+                node = NodeAddr([sender.config["row_cord"], sender.config["col_cord"]], noc_dim)
+                dest_node = tp.uniform_random(node.id)
+                sender.send_packet_to_xy(pid[0], dest_node.row, dest_node.col)
                 pid.pop(0)
 
         await RisingEdge(dut.clk_i)
@@ -459,37 +463,29 @@ async def bit_permutation(dut, log_lvl=INFO, permutation="complement", injection
     # Destination node is calculated from the coordinates of the source node
     assert (len(tb.rsc_list)*injection_rate*capture_period + 1000) < pow(2, tb.config["pckt_data_w"]), "Pckt Data Width is not big enough to provide unique ID to each packet"
 
+    noc_dim = [tb.config["row_n"], tb.config["col_m"]]
+
+    tp = TrafficPattern(noc_dim)
+
     throughput = cocotb.fork(tb.throughput(capture_period, injection_rate))
     pid = sample(range(pow(2, tb.config["pckt_data_w"])), int(len(tb.rsc_list)*injection_rate*capture_period + 1000))
     i = 0
     while i < capture_period:
         for sender in tb.rsc_list:
             if bernouli(injection_rate):
-                row_cord = BinaryValue(sender.config["row_cord"], ceil(math.log(int(os.environ["ROW_N"]), 2)), bigEndian=False).binstr
-                col_cord = BinaryValue(sender.config["col_cord"], ceil(math.log(int(os.environ["COL_M"]), 2)), bigEndian=False).binstr
-
+                node = NodeAddr([sender.config["row_cord"], sender.config["col_cord"]], noc_dim)
                 if permutation == "complement":
-                    dest = bit_p.invert(row_cord + col_cord)
+                    dest_node = tp.bit_permutation(node.id, "complement")
                 elif permutation == "shuffle":
-                    dest = bit_p.shuffle(row_cord + col_cord)
+                    dest_node = tp.bit_permutation(node.id, "shuffle")
                 elif permutation == "reverse":
-                    dest = bit_p.reverse(row_cord + col_cord)
+                    dest_node = tp.bit_permutation(node.id, "reverse")
                 elif permutation == "rotate":
-                    dest = bit_p.rotate(row_cord + col_cord)
+                    dest_node = tp.bit_permutation(node.id, "rotate")
                 else:
                     raise ValueError(f"ERROR: Incorrect Bit permutation function '{permutation}'")
 
-                row_dest = BinaryValue(dest[0:tb.config["row_addr_w"]], ceil(math.log(int(os.environ["ROW_N"]), 2)),
-                                       bigEndian=False).value
-                col_dest = BinaryValue(dest[tb.config["row_addr_w"]::], ceil(math.log(int(os.environ["COL_M"]), 2)),
-                                       bigEndian=False).value
-
-                if row_dest >= tb.config["row_n"]:
-                    row_dest = tb.config["row_n"] - 1
-                if col_dest >= tb.config["col_m"]:
-                    col_dest = tb.config["col_m"] - 1
-
-                sender.send_packet_to_xy(pid[0], row_dest, col_dest)
+                sender.send_packet_to_xy(pid[0], dest_node.row, dest_node.col)
                 pid.pop(0)
         await RisingEdge(dut.clk_i)
         i += 1
@@ -497,52 +493,55 @@ async def bit_permutation(dut, log_lvl=INFO, permutation="complement", injection
     await tb.compare(f"bp_{permutation[0:3]}_{injection_rate}")
 
 
-async def digit_permutation(dut, log_lvl=INFO, permutation="neighbour", injection_rate=0.1, capture_period=2000):
-    # Different Types of bit permutation traffic
-    log = SimLog("digit_permutation")
+async def temporal_traffic(dut, log_lvl=INFO, injection_rate=0.1, capture_period=2000, warm_up_period=500, traffic_pattern="locality"):
+    log = SimLog(f"pattern_{traffic_pattern}")
     log.setLevel(log_lvl)
     tb = NocTB(dut, log_lvl)
     await tb.setup_dut()
-
-    # Destination node is calculated from the coordinates of the source node
-    assert (len(tb.rsc_list)*injection_rate*capture_period + 1000) < pow(2, tb.config["pckt_data_w"]),\
-            "Pckt Data Width is not big enough to provide unique ID to each packet"
+    assert (int(len(tb.rsc_list)*injection_rate*capture_period)) < pow(2, tb.config["pckt_data_w"]),\
+        "Pckt Data Width is not big enough to provide unique ID to each packet"
 
     throughput = cocotb.fork(tb.throughput(capture_period, injection_rate))
-    pid = sample(range(pow(2, tb.config["pckt_data_w"])), int(len(tb.rsc_list)*injection_rate*capture_period + 1000))
+    global HOT_SPOTS
+
+    noc_dim = [tb.config["row_n"], tb.config["col_m"]]
+    tp = TrafficPattern(noc_dim)
+    pid = list(range(tb.last_warm_up_id, pow(2, tb.config["pckt_data_w"])))
     i = 0
     while i < capture_period:
         for sender in tb.rsc_list:
             if bernouli(injection_rate):
-                row_cord = BinaryValue(sender.config["row_cord"], tb.config["row_addr_w"], bigEndian=False).value
-                col_cord = BinaryValue(sender.config["col_cord"], tb.config["col_addr_w"], bigEndian=False).value
-
-                if permutation == "neighbour":
-                    row_dest = digit_p.neighbour(row_cord, tb.config["row_n"])
-                    col_dest = digit_p.neighbour(col_cord, tb.config["col_m"])
-                elif permutation == "tornado":
-                    row_dest = digit_p.tornado(row_cord, tb.config["row_n"])
-                    col_dest = digit_p.tornado(col_cord, tb.config["col_m"])
+                node = NodeAddr([sender.config["row_cord"], sender.config["col_cord"]], noc_dim)
+                if traffic_pattern == "locality":
+                  dest_node = tp.locality(node.id)
+                elif traffic_pattern == "nearest_neighbor":
+                  dest_node = tp.nearest_neighbor(node.id)
+                elif traffic_pattern == "hotspot":
+                  dest_node = tp.hotspot(node.id, spots=HOT_SPOTS)
+                  HOT_SPOTS = tp.hotspots
                 else:
-                    raise ValueError(f"ERROR: Incorrect Digit permutation function '{permutation}'")
-
-                sender.send_packet_to_xy(pid[0], row_dest, col_dest)
-
+                  raise ValueError
+                sender.send_packet_to_xy(pid[0], dest_node.row, dest_node.col)
                 pid.pop(0)
+
         await RisingEdge(dut.clk_i)
         i += 1
-
     await throughput
-    await tb.compare(f"dp_{permutation[0:3]}_{injection_rate}")
+    await tb.compare(f"{traffic_pattern[0:3]}_{injection_rate}")
 
 if int(os.environ["TESTFACTORY"]) == 1:
     tf = TestFactory(uniform_random)
     tf.add_option("injection_rate", [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325, 0.35])
     tf.generate_tests()
 
+    tf = TestFactory(temporal_traffic)
+    tf.add_option("traffic_pattern", ["locality", "nearest_neighbor", "hotspot"])
+    tf.add_option("injection_rate", [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325, 0.35])
+    tf.generate_tests()
+
     tf = TestFactory(bit_permutation)
     tf.add_option("injection_rate", [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325, 0.35])
-    tf.add_option("permutation", ["complement"])
+    tf.add_option("permutation", ["complement", "shuffle", "reverse", "rotate"])
     tf.generate_tests()
 
     # tf = TestFactory(digit_permutation)

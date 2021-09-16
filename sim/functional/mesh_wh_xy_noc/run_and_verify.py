@@ -4,7 +4,7 @@ import time
 import argparse
 from utils.rav import *
 from utils.adam_logger import *
-
+import glob
 
 def main(tf, ps, synth, row_n, col_m, ff_depth, channel_w, regression, log_lvl) -> None:
   log = get_logger(__name__, int(log_lvl))
@@ -83,16 +83,24 @@ if __name__ == '__main__':
 
   args = parser.parse_args()
 
+
+  # get a recursive list of file paths that matches pattern including sub directories
+
   if args.ps:
     metrics_filename = f"mesh_noc_wh_xy_postsynth_{args.row_n}_{args.col_m}" \
-                       f"_{args.ff_depth}_{args.channel_w}.json"
+                       f"_{args.ff_depth}_{args.channel_w}"
   else:
     metrics_filename = f"mesh_noc_wh_xy_presynth_{args.row_n}_{args.col_m}" \
-                       f"_{args.ff_depth}_{args.channel_w}.json"
+                       f"_{args.ff_depth}_{args.channel_w}"
 
-  if args.tf is False:
-   if os.path.exists(metrics_filename):
-      os.remove(metrics_filename)
+  if args.tf is 0:
+    fileList = glob.glob(f'{metrics_filename}*.json')
+    # Iterate over the list of filepaths & remove each file.
+    for filePath in fileList:
+        try:
+            os.remove(filePath)
+        except OSError:
+            print("Error while deleting file")
 
   os.environ['METRICS_FILENAME'] = metrics_filename
 

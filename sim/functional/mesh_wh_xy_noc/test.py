@@ -90,7 +90,7 @@ async def random_multi_input_at_a_time(dut, log_lvl=INFO, packet_n=10, packet_le
 
 
 async def measure(dut, log_lvl=INFO, warm_up_period=1000, meas_period=8000,
-                  injection_rate=0.3, plen=4, traffic_pattern="u_rand"):
+                  injection_rate=0.3, plen=4, traffic_pattern="uniform_random"):
 
   tb = WHNoCTB(dut, log_lvl)
   tb.setup_dut(cycle_n=5, bp=False, reader_en=False)
@@ -108,7 +108,8 @@ async def measure(dut, log_lvl=INFO, warm_up_period=1000, meas_period=8000,
   cocotb.log.info("Measurement Phase: Measurements")
   readers = []
   for out_chan in range(tb.client_n):
-    readers.append(cocotb.fork(tb.node_out_chan_reader(out_chan, cycle_n=0, time=True)))
+    readers.append(fork(tb.node_out_chan_reader(out_chan, cycle_n=0, time=True)))
+
   fork(tb.throughput(cycles=meas_period, injection_ratio=flit_injection_rate, plen=plen))
   await tb.meas_phase("measurement", meas_period, packet_injection_rate, traffic_pattern, plen=plen)
 
@@ -132,19 +133,20 @@ if int(os.environ["TESTFACTORY"]) == 1:
   tf = TestFactory(random_single_input_at_a_time)
   tf.add_option("bp", [False, True])
   tf.add_option("packet_n", [10, 100, 200])
-  tf.add_option("packet_length", [2, 8, 16])
+  tf.add_option("packet_length", [4, 8, 16])
   tf.generate_tests()
 
   tf = TestFactory(random_multi_input_at_a_time)
   tf.add_option("bp", [False, True])
   tf.add_option("packet_n", [10, 100, 200])
-  tf.add_option("packet_length", [2, 8, 16])
+  tf.add_option("packet_length", [4, 8, 16])
   tf.generate_tests()
 else:
-  tf = TestFactory(simple_test)
-  # tf.add_option("bp", [False, True])
-  # tf.generate_tests()
+  # tf = TestFactory(simple_test)
   tf = TestFactory(measure)
-  tf.add_option("traffic_pattern", ["locality", "hotspot", "nearest_neighbor"])
-  tf.add_option("injection_rate", [0.05, 0.1, 0.2, 0.3, 0.4, 0.46, 0.5, 0.55, 0.6, 0.65])
+  # tf.add_option("plen", [4, 8, 16])
+  tf.add_option("traffic_pattern", ["uniform_random", "locality", "hotspot",
+                                    "nearest_neighbor", "complement",
+                                    "shuffle", "rotate", "reverse"])
+  tf.add_option("injection_rate", [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5])
   tf.generate_tests()

@@ -1,6 +1,6 @@
 from cocotb.binary import BinaryValue
 from random import getrandbits, randint
-from math import ceil, log
+from math import ceil, log2
 from utils.functions import *
 
 
@@ -60,8 +60,8 @@ class Packet(object):
     self.flit_data_w = channel_w - flit_id_w
     self.row_n = row_n
     self.col_m = col_m
-    self.row_addr_w = ceil(log(row_n))
-    self.col_addr_w = ceil(log(col_m))
+    self.row_addr_w = ceil(log2(row_n))
+    self.col_addr_w = ceil(log2(col_m))
     assert self.flit_data_w > (self.row_addr_w + self.col_addr_w), "Data section of the FLIT is not wide enough to contain DEST"
     self.routing_alg = routing_alg
     self.flit = Flit(self.flit_id_w, self.flit_data_w,

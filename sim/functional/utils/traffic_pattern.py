@@ -3,7 +3,7 @@ from utils.address import NodeAddr
 from utils.bit_permutation import *
 from utils.digit_permutation import *
 from cocotb.binary import BinaryValue
-from math import ceil, log, floor
+from math import ceil, log2, floor
 from random import random, sample
 
 
@@ -19,8 +19,8 @@ class TrafficPattern(object):
       assert len(dim) == 2, "dim should only hold 2 values"
       self.row_n = dim[0]
       self.col_m = dim[1]
-      self.row_n_w = ceil(log(self.row_n))
-      self.col_m_w = ceil(log(self.col_m))
+      self.row_n_w = ceil(log2(self.row_n))
+      self.col_m_w = ceil(log2(self.col_m))
       self.node_n = self.row_n * self.col_m
     else:
       print("Unsupported addressing scheme!")
@@ -45,14 +45,16 @@ class TrafficPattern(object):
       print("Unsupported addressing scheme!")
       raise ValueError
 
-  def hotspot(self, input_i, hotspot_prob=0.5, hotspot_percentage=0.3):
+  def hotspot(self, input_i, hotspot_prob=0.5, hotspot_percentage=0.3, spots = None):
     assert hotspot_prob == 0.5 or hotspot_prob == 0.7, "WRONG hotspot prob value"
     assert 0 < hotspot_percentage <= 1, "GIVEN m is not EVEN!"
-    if self.hotspots is None:
-      # choose hotspots based on N only once !
-      hotspot_n = floor(self.node_n * hotspot_percentage)
-      self.hotspots = sample(range(self.node_n), hotspot_n)
-      print(self.hotspots)
+    if spots is None:
+      if self.hotspots is None:
+        # choose hotspots based on N only once !
+        hotspot_n = floor(self.node_n * hotspot_percentage)
+        self.hotspots = sample(range(self.node_n), hotspot_n)
+    else:
+      self.hotspots = spots
 
     if self.addressing_scheme == "2dxy":
       node_src = self.gen_node_from_id(input_i)
@@ -186,7 +188,6 @@ class TrafficPattern(object):
 
 
   def bit_permutation(self, input_i, traffic_pattern: str) -> NodeAddr:
-    print(traffic_pattern)
     if self.addressing_scheme == "2dxy":
       node_in = self.gen_node_from_id(input_i)
       x = BinaryValue(node_in.row, self.row_n_w, bigEndian=False)
@@ -194,7 +195,7 @@ class TrafficPattern(object):
       binstr = x.binstr + y.binstr
 
       if traffic_pattern == "complement":
-        new_binstr = invert(binstr)
+        new_binstr = complement(binstr)
       elif traffic_pattern == "reverse":
         new_binstr = reverse(binstr)
       elif traffic_pattern == "rotate":
@@ -210,7 +211,8 @@ class TrafficPattern(object):
       new_x = BinaryValue(new_binstr[:x.n_bits], self.row_n_w, bigEndian=False)
       if new_x.integer > self.row_n - 1:
         new_x.value = self.row_n - 1
-      new_y = BinaryValue(new_binstr[ x.n_bits:], self.row_n_w, bigEndian=False)
+
+      new_y = BinaryValue(new_binstr[ x.n_bits:], self.col_m_w, bigEndian=False)
       if new_y.integer > self.col_m - 1:
         new_y.value = self.col_m - 1
 
