@@ -58,6 +58,7 @@ jobs:
 
       - name: Upload JSONs
         uses: actions/upload-artifact@v2
+        if: ${{ always() }}
         with:
           name: mesh_xy_noc
           path: sim/functional/mesh_xy_noc/*.json
@@ -114,6 +115,7 @@ jobs:
 
       - name: Upload JSONs
         uses: actions/upload-artifact@v2
+        if: ${{ always() }}
         with:
           name: mesh_wh_xy_noc
           path: sim/functional/mesh_wh_xy_noc/*.json

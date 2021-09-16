@@ -530,6 +530,7 @@ async def temporal_traffic(dut, log_lvl=INFO, injection_rate=0.1, capture_period
     await tb.compare(f"{traffic_pattern[0:3]}_{injection_rate}")
 
 if int(os.environ["TESTFACTORY"]) == 1:
+  if int(os.environ["CI"]) != 1:
     tf = TestFactory(uniform_random)
     tf.add_option("injection_rate", [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325, 0.35])
     tf.generate_tests()
@@ -543,8 +544,7 @@ if int(os.environ["TESTFACTORY"]) == 1:
     tf.add_option("injection_rate", [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325, 0.35])
     tf.add_option("permutation", ["complement", "shuffle", "reverse", "rotate"])
     tf.generate_tests()
-
-    # tf = TestFactory(digit_permutation)
-    # tf.add_option("injection_rate", [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325])
-    # tf.add_option("permutation", ["neighbour"])
-    # tf.generate_tests()
+  else:
+    tf = TestFactory(uniform_random)
+    tf.add_option("injection_rate", [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35])
+    tf.generate_tests()
