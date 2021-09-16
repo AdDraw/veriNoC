@@ -52,6 +52,8 @@ class TrafficPattern(object):
       if self.hotspots is None:
         # choose hotspots based on N only once !
         hotspot_n = floor(self.node_n * hotspot_percentage)
+        if hotspot_n == 0:
+          hotspot_n = 1
         self.hotspots = sample(range(self.node_n), hotspot_n)
     else:
       self.hotspots = spots
@@ -64,7 +66,11 @@ class TrafficPattern(object):
         hotspots = self.hotspots.copy()
         if input_i in hotspots:
           hotspots.remove(input_i)
-        node_out = sample(hotspots, 1)
+        if len(hotspots) != 0:
+          node_out = sample(hotspots, 1)
+        else:
+          cold_spots = [x for x in range(self.node_n) if x not in self.hotspots]
+          node_out = sample(cold_spots, 1)
       else:
         cold_spots = [x for x in range(self.node_n) if x not in self.hotspots]
         if input_i in cold_spots:

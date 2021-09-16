@@ -200,7 +200,7 @@ class WHNoCTB:
     for flow in flow_acc_traffic.items():
       accepted_traffic.append(flow[1])
       self.noc_metrics.throughput_per_flow.append(flow[1]*injection_ratio)
-      
+
     avg_acc_traffic = np.asarray(accepted_traffic).mean()
     min_acc_traffic = np.asarray(accepted_traffic).min()
     max_acc_traffic = np.asarray(accepted_traffic).max()
@@ -258,12 +258,12 @@ class WHNoCTB:
         self.noc_metrics.avg_latency_per_flow = []
         self.noc_metrics.packet_per_flow = []
         for flow in flows:
-          lat_sum = sum([d["latency"] for d in latencies_per_flow if d['flow'] == flow])
-          count = sum([d["count"] for d in latencies_per_flow if d['flow'] == flow])
-          avg_lat = lat_sum/count
-          flit_n = sum([len(d["packet"]) for d in latencies_per_flow if d['flow'] == flow])
-          self.noc_metrics.avg_latency_per_flow.append({"flow": flow, "avg_lat": avg_lat, "packet_n": count, "flit_n": flit_n})
-          self.noc_metrics.packet_per_flow.append({"flow": flow, "packet_n": count, "flit_n": flit_n})
+          lat_sum_f = sum([d["latency"] for d in latencies_per_flow if d['flow'] == flow])
+          count_f = sum([d["count"] for d in latencies_per_flow if d['flow'] == flow])
+          avg_lat_f = lat_sum_f/count_f
+          flit_n_f = sum([len(d["packet"]) for d in latencies_per_flow if d['flow'] == flow])
+          self.noc_metrics.avg_latency_per_flow.append({"flow": flow, "avg_lat": avg_lat_f, "packet_n": count_f, "flit_n": flit_n_f})
+          self.noc_metrics.packet_per_flow.append({"flow": flow, "packet_n": count_f, "flit_n": flit_n_f})
         self.noc_metrics.avg_latency_per_flow = sorted(self.noc_metrics.avg_latency_per_flow, key=lambda k: k['flow'])
 
         self.noc_metrics.avg_packet_latency = lat_sum/len(packet_times_rec)
