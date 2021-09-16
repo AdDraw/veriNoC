@@ -85,6 +85,7 @@ jobs:
 
       - name: Mesh XY Single
         run: |
+          export CI=1
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 6 -pckt_w 14
 
@@ -121,13 +122,9 @@ jobs:
           cd sim/functional/circ_fifo_sim
           python3 run_and_verify.py -ps -synth
 
-      - name: Mesh XY 2x2
-        run: |
-          cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf -ps -synth -ff_depth 4 -pckt_w 12 -row_n 2 -col_m 2
-
       - name: Mesh XY 3x3
         run: |
+          export CI=1
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ps -synth -ff_depth 4 -pckt_w 13 -row_n 3 -col_m 3
 

@@ -1,4 +1,3 @@
-from utils.data_units import Packet, all_ones
 from cocotb.triggers import RisingEdge, FallingEdge, ClockCycles, ReadOnly
 from cocotb.result import TestSuccess, TestFailure
 from logging import INFO, DEBUG
@@ -7,7 +6,8 @@ import os
 from collections import Counter
 from driver import ChanDriver
 from utils.data_units import Packet, all_ones
-from utils.functions import *
+from utils.functions import bernouli
+import cocotb
 from utils.noc_metrics import NoCMetrics
 import numpy as np
 from cocotb.utils import get_sim_steps, get_time_from_sim_steps, get_sim_time, _get_simulator_precision
@@ -149,61 +149,66 @@ class WHNoCTB:
 
   async def throughput(self, cycles, injection_ratio=0.1, plen=4):
     await ClockCycles(self.dut.clk_i, cycles)
-    flow_arr_r = []
-    count = 0
-
     flit_expected = cycles*self.client_n*injection_ratio
     packets_expected = flit_expected/plen
     packet_expected_true = len(self.measurement_packets)
     flit_expected_true = len(self.measurement_packets) * plen
     flit_max_possible = cycles*self.client_n
     packets_max_possible = cycles*self.client_n/plen
-    # self.log.info(f" fe {flit_expected}, pe  {packets_expected}")
-    # self.log.info(f"fet {flit_expected_true}, pet {packet_expected_true}")
 
     packets_throughput = []
-    for packet_rec in self.packets_received:
-      for packet_count in self.measurement_packets:
-        if packet_count["packet"] == packet_rec["packet"]:
-          packets_throughput.append(packet_rec)
-          count += 1
+    flow_arr_s = []
+    flow_arr_s_occ = {}
+    flow_arr_r = []
+    flow_arr_r_occ = {} # occurances
+    flow_acc_traffic = {}
+    accepted_traffic = []
+    self.noc_metrics.throughput_per_flow = []
+
+    for packet_count in self.measurement_packets:
+      packet_c = [packet_count["node_dest"], packet_count["packet"]]
+      for packet_rec in self.packets_received:
+        packet_r = [packet_rec["node"], packet_rec["packet"]]
+        if packet_c == packet_r:
+          packets_throughput.append(packet_count)
           source = packet_count["node_src"]
           sink = packet_rec["node"]
           flow_arr_r.append([source, sink])
           break
-    flow_arr_s = []
+    assert len(packets_throughput) > 0, "too small"
+
     for packet_sent in self.measurement_packets:
       source = packet_sent["node_src"]
       sink = packet_sent["node_dest"]
       flow_arr_s.append([source, sink])
+    assert len(flow_arr_s) > 0, "too small"
 
-    flow_arr_r_occ = {} # occurances
     flow_map = []
     for flow in flow_arr_r:
       if flow not in flow_map:
         flow_map.append(flow)
         flow_arr_r_occ.update({f"{flow}": flow_arr_r.count(flow)})
+    assert len(flow_arr_r) > 0, "too small"
 
-    flow_arr_s_occ = {}
     flow_map = []
     for flow in flow_arr_s:
       if flow not in flow_map:
         flow_map.append(flow)
         flow_arr_s_occ.update({f"{flow}": flow_arr_s.count(flow)})
+    assert len(flow_arr_r_occ) > 0, "too small"
 
-    flow_acc_traffic = {}
     for flow in flow_arr_r_occ.keys():
       flow_acc_traffic.update({f"{flow}": flow_arr_r_occ[flow]/flow_arr_s_occ[flow]})
+    assert len(flow_acc_traffic) > 0, "too small"
 
-    accepted_traffic = []
-    self.noc_metrics.throughput_per_flow = []
     for flow in flow_acc_traffic.items():
       accepted_traffic.append(flow[1])
       self.noc_metrics.throughput_per_flow.append(flow[1]*injection_ratio)
+    assert len(accepted_traffic) > 0, "too small"
 
-    avg_acc_traffic = np.asarray(accepted_traffic).mean()
-    min_acc_traffic = np.asarray(accepted_traffic).min()
-    max_acc_traffic = np.asarray(accepted_traffic).max()
+    avg_acc_traffic = np.array(accepted_traffic).mean()
+    min_acc_traffic = np.array(accepted_traffic).min()
+    max_acc_traffic = np.array(accepted_traffic).max()
 
     self.noc_metrics.accepted_traffic = avg_acc_traffic * injection_ratio
     self.noc_metrics.min_accepted_traffic = min_acc_traffic * injection_ratio
