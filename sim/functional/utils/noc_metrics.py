@@ -16,6 +16,17 @@ class NoCMetrics(object):
   warmup_period = 0
   meas_period = 0
 
+  # per node gen
+  packet_gen_per_node = 0 # V
+  # per node sink
+  packet_sink_per_node = 0 # V
+  # per flow packet n
+  packet_per_flow = 0
+  # per flow avg latency
+  avg_latency_per_flow = 0 # V
+  # per flow throughput
+  throughput_per_flow = 0 # V
+
   def __init__(self, name, offered_traffic, warmup_period, meas_period, plen=None, log_lvl=INFO):
     super(NoCMetrics, self).__init__()
     self.log = SimLog("noc_metrics")
@@ -41,6 +52,8 @@ class NoCMetrics(object):
     self.log.info(f"   - Avg throughput : {self.accepted_traffic:.4f} | {self.offered_traffic:.4f}")
     self.log.info(f"   - Min throughput : {self.min_accepted_traffic:.4f} | {self.offered_traffic:.4f}")
     self.log.info(f"   - Max throughput : {self.max_accepted_traffic:.4f} | {self.offered_traffic:.4f}")
+    self.log.debug(f" latencies per flow {self.avg_latency_per_flow}")
+    self.log.debug(f" throughput_per_flow {self.throughput_per_flow}")
 
   def json_gen(self):
     json = {"name": self.name + "_" + str(self.offered_traffic)}
@@ -54,4 +67,8 @@ class NoCMetrics(object):
     json["accepted_traffic"] = self.accepted_traffic
     json["min_accepted_traffic"] = self.min_accepted_traffic
     json["max_accepted_traffic"] = self.max_accepted_traffic
+    json["avg_latency_per_flow"] = self.avg_latency_per_flow
+    json["accepted_traffic_per_flow"] = self.throughput_per_flow
+    json["packet_gen_per_node"] = self.packet_gen_per_node
+    json["packet_sink_per_node"] = self.packet_sink_per_node
     return json

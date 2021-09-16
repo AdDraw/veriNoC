@@ -16,7 +16,7 @@ import json
 from utils.address import NodeAddr
 from utils.traffic_pattern import TrafficPattern
 METRICS_FILENAME = str(os.environ["METRICS_FILENAME"])
-
+HOT_SPOTS = None
 
 class WHNoCTB:
   def __init__(self, dut, log_lvl=INFO):
@@ -103,6 +103,8 @@ class WHNoCTB:
           packet_rec = {"node": i, "packet": packet}
           if time:
             packet_rec["time_out"] = get_sim_time(units = "ns")
+
+          assert packet_rec not in self.packets_received, "DUPLICATED DATA"
           self.packets_received.append(packet_rec)
 
   async def backpressure_gen(self, cycle_n=10):
@@ -174,27 +176,35 @@ class WHNoCTB:
       source = packet_sent["node_src"]
       sink = packet_sent["node_dest"]
       flow_arr_s.append([source, sink])
-    flow_arr_r_occ = {}
+
+    flow_arr_r_occ = {} # occurances
     flow_map = []
     for flow in flow_arr_r:
       if flow not in flow_map:
         flow_map.append(flow)
         flow_arr_r_occ.update({f"{flow}": flow_arr_r.count(flow)})
+
     flow_arr_s_occ = {}
     flow_map = []
     for flow in flow_arr_s:
       if flow not in flow_map:
         flow_map.append(flow)
         flow_arr_s_occ.update({f"{flow}": flow_arr_s.count(flow)})
+
     flow_acc_traffic = {}
     for flow in flow_arr_r_occ.keys():
       flow_acc_traffic.update({f"{flow}": flow_arr_r_occ[flow]/flow_arr_s_occ[flow]})
+
     accepted_traffic = []
+    self.noc_metrics.throughput_per_flow = []
     for flow in flow_acc_traffic.items():
       accepted_traffic.append(flow[1])
+      self.noc_metrics.throughput_per_flow.append(flow[1]*injection_ratio)
+      
     avg_acc_traffic = np.asarray(accepted_traffic).mean()
     min_acc_traffic = np.asarray(accepted_traffic).min()
     max_acc_traffic = np.asarray(accepted_traffic).max()
+
     self.noc_metrics.accepted_traffic = avg_acc_traffic * injection_ratio
     self.noc_metrics.min_accepted_traffic = min_acc_traffic * injection_ratio
     self.noc_metrics.max_accepted_traffic = max_acc_traffic * injection_ratio
@@ -205,32 +215,32 @@ class WHNoCTB:
     for packet in self.measurement_packets:
       flit_s += len(packet["packet"])
 
-    # self.log.warning(f"packets to count should be {(cycles*self.client_n)/4}")
-    # self.log.warning(f"throughput {count}/{len(self.measurement_packets)}")
-    # self.log.warning(f"TR = {100*(flit_r/(self.client_n*cycles))}%, {flit_r}/{(self.client_n*cycles)}")
-    # self.log.warning(f"TS = {100*(flit_s/(self.client_n*cycles))}%, {flit_s}/{(self.client_n*cycles)}")
-    # self.log.warning(f"{(flit_r/flit_s)*100}%, {(flit_r/flit_s)*100*injection_ratio}")
-
   async def drain(self):
     while True:
       packet_times_rec = []
-      for packet_rec in self.packets_received:
-        for packet_sent in self.measurement_packets:
-          if packet_rec["packet"] == packet_sent["packet"]:
-            packet_times_rec.append({"got": packet_rec["time_out"],
+      packets_rec_copy = self.packets_received.copy()
+      for packet_sent in self.measurement_packets:
+        packet_in = [packet_sent["node_dest"], packet_sent["packet"]]
+        for packet_rec in packets_rec_copy:
+          packet_out = [packet_rec["node"], packet_rec["packet"]]
+          if packet_out == packet_in:
+            packet_tmp = {"got": packet_rec["time_out"],
                                      "sent": packet_sent["time_in"],
                                      "input_i": packet_sent["node_src"],
                                      "output_is": packet_sent["node_dest"],
                                      "output_ir": packet_rec["node"],
                                      "packet": packet_rec["packet"]
                                      }
-                                     )
-            break
+            if packet_tmp not in packet_times_rec:
+              packet_times_rec.append(packet_tmp)
+              packets_rec_copy.remove(packet_rec)
+              break
 
       timed_packets = len(packet_times_rec)
       self.log.info(f"waiting for packets... {timed_packets}/{len(self.measurement_packets)}")
       if (timed_packets == len(self.measurement_packets)):
-        latencies = []
+        latencies_per_flow = []
+        flows = []
         lat_sum = 0
         for packet in packet_times_rec:
           latency = packet["got"] - packet["sent"]
@@ -238,17 +248,44 @@ class WHNoCTB:
             self.noc_metrics.max_packet_latency = latency
           if latency < self.noc_metrics.min_packet_latency:
             self.noc_metrics.min_packet_latency = latency
-          latencies.append(latency)
+
+          flow = [packet["input_i"], packet["output_ir"]]
+          if flow not in flows:
+            flows.append(flow)
+          latencies_per_flow.append({"flow": flow, "latency": latency, "count": 1, "packet": packet["packet"]})
           lat_sum += latency
 
+        self.noc_metrics.avg_latency_per_flow = []
+        self.noc_metrics.packet_per_flow = []
+        for flow in flows:
+          lat_sum = sum([d["latency"] for d in latencies_per_flow if d['flow'] == flow])
+          count = sum([d["count"] for d in latencies_per_flow if d['flow'] == flow])
+          avg_lat = lat_sum/count
+          flit_n = sum([len(d["packet"]) for d in latencies_per_flow if d['flow'] == flow])
+          self.noc_metrics.avg_latency_per_flow.append({"flow": flow, "avg_lat": avg_lat, "packet_n": count, "flit_n": flit_n})
+          self.noc_metrics.packet_per_flow.append({"flow": flow, "packet_n": count, "flit_n": flit_n})
+        self.noc_metrics.avg_latency_per_flow = sorted(self.noc_metrics.avg_latency_per_flow, key=lambda k: k['flow'])
+
         self.noc_metrics.avg_packet_latency = lat_sum/len(packet_times_rec)
+
+        self.noc_metrics.packet_gen_per_node = self.client_n * [0]
+        self.noc_metrics.packet_sink_per_node = self.client_n * [0]
+
+        for node in range(self.client_n):
+          for packet in packet_times_rec:
+            if packet["input_i"] == node:
+              self.noc_metrics.packet_gen_per_node[node] += 1
+            if packet["output_ir"] == node:
+              self.noc_metrics.packet_sink_per_node[node] += 1
+
         self.noc_metrics.print()
 
-        self.json_dump(self.noc_metrics.json_gen(), METRICS_FILENAME)
+        metrics_filepath = METRICS_FILENAME + f"_{self.noc_metrics.plen}" + ".json"
+        self.json_dump(self.noc_metrics.json_gen(), metrics_filepath)
 
         raise TestSuccess()
       else:
-        await ClockCycles(self.dut.clk_i, 500)
+        await ClockCycles(self.dut.clk_i, 1000)
 
   def json_dump(self, metrics: dict, filename) -> None:
     if os.path.exists(filename):
@@ -266,6 +303,7 @@ class WHNoCTB:
         json_file = {"noc_type": "mesh_wh_noc_xy",
                      "date": f"{time.asctime()}"}
         json_file.update(self.config)
+        json_file.update({"packet_lenght": self.noc_metrics.plen})
         json_file.update({"testcases": []})
         json_file["testcases"].append(metrics)
         json.dump(json_file, outfile)
@@ -302,16 +340,16 @@ class WHNoCTB:
       raise TestSuccess
 
   async def meas_phase(self, phase, period, packet_injection_rate, traffic_pattern, plen):
-
+    global HOT_SPOTS
     assert phase in ["drain", "measurement", "warmup"], "PHASE IS INCORRECT"
     if phase == "drain":
       while True:
         for input_i in range(self.client_n):
           if bernouli(packet_injection_rate):
-            if traffic_pattern == "u_rand":
+            if traffic_pattern == "uniform_random":
               dest_node = self.tp.uniform_random(input_i)
-            elif traffic_pattern == "complement":
-              dest_node = self.tp.bit_permutation(input_i)
+            elif traffic_pattern in ["complement", "reverse", "rotate", "shuffle"] :
+              dest_node = self.tp.bit_permutation(input_i, traffic_pattern=traffic_pattern)
             elif traffic_pattern == "hotspot":
               dest_node = self.tp.hotspot(input_i)
             elif traffic_pattern == "nearest_neighbor":
@@ -319,7 +357,7 @@ class WHNoCTB:
             elif traffic_pattern == "locality":
               dest_node = self.tp.locality(input_i)
             else:
-              print("This traffic pattern is not supported")
+              self.log.error("This traffic pattern is not supported")
               raise ValueError
             packet = self.packet.gen_packet(dest_node.addr, lenght=plen)
             x = self.drv.send_packet_from(input_i, packet)
@@ -328,18 +366,19 @@ class WHNoCTB:
       for i in range(period):
         for input_i in range(self.client_n):
           if bernouli(packet_injection_rate):
-            if traffic_pattern == "u_rand":
+            if traffic_pattern == "uniform_random":
               dest_node = self.tp.uniform_random(input_i)
-            elif traffic_pattern == "complement":
-              dest_node = self.tp.bit_permutation(input_i)
+            elif traffic_pattern in ["complement", "reverse", "rotate", "shuffle"] :
+              dest_node = self.tp.bit_permutation(input_i, traffic_pattern=traffic_pattern)
             elif traffic_pattern == "hotspot":
-              dest_node = self.tp.hotspot(input_i)
+              dest_node = self.tp.hotspot(input_i, spots=HOT_SPOTS)
+              HOT_SPOTS = self.tp.hotspots
             elif traffic_pattern == "nearest_neighbor":
               dest_node = self.tp.nearest_neighbor(input_i)
             elif traffic_pattern == "locality":
               dest_node = self.tp.locality(input_i)
             else:
-              print("This traffic pattern is not supported")
+              self.log.error("This traffic pattern is not supported")
               raise ValueError
             packet = self.packet.gen_packet(dest_node.addr, lenght=plen)
             x = self.drv.send_packet_from(input_i, packet)

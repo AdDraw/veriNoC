@@ -25,7 +25,7 @@ def simulate(log, tf, ps, synth, parameters, tcl_script):
         subprocess.run(synth_cmd)
         os.chdir(pwd)
 
-    cmd = ["make", "-j12", "-B", f"TESTFACTORY={tf}", f"SYNTH={ps}"]
+    cmd = ["make", "sim", "-j12", "-B", f"TESTFACTORY={tf}", f"SYNTH={ps}"]
     for arg in parameters.items():
         cmd.append(f"{arg[0]}={arg[1]}")
 
