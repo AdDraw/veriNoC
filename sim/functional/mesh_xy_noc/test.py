@@ -537,13 +537,15 @@ if int(os.environ["TESTFACTORY"]) == 1:
     tf.generate_tests()
 
     tf = TestFactory(temporal_traffic)
-    tf.add_option("traffic_pattern", ["locality", "nearest_neighbor", "hotspot"])
+    # tf.add_option("traffic_pattern", ["locality", "nearest_neighbor", "hotspot"])
+    tf.add_option("traffic_pattern", ["locality", "hotspot"])
     tf.add_option("injection_rate", injection_rates)
     tf.generate_tests()
 
     tf = TestFactory(bit_permutation)
     tf.add_option("injection_rate", injection_rates)
-    tf.add_option("permutation", ["complement", "shuffle", "reverse", "rotate"])
+    tf.add_option("permutation", ["complement"])
+    # tf.add_option("permutation", ["complement", "shuffle", "reverse", "rotate"])
     tf.generate_tests()
   else:
     tf = TestFactory(uniform_random)

@@ -147,9 +147,11 @@ else:
   injection_rates = [.05, .1, .15, .2, .3, .35, .4, .6, .8, 1]
   tf = TestFactory(measure)
   # tf.add_option("plen", [4, 8, 16])
-  tf.add_option("traffic_pattern", ["uniform_random", "locality", "hotspot",
-                                    "nearest_neighbor", "complement",
-                                    "shuffle", "rotate", "reverse"])
+  tf.add_option("traffic_pattern", ["uniform_random", "locality", "hotspot", "complement"])
+
+  # tf.add_option("traffic_pattern", ["uniform_random", "locality", "hotspot",
+  #                                   "nearest_neighbor", "complement",
+  #                                   "shuffle", "rotate", "reverse"])
   # tf.add_option("injection_rate", [.5, .1, ..37, .38, .4, .45, .5, 0.6, .7, .8, .9, 1])
   tf.add_option("injection_rate", injection_rates)
   tf.generate_tests()
