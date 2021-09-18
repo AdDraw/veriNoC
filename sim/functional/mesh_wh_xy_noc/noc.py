@@ -148,6 +148,7 @@ class WHNoCTB:
 
 
   async def throughput(self, cycles, injection_ratio=0.1, plen=4):
+    time_start_meas = get_sim_time(units = "ns")
     await ClockCycles(self.dut.clk_i, cycles)
     flit_expected = cycles*self.client_n*injection_ratio
     packets_expected = flit_expected/plen
@@ -165,16 +166,18 @@ class WHNoCTB:
     accepted_traffic = []
     self.noc_metrics.throughput_per_flow = []
 
-    for packet_count in self.measurement_packets:
-      packet_c = [packet_count["node_dest"], packet_count["packet"]]
-      for packet_rec in self.packets_received:
-        packet_r = [packet_rec["node"], packet_rec["packet"]]
-        if packet_c == packet_r:
-          packets_throughput.append(packet_count)
-          source = packet_count["node_src"]
-          sink = packet_rec["node"]
-          flow_arr_r.append([source, sink])
-          break
+    for packet_r in self.packets_received:
+      p_r = [packet_r["node"], packet_r["packet"]]
+      if packet_r['time_out'] >= time_start_meas:
+        for packet_s in self.packets_to_send:
+          p_s = [packet_s["node_dest"], packet_s["packet"]]
+          if p_r == p_s:
+            packets_throughput.append(packet_s)
+            source = packet_s["node_src"]
+            sink = packet_r["node"]
+            flow_arr_r.append([source, sink])
+            break
+
     assert len(packets_throughput) > 0, "too small"
 
     for packet_sent in self.measurement_packets:
@@ -387,7 +390,7 @@ class WHNoCTB:
               raise ValueError
             packet = self.packet.gen_packet(dest_node.addr, lenght=plen)
             x = self.drv.send_packet_from(input_i, packet)
-            self.packets_to_send.append({"node": dest_node.id, "packet": x["packet"] })
+            self.packets_to_send.append({"node_src": input_i, "node_dest": dest_node.id, "packet": x["packet"], "time_in": x["time"]})
             if phase == "measurement":
                 self.measurement_packets.append({"node_src": input_i, "node_dest": dest_node.id, "packet": x["packet"], "time_in": x["time"]})
 
