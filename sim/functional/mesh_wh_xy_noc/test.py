@@ -3,6 +3,7 @@ from cocotb.regression import TestFactory
 from cocotb.triggers import RisingEdge, FallingEdge, ReadOnly, ClockCycles, Combine
 from cocotb.result import TestSuccess
 import os
+import numpy as np
 from utils.functions import *
 from noc import WHNoCTB
 from noc import NoCMetrics
@@ -142,11 +143,13 @@ if int(os.environ["TESTFACTORY"]) == 1:
   tf.add_option("packet_length", [4, 8, 16])
   tf.generate_tests()
 else:
-  # tf = TestFactory(simple_test)
+  step = .1
+  injection_rates = [.05, .1, .15, .2, .3, .35, .4, .6, .8, 1]
   tf = TestFactory(measure)
   # tf.add_option("plen", [4, 8, 16])
   tf.add_option("traffic_pattern", ["uniform_random", "locality", "hotspot",
                                     "nearest_neighbor", "complement",
                                     "shuffle", "rotate", "reverse"])
-  tf.add_option("injection_rate", [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5])
+  # tf.add_option("injection_rate", [.5, .1, ..37, .38, .4, .45, .5, 0.6, .7, .8, .9, 1])
+  tf.add_option("injection_rate", injection_rates)
   tf.generate_tests()

@@ -7,47 +7,85 @@ on: workflow_dispatch
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  mesh_xy_noc:
+  mesh_xy_noc_FF_D2:
     # The type of runner that the job will run on
     runs-on: self-hosted
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: XY NoC FF_D 2
+      - name: XY NoC
         if: ${{ always() }}
         run: |
           export CI=0
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 2 -row_n 3 -col_m 3
 
-      - name: XY NoC FF_D 3
-        if: ${{ always() }}
-        run: |
-          export CI=0
-          cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf -ff_depth 3 -row_n 3 -col_m 3
-
-      - name: XY NoC FF_D 4
-        if: ${{ always() }}
-        run: |
-          export CI=0
-          cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf -ff_depth 4 -row_n 3 -col_m 3
-
-      - name: XY NoC 4x4 FF_D 2
+      - name: XY NoC 4x4
         if: ${{ always() }}
         run: |
           export CI=0
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 2 -row_n 4 -col_m 4
 
-      - name: XY NoC 4x4 FF_D 3
+      - name: XY NoC 5x5
+        if: ${{ always() }}
+        run: |
+          export CI=0
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf -ff_depth 2 -row_n 5 -col_m 5
+
+      - name: Upload JSONs
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: mesh_xy_noc_FF_D2
+          path: sim/functional/mesh_xy_noc/*.json
+
+  mesh_xy_noc_FF_D3:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: XY NoC 3x3
+        if: ${{ always() }}
+        run: |
+          export CI=0
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf -ff_depth 3 -row_n 3 -col_m 3
+
+      - name: XY NoC 4x4
         if: ${{ always() }}
         run: |
           export CI=0
           cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 3 -row_n 4 -col_m 4
 
-      - name: XY NoC 4x4 FF_D 4
+      - name: XY NoC 5x5
+        if: ${{ always() }}
+        run: |
+          export CI=0
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf -ff_depth 3 -row_n 5 -col_m 5
+
+      - name: Upload JSONs
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: mesh_xy_noc_FF_D3
+          path: sim/functional/mesh_xy_noc/*.json
+
+  mesh_xy_noc_FF_D4:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: XY NoC 3x3
+        if: ${{ always() }}
+        run: |
+          export CI=0
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf -ff_depth 4 -row_n 3 -col_m 3
+
+      - name: XY NoC 4x4
         if: ${{ always() }}
         run: |
           export CI=0
@@ -59,30 +97,16 @@ jobs:
         run: |
           export CI=0
           cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf -ff_depth 2 -row_n 5 -col_m 5
-
-      - name: XY NoC 5x5 FF_D 3
-        if: ${{ always() }}
-        run: |
-          export CI=0
-          cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf -ff_depth 3 -row_n 5 -col_m 5
-
-      - name: XY NoC 5x5 FF_D 4
-        if: ${{ always() }}
-        run: |
-          export CI=0
-          cd sim/functional/mesh_xy_noc
           python3 run_and_verify.py -tf -ff_depth 4 -row_n 5 -col_m 5
 
       - name: Upload JSONs
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: mesh_xy_noc
+          name: mesh_xy_noc_FF_D4
           path: sim/functional/mesh_xy_noc/*.json
 
-  mesh_wh_xy_noc:
+  mesh_wh_xy_noc_FF_D2:
     # The type of runner that the job will run on
     runs-on: self-hosted
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -99,30 +123,68 @@ jobs:
         run: |
           export CI=0
           cd sim/functional/mesh_wh_xy_noc
-          python3 run_and_verify.py -ff_depth 3 -row_n 3 -col_m 3
+          python3 run_and_verify.py -ff_depth 2 -row_n 4 -col_m 4
 
       - name: Wormhole XY NoC FF_D 4
         if: ${{ always() }}
         run: |
           export CI=0
           cd sim/functional/mesh_wh_xy_noc
-          python3 run_and_verify.py -ff_depth 4 -row_n 3 -col_m 3
+          python3 run_and_verify.py -ff_depth 2 -row_n 5 -col_m 5
 
-      - name: Wormhole XY NoC 4x4 FF_D 2
+      - name: Upload JSONs
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: mesh_wh_xy_noc_FF_D2
+          path: sim/functional/mesh_wh_xy_noc/*.json
+
+  mesh_wh_xy_noc_FF_D3:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Wormhole XY NoC 3x3
         if: ${{ always() }}
         run: |
           export CI=0
           cd sim/functional/mesh_wh_xy_noc
-          python3 run_and_verify.py -ff_depth 2 -row_n 4 -col_m 4
+          python3 run_and_verify.py -ff_depth 3 -row_n 3 -col_m 3
 
-      - name: Wormhole XY NoC 4x4 FF_D 3
+      - name: Wormhole XY NoC 4x4
         if: ${{ always() }}
         run: |
           export CI=0
           cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -ff_depth 3 -row_n 4 -col_m 4
 
-      - name: Wormhole XY NoC 4x4 FF_D 4
+      - name: Wormhole XY NoC 5x5
+        if: ${{ always() }}
+        run: |
+          export CI=0
+          cd sim/functional/mesh_wh_xy_noc
+          python3 run_and_verify.py -ff_depth 3 -row_n 5 -col_m 5
+
+      - name: Upload JSONs
+        uses: actions/upload-artifact@v2
+        if: ${{ always() }}
+        with:
+          name: mesh_wh_xy_noc_FF_D3
+          path: sim/functional/mesh_wh_xy_noc/*.json
+
+  mesh_wh_xy_noc_FF_D4:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Wormhole XY NoC 3x3
+        if: ${{ always() }}
+        run: |
+          export CI=0
+          cd sim/functional/mesh_wh_xy_noc
+          python3 run_and_verify.py -ff_depth 4 -row_n 3 -col_m 3
+
+      - name: Wormhole XY NoC 4x4
         if: ${{ always() }}
         run: |
           export CI=0
@@ -134,25 +196,11 @@ jobs:
         run: |
           export CI=0
           cd sim/functional/mesh_wh_xy_noc
-          python3 run_and_verify.py -ff_depth 2 -row_n 5 -col_m 5
-
-      - name: Wormhole XY NoC 5x5 FF_D 3
-        if: ${{ always() }}
-        run: |
-          export CI=0
-          cd sim/functional/mesh_wh_xy_noc
-          python3 run_and_verify.py -ff_depth 3 -row_n 5 -col_m 5
-
-      - name: Wormhole XY NoC 5x5 FF_D 4
-        if: ${{ always() }}
-        run: |
-          export CI=0
-          cd sim/functional/mesh_wh_xy_noc
           python3 run_and_verify.py -ff_depth 4 -row_n 5 -col_m 5
 
       - name: Upload JSONs
         uses: actions/upload-artifact@v2
         if: ${{ always() }}
         with:
-          name: mesh_wh_xy_noc
+          name: mesh_wh_xy_noc_FF_D4
           path: sim/functional/mesh_wh_xy_noc/*.json
