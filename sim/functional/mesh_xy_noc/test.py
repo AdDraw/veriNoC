@@ -531,7 +531,7 @@ async def temporal_traffic(dut, log_lvl=INFO, injection_rate=0.1, capture_period
 
 if int(os.environ["TESTFACTORY"]) == 1:
   if int(os.environ["CI"]) != 1:
-    injection_rates = [.05, .1, .2, .225, .25, .275, .3, .4, .5, .6, .8, 1]
+    injection_rates = [0.01, .05, .1, .2, .225, .25, .275, .3, .4, .5]
     tf = TestFactory(uniform_random)
     tf.add_option("injection_rate", injection_rates)
     tf.generate_tests()
