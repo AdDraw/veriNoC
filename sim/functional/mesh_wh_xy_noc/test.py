@@ -144,7 +144,7 @@ if int(os.environ["TESTFACTORY"]) == 1:
   tf.generate_tests()
 else:
   step = .1
-  injection_rates = [.05, .1, .2, .3, .325 .35, .375, .4, .5]
+  injection_rates = [.01, .05, .1, .2, .3, .325, .35, .375, .4, .5]
   tf = TestFactory(measure)
   # tf.add_option("plen", [4, 8, 16])
   tf.add_option("traffic_pattern", ["uniform_random", "locality", "hotspot", "complement"])
