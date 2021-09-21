@@ -20,7 +20,7 @@
 
 module matrix_arb
   #(
-    parameter IN_N = 4 // this should be 5 right now
+    parameter IN_N = 5 // this should be 5 right now
     )
   (
     input                     clk_i,
@@ -32,6 +32,7 @@ module matrix_arb
   // Last granted requested moves to the end of the que
   reg   [IN_N-1:0]  p_matrix [IN_N-1:0];
   wire  [IN_N-1:0]  grant_w;
+  wire [$clog2(IN_N)-1:0] grant_bcd_w;
 
   // MATRIX UPDATE CIRC
   integer i,j;
@@ -45,8 +46,8 @@ module matrix_arb
       end
     end
     else begin
-      for (i=0; i < IN_N; i=i+1) begin // row
-        for (j=0; j < IN_N ; j = j + 1) begin // col
+      for (i = 0; i < IN_N; i = i + 1) begin // row
+        for (j = 0; j < IN_N ; j = j + 1) begin // col
           if (grant_w[i] == 1'b1) begin
             p_matrix[i][j] <= 1'b0;
             p_matrix[j][i] <= 1'b1;
@@ -62,24 +63,19 @@ module matrix_arb
     for (gi = 0; gi < IN_N; gi = gi + 1) begin // col
       wire [IN_N-1:0] dis_w;
       for (gj = 0; gj < IN_N; gj = gj + 1) begin // row
-        if (gj != gi) begin
-          assign dis_w[gj] = req_i[gj] & p_matrix[gj][gi];
-        end
-        else
-          assign dis_w[gj] = 1'b0;
+        if (gj != gi) assign dis_w[gj] = req_i[gj] & p_matrix[gj][gi];
+        else          assign dis_w[gj] = 1'b0;
       end
       assign grant_w[gi] =  req_i[gi] & ~(|dis_w);
     end
   endgenerate
 
   // from ONEHOT to DECIMAL
-  reg [$clog2(IN_N)-1:0] grant_v;
-  always @ ( * ) begin
-    for (i = 0; i< IN_N; i = i + 1) begin
-      if (grant_w[i] == 1'b1) grant_v <= i;
-    end
-  end
+  assign grant_bcd_w = (grant_w[0]) ? 0 :
+                       (grant_w[1]) ? 1 :
+                       (grant_w[2]) ? 2 :
+                       (grant_w[3]) ? 3 :
+                       (grant_w[4]) ? 4 : 0;
+  assign grant_o = grant_bcd_w;
 
-  assign grant_o = grant_v;
-
-endmodule // round_robin_arb
+endmodule // matrix

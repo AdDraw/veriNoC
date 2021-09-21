@@ -76,7 +76,7 @@ if __name__ == '__main__':
   parser.add_argument('-row_n', default=3, help='ROW_N parameter')
   parser.add_argument('-col_m', default=3, help='COL_M parameter')
   parser.add_argument('-ff_depth', default=2, help='FIFO_DEPTH_W parameter')
-  parser.add_argument('-channel_w', default=10, help='CHANNEL_W parameter')
+  parser.add_argument('-channel_w', default=8, help='CHANNEL_W parameter')
   parser.add_argument('-regression', default=0, help="IF '1' RUNS NOC simulations from 2x2 to 4x4"
                                                      " to check size problems")
   parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
@@ -92,8 +92,8 @@ if __name__ == '__main__':
   else:
     metrics_filename = f"mesh_noc_wh_xy_presynth_{args.row_n}_{args.col_m}" \
                        f"_{args.ff_depth}_{args.channel_w}"
-
-  if args.tf is 0:
+                       
+  if args.tf == 0:
     fileList = glob.glob(f'{metrics_filename}*.json')
     # Iterate over the list of filepaths & remove each file.
     for filePath in fileList:

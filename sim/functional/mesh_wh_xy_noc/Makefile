@@ -35,9 +35,9 @@ TOPLEVEL  := tb
 MODULE    := test
 SIM       ?= icarus
 
-export ROW_N                ?= 4
-export COL_M                ?= 4
-export CHANNEL_W            ?= 10
+export ROW_N                ?= 3
+export COL_M                ?= 3
+export CHANNEL_W            ?= 8
 export FLIT_ID_W            ?= 2
 export NODE_RADIX           ?= 5
 export NODE_BUFFER_DEPTH_W  ?= 2

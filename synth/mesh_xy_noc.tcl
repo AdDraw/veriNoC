@@ -43,6 +43,8 @@ if {$::env(SHOW_PARAMS) == 1} {
   exit 0
 }
 
+set file_name $top_module-$values(0)-$values(1)-$values(2)-$values(3)
+
 echo on
 read_verilog  -DYS_MESH_XY_TOP=1 \
               -DYS_$params(0)=$values(0) \
@@ -50,12 +52,11 @@ read_verilog  -DYS_MESH_XY_TOP=1 \
               -DYS_$params(2)=$values(2) \
               -DYS_$params(3)=$values(3) \
               ../srcs/noc/mesh_xy_noc.v
-
 echo off
 hierarchy -top $top_module -keep_portwidths -check
 synth -top $top_module -flatten
-dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
-abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
+dfflibmap -liberty osu18_std.lib
+abc -liberty osu18_std.lib
 
 # cleanup
 clean
@@ -64,8 +65,8 @@ if { ![info exists ::env(NO_XDOT)] } {
   show  -enum -width -colors 3 $top_module
 }
 
-json -o $::env(JSON_PATH)/$top_module-$values(0)-$values(1).json
+json -o $::env(JSON_PATH)/$file_name.json
 write_verilog ../srcs/noc/mesh_xy_noc_synth.v
-
-stat $top_module
+echo on
+tee -o $file_name.log stat -top $top_module -liberty osu18_std.lib -tech cmos
 ltp

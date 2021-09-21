@@ -62,7 +62,7 @@ class Packet(object):
     self.col_m = col_m
     self.row_addr_w = ceil(log2(row_n))
     self.col_addr_w = ceil(log2(col_m))
-    assert self.flit_data_w > (self.row_addr_w + self.col_addr_w), "Data section of the FLIT is not wide enough to contain DEST"
+    assert self.flit_data_w >= (self.row_addr_w + self.col_addr_w), "Data section of the FLIT is not wide enough to contain DEST"
     self.routing_alg = routing_alg
     self.flit = Flit(self.flit_id_w, self.flit_data_w,
                      self.row_addr_w, self.col_addr_w)

@@ -392,7 +392,6 @@ class NocTB:
                 json.dump(json_file, outfile)
 
 
-@cocotb.test(skip=False)
 async def smoke(dut, log_lvl=INFO, injection_rate=0.1):
     log = SimLog("smoke")
     log.setLevel(log_lvl)
@@ -531,23 +530,21 @@ async def temporal_traffic(dut, log_lvl=INFO, injection_rate=0.1, capture_period
 
 if int(os.environ["TESTFACTORY"]) == 1:
   if int(os.environ["CI"]) != 1:
-    injection_rates = [0.01, .05, .1, .2, .225, .25, .275, .3, .4, .5]
+    injection_rates = [.01, .1, .2, .225, .25, .275, .3, .4, .5, .6, .8, 1]
     tf = TestFactory(uniform_random)
     tf.add_option("injection_rate", injection_rates)
     tf.generate_tests()
-
     tf = TestFactory(temporal_traffic)
-    # tf.add_option("traffic_pattern", ["locality", "nearest_neighbor", "hotspot"])
-    tf.add_option("traffic_pattern", ["locality", "hotspot"])
+    tf.add_option("traffic_pattern", ["locality", "nearest_neighbor", "hotspot"])
+    # tf.add_option("traffic_pattern", ["locality", "hotspot"])
     tf.add_option("injection_rate", injection_rates)
     tf.generate_tests()
-
     tf = TestFactory(bit_permutation)
     tf.add_option("injection_rate", injection_rates)
-    tf.add_option("permutation", ["complement"])
-    # tf.add_option("permutation", ["complement", "shuffle", "reverse", "rotate"])
+    # tf.add_option("permutation", ["complement"])
+    tf.add_option("permutation", ["complement", "shuffle", "reverse", "rotate"])
     tf.generate_tests()
   else:
     tf = TestFactory(uniform_random)
-    tf.add_option("injection_rate", [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35])
+    tf.add_option("injection_rate", [.01, .1, .2, .225, .25, .275, .3, .4, .5, .6, .8, 1])
     tf.generate_tests()

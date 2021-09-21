@@ -94,7 +94,7 @@ async def measure(dut, log_lvl=INFO, warm_up_period=1000, meas_period=4000,
                   injection_rate=0.3, plen=4, traffic_pattern="uniform_random"):
 
   tb = WHNoCTB(dut, log_lvl)
-  tb.setup_dut(cycle_n=5, bp=False, reader_en=False)
+  tb.setup_dut(cycle_n=10, bp=False, reader_en=False)
   await ClockCycles(dut.clk_i, 10)
 
   packet_injection_rate = injection_rate/plen
@@ -144,14 +144,21 @@ if int(os.environ["TESTFACTORY"]) == 1:
   tf.generate_tests()
 else:
   step = .1
-  injection_rates = [.01, .05, .1, .2, .3, .325, .35, .375, .4, .5]
-  tf = TestFactory(measure)
-  # tf.add_option("plen", [4, 8, 16])
-  tf.add_option("traffic_pattern", ["uniform_random", "locality", "hotspot", "complement"])
+  row_n = int(os.environ["ROW_N"])
+  col_m = int(os.environ["COL_M"])
+  ff_depth = int(os.environ["NODE_BUFFER_DEPTH_W"])
+  chan_w = int(os.environ["CHANNEL_W"])
 
-  # tf.add_option("traffic_pattern", ["uniform_random", "locality", "hotspot",
-  #                                   "nearest_neighbor", "complement",
-  #                                   "shuffle", "rotate", "reverse"])
-  # tf.add_option("injection_rate", [.5, .1, ..37, .38, .4, .45, .5, 0.6, .7, .8, .9, 1])
+  config = [row_n, col_m, ff_depth, chan_w]
+  if config == [3, 3, 2, 8]:
+    traffic_patterns = ["uniform_random", "locality", "hotspot",
+                        "nearest_neighbor", "complement",
+                        "shuffle", "rotate", "reverse"]
+    injection_rates = [.02, .1, .2, .3, .325, .35, .375, .4, .5, .6, .8, 1]
+  else:
+    traffic_patterns = ["uniform_random"]
+    injection_rates = [.02, .1, .2, .3, .325, .35, .375, .4, .5, .6, .8, 1]
+  tf = TestFactory(measure)
+  tf.add_option("traffic_pattern", traffic_patterns)
   tf.add_option("injection_rate", injection_rates)
   tf.generate_tests()
