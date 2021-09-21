@@ -232,17 +232,18 @@ class WHNoCTB:
         for packet_rec in packets_rec_copy:
           packet_out = [packet_rec["node"], packet_rec["packet"]]
           if packet_out == packet_in:
-            packet_tmp = {"got": packet_rec["time_out"],
-                                     "sent": packet_sent["time_in"],
-                                     "input_i": packet_sent["node_src"],
-                                     "output_is": packet_sent["node_dest"],
-                                     "output_ir": packet_rec["node"],
-                                     "packet": packet_rec["packet"]
-                                     }
-            if packet_tmp not in packet_times_rec:
-              packet_times_rec.append(packet_tmp)
-              packets_rec_copy.remove(packet_rec)
-              break
+            if packet_rec["time_out"] > packet_sent["time_in"]:
+              packet_tmp = {"got": packet_rec["time_out"],
+                            "sent": packet_sent["time_in"],
+                            "input_i": packet_sent["node_src"],
+                            "output_is": packet_sent["node_dest"],
+                            "output_ir": packet_rec["node"],
+                            "packet": packet_rec["packet"]
+                            }
+              if packet_tmp not in packet_times_rec:
+                packet_times_rec.append(packet_tmp)
+                packets_rec_copy.remove(packet_rec)
+                break
 
       timed_packets = len(packet_times_rec)
       self.log.info(f"waiting for packets... {timed_packets}/{len(self.measurement_packets)}")
@@ -252,6 +253,8 @@ class WHNoCTB:
         lat_sum = 0
         for packet in packet_times_rec:
           latency = packet["got"] - packet["sent"]
+          if latency < 0:
+            self.log.warning(f"{packet} : {packet['got']} < {packet['sent']}")
           if latency > self.noc_metrics.max_packet_latency:
             self.noc_metrics.max_packet_latency = latency
           if latency < self.noc_metrics.min_packet_latency:
@@ -291,6 +294,7 @@ class WHNoCTB:
         metrics_filepath = METRICS_FILENAME + f"_{self.noc_metrics.plen}" + ".json"
         self.json_dump(self.noc_metrics.json_gen(), metrics_filepath)
 
+        await ClockCycles(self.dut.clk_i, 10)
         raise TestSuccess()
       else:
         await ClockCycles(self.dut.clk_i, 1000)

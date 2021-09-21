@@ -59,15 +59,15 @@ def plot_hist(df, title, fig_size=(19.2, 10.8), plot_path=None):
 
 
 def plot_multi_traffic_patterns(x, y, testcase_names, df_src, title, path_to_save, xlabel, ylabel,
-                                fig_size=(19.2, 10.8), ylim=None, yticks=None):
+                                fig_size=(19.2, 10.8), ylim=None, yticks=None, logy=False):
   ax = None
   for name in testcase_names:
     df = extract_rows(df_src, str(name))
     df = df.rename(columns={f"{y}": f"{name}"})
     if ax is None:
-      ax = df.plot(x=str(x), y=[f"{name}"], figsize=fig_size, grid=True, marker='o')
+      ax = df.plot(x=str(x), y=[f"{name}"], figsize=fig_size, grid=True, marker='o', logy=logy)
     else:
-      df.plot(x=str(x), y=[f"{name}"], ax=ax, grid=True, marker='o')
+      df.plot(x=str(x), y=[f"{name}"], ax=ax, grid=True, marker='o', logy=logy)
 
     plt.xlabel(xlabel)
     plt.xticks(rotation='horizontal')
@@ -114,73 +114,113 @@ def parse(json_file):
   return dict_json, json_no_suffix
 
 
-def parse_and_plot(json_file, loop_json=False, buff_size_en=False):
+def parse_and_plot(json_file, loop_json=True, change_param="net_size"):
   if loop_json:
-    buff_size = [1, 2, 3, 4]
+    buff_size = [2, 3, 4]
     nxn_size = ["3_3", "4_4", "5_5"]
     dict_json = []
     df_l = []
-    if buff_size_en:
+    dir = change_param
+    if not (Path(change_param).exists()):
+      pp(f"Created '{change_param}' directory")
+      Path.mkdir(Path(change_param))
+    if change_param == "buff_size":
       for size in buff_size:
-        tmp_file_path = pathlib.Path(f"mesh_noc_xy_presynth_3_3_{size}_15.json")
+        tmp_file_path = pathlib.Path(f"mesh_noc_xy_presynth_3_3_{size}_16.json")
+        dict_json.append(parse(tmp_file_path))
+        dicty, json_no_suffix = parse(tmp_file_path)
+        df_l.append(pandas.DataFrame.from_dict(dicty["testcases"]))
+    elif change_param == "net_size":
+      for nxn in nxn_size:
+        tmp_file_path = pathlib.Path(f"mesh_noc_xy_presynth_{nxn}_2_16.json")
         dict_json.append(parse(tmp_file_path))
         dicty, json_no_suffix = parse(tmp_file_path)
         df_l.append(pandas.DataFrame.from_dict(dicty["testcases"]))
     else:
-      for nxn in nxn_size:
-        tmp_file_path = pathlib.Path(f"mesh_noc_xy_presynth_{nxn}_2_15.json")
-        dict_json.append(parse(tmp_file_path))
-        dicty, json_no_suffix = parse(tmp_file_path)
-        df_l.append(pandas.DataFrame.from_dict(dicty["testcases"]))
+      raise ValueError(f"change param is not supported {change_param}")
 
     testcase_names = []
     for row in df_l[0].iterrows():
       if "_0" or "_1" in row[1]["name"]:
-        name = row[1]["name"].split("_")[0] + "_" + row[1]["name"].split("_")[1]
+        if len(row[1]["name"].split("_")) == 1:
+          name = row[1]["name"]
+        elif len(row[1]["name"].split("_")) == 2:
+          name = row[1]["name"].split("_")[0]
+        else:
+          name = row[1]["name"].split("_")[0] + "_" + row[1]["name"].split("_")[1]
         if name not in testcase_names:
           testcase_names.append(name)
 
-    # print(testcase_names)
-    x_name = "u_rand"
-    assert x_name in testcase_names, "name not in testcase_names"
     fig_size = (19.2, 10.8)
     x = "offered_traffic"
-    ax = None
-    for did, df in enumerate(df_l):
-      df = extract_rows(df, str(x_name))
-      ff_depth = dict_json[did][0]['fifo_depth_w']
-      row_n = dict_json[did][0]['row_n']
-      col_m = dict_json[did][0]['col_m']
-      name = f"{row_n}x{col_m}"
-      df = df.rename(columns={f"avg_packet_latency_cyc": f"{name}"})
+    metric_name = ["accepted_traffic", "avg_packet_latency_ns"]
+    for x_name in metric_name:
+      for testcase in testcase_names:
+        print(testcase)
+        if testcase == "u_rand":
+          ax = None
+          for did, df in enumerate(df_l):
+            df = extract_rows(df, str(testcase))
+            print(f"ADKJG {df}")
+            # plen = dict_json[did][0]['packet_lenght']
+            ff_depth = dict_json[did][0]['fifo_depth_w']
+            row_n = dict_json[did][0]['row_n']
+            col_m = dict_json[did][0]['col_m']
+            name = f"{row_n}x{col_m}_{ff_depth}"
+            df = df.rename(columns={f"{x_name}": f"{name}"})
 
-      if ax is None:
-        ax = df.plot(x=str(x), y=[f"{name}"], figsize=fig_size, grid=True, marker='o')
-      else:
-        df.plot(x=str(x), y=[f"{name}"], ax=ax, grid=True, marker='o')
+            if ax is None:
+              ax = df.plot(x=str(x), y=[f"{name}"], figsize=fig_size, grid=True, marker='o')
+            else:
+              df.plot(x=str(x), y=[f"{name}"], ax=ax, grid=True, marker='o')
 
-      plt.xlabel("Oferowany ruch [ułamek pojemności]")
-      plt.xticks(rotation='horizontal')
-      plt.xticks(np.arange(0.05, max(df[str(x)]), step=0.05))
+            plt.xlabel("Oferowany ruch [ułamek pojemności]")
+            plt.xticks(rotation='horizontal')
+            plt.xticks(np.arange(0.05, max(df[str(x)]), step=0.05))
 
-      plt.ylabel("Latencja pakietu [cykle]")
-      plt.title("Uniform Random | Wpływ zmiany wielkości sieci na latencję pakietu z buforami o głębokości 4", loc='left')
-      plt.yticks(np.arange(0, 100 + 5, step=5))
-      x1, x2, y1, y2 = plt.axis()
-      y1, y2 = (0, 100)
-      plt.axis((x1, x2, y1, y2))
-      plt.tight_layout()
-      plt.margins(0.1)
-      plt.legend(loc='upper left', bbox_to_anchor=(0, 0.99))
+            if x_name == "accepted_traffic":
+              plt.ylabel(f"Przepustowość [ułamek pojemności]")
+              ylab = "Przepustowość"
+            else:
+              plt.ylabel(f"Latencja [ns]")
+              ylab = "Latencję"
 
-    if buff_size_en:
-      file_name = f"{row_n}x{col_m}_Avg_Traffic_different_buffor_size.png"
-    else:
-      file_name = f"Buf_2_Avg_Latency_different_network_size.png"
-    plt.savefig(file_name)
-    print(f"Wrote {file_name}")
-    plt.close()
+            if change_param == "buff_size":
+              plt.title(f"Traffic Pattern: {testcase} | Wpływ zmiany wielkości buforów wejściowych na {ylab}", loc='left')
+            elif change_param == "net_size":
+              plt.title(f"Traffic Pattern: {testcase} | Wpływ zmiany wielkości sieci na {ylab}", loc='left')
+            else:
+              plt.title(f"Traffic Pattern: {testcase} | Wpływ zmiany wielkości pakietu na {ylab}", loc='left')
 
+            if x_name == "accepted_traffic":
+              plt.yticks(np.arange(0, 0.3, step=0.05))
+              x1, x2, y1, y2 = plt.axis()
+              y1, y2 = (0, .3)
+              plt.axis((x1, x2, y1, y2))
+            else:
+              plt.yticks(np.arange(0, 1000 + 50, step=50))
+              plt.xticks(np.arange(.0, 0.3, step=0.05))
+              x1, x2, y1, y2 = plt.axis()
+              y1, y2 = (0, 1000)
+              x1, x2 = (.0, .3)
+              plt.axis((x1, x2, y1, y2))
+            # plt.tight_layout()
+            # plt.margins(0.1)
+            plt.legend(loc='upper left', bbox_to_anchor=(0, 0.99))
+
+          if change_param == "buff_size":
+            file_name = f"{dir}/{row_n}x{col_m}_{testcase}_{x_name}_different_buffer_size.png"
+          elif change_param == "net_size":
+            file_name = f"{dir}/{ff_depth}_{testcase}_{x_name}_different_network_size.png"
+          else:
+            print("error")
+            exit()
+
+          plt.savefig(file_name)
+          print(f"Wrote {file_name}!")
+          plt.close()
+    print(f"Finished Plotting '{dir}'!")
+    return 0
   else:
     dict_json, json_no_suffix = parse(json_file)
     # Gather info
@@ -209,7 +249,7 @@ def parse_and_plot(json_file, loop_json=False, buff_size_en=False):
 
     for name in testcase_names:
       df = extract_rows(df_fp, str(name))
-      plot_df(df, "offered_traffic", ["accepted_traffic", "min_accepted_traffic", "max_accepted_traffic"],
+      plot_df(df, "offered_traffic", ["accepted_traffic", "min_accepted_traffic"],
               f"Oferowany ruch [ułamek pojemności]", f"Przepustowość [ułamek pojemności]",
               name + " | " + title, f'{json_no_suffix}/{name}_throughput.png')
       plot_df(df, "offered_traffic", ["min_packet_latency_ns", "avg_packet_latency_ns", "max_packet_latency_ns"],
@@ -226,15 +266,11 @@ def parse_and_plot(json_file, loop_json=False, buff_size_en=False):
                                 "Oferowany ruch [ułamek pojemności]",
                                 "Latencja pakietu [ns]", ylim=(0, 1000), yticks=np.arange(0, 1000 + 50, step=50))
 
-    plot_multi_traffic_patterns("offered_traffic", "avg_packet_latency_cyc", testcase_names, df_fp,
-                                "Średnia latencja pakietu " + title, f"{json_no_suffix}/Avg_Packet_Latency_cyc.png",
+    plot_multi_traffic_patterns("offered_traffic", "avg_packet_latency_ns", testcase_names, df_fp,
+                                "Średnia latencja pakietu " + title, f"{json_no_suffix}/Avg_Packet_Latency_ns_logy.png",
                                 "Oferowany ruch [ułamek pojemności]",
-                                "Latencja pakietu [cykle]", ylim=(0, 100), yticks=np.arange(0, 100 + 5, step=5))
-
+                                "Latencja pakietu [ns]", logy=True)
     df_fp.to_csv(f"{json_no_suffix}/dumped.csv", float_format='%.2f')
-
-      # Histograms
-      # plot_hist(df_fp, title, plot_path=json_no_suffix)
 
   # Fin
   print(f"Finished Plotting '{json_file}'!")
