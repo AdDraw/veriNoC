@@ -1,0 +1,35 @@
+[00038.724108] 
+yosys> stat -top mesh_xy_noc -liberty osu18_std.lib -tech cmos
+[00038.732448] 
+[00038.732453] 16. Printing statistics.
+[00038.762288] 
+[00038.762309] === mesh_xy_noc ===
+[00038.762312] 
+[00038.762317]    Number of wires:              31089
+[00038.762321]    Number of wire bits:          63122
+[00038.762323]    Number of public wires:        3445
+[00038.762326]    Number of public wire bits:   35478
+[00038.762329]    Number of memories:               0
+[00038.762331]    Number of memory bits:            0
+[00038.762334]    Number of processes:              0
+[00038.762337]    Number of cells:              36429
+[00038.762340]      AND2X1                       2428
+[00038.762343]      AOI21X1                       422
+[00038.762346]      AOI22X1                      3588
+[00038.762348]      DFFSR                        8460
+[00038.762351]      INVX1                        3512
+[00038.762355]      MUX2X1                       1853
+[00038.762358]      NAND2X1                      3652
+[00038.762361]      NAND3X1                       662
+[00038.762364]      NOR2X1                       1537
+[00038.762367]      NOR3X1                        152
+[00038.762370]      OAI21X1                      9136
+[00038.762373]      OAI22X1                        84
+[00038.762376]      OR2X1                         513
+[00038.762380]      XNOR2X1                       258
+[00038.762383]      XOR2X1                        172
+[00038.762385] 
+[00038.762393]    Chip area for module '\mesh_xy_noc': 2280896.000000
+[00038.762409] 
+[00038.762412]    Estimated number of transistors:          0+
+[00038.762416] 

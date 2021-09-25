@@ -1,4 +1,5 @@
 yosys -import
+set std_lib $::env(STD_LIB)
 
 read_verilog  -defer ../srcs/components/circ_fifo.v
 read_verilog  -defer ../srcs/switch/constants.v
@@ -68,8 +69,8 @@ read_verilog  -DYS_MESH_WORMHOLE_NODE_TOP=1 \
 echo off
 hierarchy -top $top_module -keep_portwidths -check
 synth -top $top_module -flatten
-dfflibmap -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
-abc -liberty ~/opt/yosys/examples/cmos/cmos_cells.lib
+dfflibmap -liberty $std_lib
+abc -liberty $std_lib
 
 # cleanup
 clean
@@ -81,5 +82,5 @@ if { ![info exists ::env(NO_XDOT)] } {
 json -o $::env(JSON_PATH)/$top_module.json
 write_verilog ../srcs/switch/mesh_wormhole/mesh_wormhole_node_synth.v
 
-stat
+stat -top $top_module -liberty $std_lib -tech cmos
 ltp

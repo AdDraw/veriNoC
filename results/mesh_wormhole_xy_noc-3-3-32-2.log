@@ -1,0 +1,34 @@
+[00052.344592] 
+[00052.350484] 15. Printing statistics.
+[00052.377732] 
+[00052.377751] === mesh_wormhole_xy_noc ===
+[00052.377758] 
+[00052.377763]    Number of wires:              29315
+[00052.377766]    Number of wire bits:          69015
+[00052.377770]    Number of public wires:        3726
+[00052.377773]    Number of public wire bits:   43426
+[00052.377775]    Number of memories:               0
+[00052.377778]    Number of memory bits:            0
+[00052.377781]    Number of processes:              0
+[00052.377784]    Number of cells:              32683
+[00052.377788]      AND2X1                       1534
+[00052.377791]      AOI21X1                       916
+[00052.377794]      AOI22X1                      2431
+[00052.377797]      BUFX2                         125
+[00052.377800]      DFFSR                        6608
+[00052.377804]      INVX1                        2652
+[00052.377807]      MUX2X1                       1325
+[00052.377810]      NAND2X1                      4943
+[00052.377813]      NAND3X1                      1030
+[00052.377816]      NOR2X1                       2075
+[00052.377819]      NOR3X1                        168
+[00052.377822]      OAI21X1                      7566
+[00052.377826]      OAI22X1                       719
+[00052.377829]      OR2X1                         413
+[00052.377831]      XNOR2X1                       151
+[00052.377834]      XOR2X1                         27
+[00052.377837] 
+[00052.377844]    Chip area for module '\mesh_wormhole_xy_noc': 1889906.000000
+[00052.377858] 
+[00052.377861]    Estimated number of transistors:          0+
+[00052.377865] 
