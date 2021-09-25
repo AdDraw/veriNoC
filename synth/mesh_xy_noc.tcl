@@ -1,4 +1,5 @@
 yosys -import
+set std_lib $::env(STD_LIB)
 
 read_verilog -defer ../srcs/switch/constants.v
 read_verilog -defer ../srcs/components/circ_fifo.v
@@ -55,8 +56,8 @@ read_verilog  -DYS_MESH_XY_TOP=1 \
 echo off
 hierarchy -top $top_module -keep_portwidths -check
 synth -top $top_module -flatten
-dfflibmap -liberty osu18_std.lib
-abc -liberty osu18_std.lib
+dfflibmap -liberty $std_lib
+abc -liberty $std_lib
 
 # cleanup
 clean
@@ -68,5 +69,5 @@ if { ![info exists ::env(NO_XDOT)] } {
 json -o $::env(JSON_PATH)/$file_name.json
 write_verilog ../srcs/noc/mesh_xy_noc_synth.v
 echo on
-tee -o $file_name.log stat -top $top_module -liberty osu18_std.lib -tech cmos
+tee -o $file_name.log stat -top $top_module -liberty $std_lib -tech cmos
 ltp

@@ -31,6 +31,8 @@ function display_help {
   echo ">>"
   echo ">>            --no-xdot         - disables yosys show command"
   echo ">>"
+  echo ">>            --std-lib         - path to std cell library, default: std_libs/osu018_std.lib"
+  echo ">>"
   echo ">>            -h/--help         - by using a help switch this manual will be seen"
 	echo ">>"
   echo ">>            PARAMETERs       - Design parameter values passed as POSITIONAL values"
@@ -52,6 +54,7 @@ fi
 
 POSITIONAL=() # list that should store parameters as positional arguments
 TCL_FILE="null"
+STD_LIB="std_libs/osu18_std.lib"
 export SHOW_PARAMS=0
 while [[ $# -gt 0 ]]
 do
@@ -72,6 +75,11 @@ do
       export NO_XDOT=1
       shift # past argument
       ;;
+      --std-lib)
+      echo "${green}Setting STD_LIB="$2"${white}"
+      STD_LIB="$2"
+      shift # past argument
+      ;;
       -h|--help)
       display_help
       shift # past argument
@@ -83,7 +91,7 @@ do
       ;;
   esac
 done
-
+export STD_LIB=$STD_LIB
 # Check if the script was passed
 if [[ $SCRIPT_FILE == "null" ]]; then
   #statements
