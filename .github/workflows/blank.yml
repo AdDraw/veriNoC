@@ -87,7 +87,7 @@ jobs:
         run: |
           export CI=1
           cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf -ff_depth 6 -pckt_w 14
+          python3 run_and_verify.py -tf -ff_depth 6 -pckt_w 16
 
       # - name: Mesh XY Regression
       #   run: |
