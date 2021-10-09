@@ -12,8 +12,8 @@ from pathlib import Path
 
 def plot_rows(regex, data_frame, y, kind, filename,
               title, xlabel, ylabel, ncol=None, stacked=True, transpose=False,
-              printy=False):
-  fig_size = (19.2, 10.8)
+              printy=False, x_rot_val='horizontal'):
+  fig_size = (7.2, 4.8)
   regname = "_"
   for item in regex:
     if regname == "_":
@@ -27,31 +27,32 @@ def plot_rows(regex, data_frame, y, kind, filename,
     d_f = extract_rows(d_f, y)
     if kind == "pie":
       d_f.plot(kind=kind, stacked=False, y=regex[0], grid=True, figsize=fig_size, pctdistance=.7, labeldistance=1.05, radius=1.05, startangle=-17, rotatelabels=True)
-      plt.legend([],[])
+      # plt.legend([],[])
     else:
-      print(d_f)
+      # print(d_f)
       d_f.plot(kind=kind, stacked=stacked, y=d_f.keys(), grid=True, figsize=fig_size)
-      plt.legend(loc='upper left', bbox_to_anchor=(0, 0.99), ncol=len(y))
+      # plt.legend(loc='upper left', bbox_to_anchor=(0, 0.99), ncol=len(y))
   else:
     d_f.plot(kind=kind, stacked=stacked, y=y, grid=True, figsize=fig_size)
     if ncol is None:
       ncol = len(y)
     else:
       ncol = ncol
-    plt.legend(loc='upper left', bbox_to_anchor=(0, 0.99), ncol=ncol)
+    # plt.legend(loc='upper left', bbox_to_anchor=(0, 0.99), ncol=ncol)
 
 
   # if printy:
   #   print(d_f["Chip area"].to_csv())
 
-  plt.xticks(rotation='horizontal')
+  plt.xticks(rotation=x_rot_val)
   plt.xlabel(xlabel)
   plt.ylabel(ylabel)
-  plt.title(title, loc='center')
-  # plt.tight_layout()
+  # plt.title(title, loc='center')
+  plt.tight_layout()
   plt.margins(0.1)
   if Path("results").exists() is False:
     os.mkdir("results")
+  print("Wrote results/" + filename + regname + ".png")
   plt.savefig("results/" + filename + regname + ".png")
   plt.close()
 
@@ -157,47 +158,42 @@ def main() -> None:
   dataframe = dataframe.astype(float)
 
   print(dataframe)
-
+ 
   y = ["AND2X1", "AOI21X1", "AOI22X1", "BUFX2", "DFFSR", "INVX1",
        "MUX2X1", "NOR2X1", "NAND2X1", "NAND3X1", "NOR3X1", "OAI21X1", "OAI22X1",
       "OR2X1", "XNOR2X1", "XOR2X1",]
-  plot_rows(["mesh_xy_noc-3-3-8-2"], dataframe, y, "bar", "bar_cell", "Prototypowa", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
-  plot_rows(["mesh_wormhole_xy_noc-3-3-8-2"], dataframe, y, "bar", "bar_cell", "Wormhole", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
-  plot_rows(["3-3-8-2"], dataframe, y, "bar", "bar_cell", "Wpływ typu sieci na ilość komórek", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
+  plot_rows(["prototyp-3-3-8-2"], dataframe, y, "bar", "ilosc_elementow_sieci_dla_pojedynczej_konfiguracji", "Prototypowa", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
+  plot_rows(["wormhole-3-3-8-2"], dataframe, y, "bar", "ilosc_elementow_sieci_dla_pojedynczej_konfiguracji", "Wormhole", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
+  plot_rows(["3-3-8-2"], dataframe, y, "bar", "wplyw_typu_sieci_na_ilosc_komorek", "Wpływ typu sieci na ilość komórek", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
 
-  plot_rows(["3-3-8", "wormhole"], dataframe, y, "bar", "bar_cell", "Wormhole | Wpływ wielkości bufora sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
-  plot_rows(["3-3-8", "mesh_xy"], dataframe, y, "bar", "bar_cell", "Prototypowa | Wpływ wielkości bufora sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
-  plot_rows(["3-3-8"], dataframe, y, "bar", "bar_cell", "Wpływ wielkości bufora sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
+  plot_rows(["3-3-8", "wormhole"], dataframe, y, "bar", "wplyw_wielkosci_bufora_na_ilosc_komorek_sieci", "Wormhole | Wpływ wielkości bufora sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
+  plot_rows(["3-3-8", "prototyp"], dataframe, y, "bar", "wplyw_wielkosci_bufora_na_ilosc_komorek_sieci", "Prototypowa | Wpływ wielkości bufora sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
+  plot_rows(["3-3-8"], dataframe, y, "bar", "wplyw_wielkosci_bufora_na_ilosc_komorek_sieci", "Wpływ wielkości bufora sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
 
-  plot_rows(["8-2", "mesh_xy"], dataframe, y, "bar", "bar_cell", "Prototypowa | Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
-  plot_rows(["8-2", "wormhole"], dataframe, y, "bar", "bar_cell", "Wormhole | Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
-  plot_rows(["8-2"], dataframe, y, "bar", "bar_cell", "Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
+  plot_rows(["8-2", "prototyp"], dataframe, y, "bar", "wplyw_k_sieci_na_ilosc_komorek_sieci", "Prototypowa | Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
+  plot_rows(["8-2", "wormhole"], dataframe, y, "bar", "wplyw_k_sieci_na_ilosc_komorek_sieci", "Wormhole | Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
+  plot_rows(["8-2"], dataframe, y, "bar", "wplyw_k_sieci_na_ilosc_komorek_sieci", "Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
 
-  plot_rows(["3-3", "2", "wormhole"], dataframe, y, "bar", "bar_cell", "Wormhole | Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
-  plot_rows(["3-3", "2", "mesh_xy"], dataframe, y, "bar", "bar_cell", "Prototypowa | Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
-  plot_rows(["3-3", "2"], dataframe, y, "bar", "bar_cell", "Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True)
+  plot_rows(["3-3", "2", "wormhole"], dataframe, y, "bar", "wplyw_k_sieci_na_ilosc_komorek_sieci", "Wormhole | Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
+  plot_rows(["3-3", "2", "prototyp"], dataframe, y, "bar", "wplyw_k_sieci_na_ilosc_komorek_sieci", "Prototypowa | Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
+  plot_rows(["3-3", "2"], dataframe, y, "bar", "wplyw_k_sieci_na_ilosc_komorek_sieci", "Wpływ k sieci na ilość komórek w sieci", "Typ elementu", "Liczba komórek", stacked=False, transpose=True, x_rot_val=45)
 
   y = ["Chip area"]
-  plot_rows(["3-3-8-2"], dataframe, y, "bar", "bar_chip_area", "Wpływ typu sieci na powierzchnię sieci", "Konfiguracja", "Powierzchnia [λ^2]", stacked=False, printy=True)
-  plot_rows(["mesh_xy_noc", "3-3-8"], dataframe, y, "bar", "bar_total_cell", "Prototypowa | Wpływ rozmiaru bufora na powierzchnię sieci", "Typ elementu", "Liczba komórek", stacked=False)
-  plot_rows(["mesh_wormhole_xy_noc", "3-3-8"], dataframe, y, "bar", "bar_total_cell", "Wormhole | Wpływ rozmiaru bufora na powierzchnię sieci", "Typ elementu", "Liczba komórek", stacked=False)
-  plot_rows(["8-2"], dataframe, y, "bar", "bar_chip_area", "Wpływ typu sieci i k na powierzchnię sieci", "Konfiguracja", "Powierzchnia [λ^2]", stacked=False, printy=True, transpose=True)
+  plot_rows(["3-3-8-2"], dataframe, y, "bar", "wplyw_typu_sieci_na_powierzchnie", "Wpływ typu sieci na powierzchnię sieci", "Konfiguracja", "Powierzchnia [λ^2]", stacked=False, printy=True)
+  plot_rows(["prototyp", "3-3-8"], dataframe, y, "bar", "wplyw_rozmiaru_bufora_na_powierzchnie", "Prototypowa | Wpływ rozmiaru bufora na powierzchnię sieci", "Typ elementu", "Liczba komórek", stacked=False)
+  plot_rows(["wormhole", "3-3-8"], dataframe, y, "bar", "wplyw_rozmiaru_bufora_na_powierzchnie", "Wormhole | Wpływ rozmiaru bufora na powierzchnię sieci", "Typ elementu", "Liczba komórek", stacked=False)
+  plot_rows(["8-2"], dataframe, y, "bar", "wplyw_typu_i_k_sieci_na_powierchnie", "Wpływ typu sieci i k na powierzchnię sieci", "Konfiguracja", "Powierzchnia [λ^2]", stacked=False, printy=True, transpose=True)
 
   y = ["Number of cells", "Number of wires"]
-  plot_rows(["mesh_xy_noc", "8-2"], dataframe, y, "bar", "bar_total_cell", "Prototypowa | Wpływ k na ilość elementów", "Konfiguracja", "Liczba komórek", stacked=False)
-  plot_rows(["mesh_wormhole_xy_noc", "8-2"], dataframe, y, "bar", "bar_total_cell", "Wormhole | Wpływ k na ilość elementów", "Konfiguracja", "Liczba komórek", stacked=False)
+  plot_rows(["prototyp", "8-2"], dataframe, y, "bar", "wplyw_k_na_ilosc_elementow", "Prototypowa | Wpływ k na ilość elementów", "Konfiguracja", "Liczba komórek", stacked=False)
+  plot_rows(["wormhole", "8-2"], dataframe, y, "bar", "wplyw_k_na_ilosc_elementow", "Wormhole | Wpływ k na ilość elementów", "Konfiguracja", "Liczba komórek", stacked=False)
 
-  plot_rows(["mesh_xy_noc", "3-3-8"], dataframe, y, "bar", "bar_total_cell", "Prototypowa | Wpływ rozmiaru bufora na ilość elementów", "Typ elementu", "Ilość", stacked=False)
-  plot_rows(["mesh_wormhole_xy_noc", "3-3-8"], dataframe, y, "bar", "bar_total_cell", "Wormhole | Wpływ rozmiaru bufora na ilość elementów", "Typ elementu", "Ilość", stacked=False)
+  plot_rows(["prototyp", "3-3-8"], dataframe, y, "bar", "wplyw_rozmiaru_bufora_na_ilosc_elementow", "Prototypowa | Wpływ rozmiaru bufora na ilość elementów", "Typ elementu", "Ilość", stacked=False)
+  plot_rows(["wormhole", "3-3-8"], dataframe, y, "bar", "wplyw_rozmiaru_bufora_na_ilosc_elementow", "Wormhole | Wpływ rozmiaru bufora na ilość elementów", "Typ elementu", "Ilość", stacked=False)
 
-  plot_rows(["3-3", "2"], dataframe, y, "bar", "bar_total_cell", "Wpływ typu sieci i szerokości części informacyjnej phit'a na ilość elementów", "Typ elementu", "Ilość", stacked=False, transpose=True)
-  # plot_rows(["3-3-8"], dataframe, y, "bar", "bar_total_cell", "Wpływ typu sieci i rozmiaru bufora na ilość elementów", "Typ elementu", "Ilość", stacked=False, transpose=True)
+  plot_rows(["3-3", "2"], dataframe, y, "bar", "wplyw_typu_i_pckt_w_na_ilosc_elementow", "Wpływ typu sieci i szerokości części informacyjnej phit'a na ilość elementów", "Typ elementu", "Ilość", stacked=False, transpose=True)
 
-
-
-
-
-
+  print("Finished Plotting!")
   sys.exit(0)
 
 if __name__ == '__main__':
