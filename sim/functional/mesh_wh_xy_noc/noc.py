@@ -15,6 +15,7 @@ import time
 import json
 from utils.address import NodeAddr
 from utils.traffic_pattern import TrafficPattern
+from random import getrandbits
 METRICS_FILENAME = str(os.environ["METRICS_FILENAME"])
 HOT_SPOTS = None
 
