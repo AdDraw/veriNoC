@@ -126,7 +126,7 @@ jobs:
         run: |
           export CI=1
           cd sim/functional/mesh_xy_noc
-          python3 run_and_verify.py -tf -ps -synth -ff_depth 4 -pckt_w 13 -row_n 3 -col_m 3
+          python3 run_and_verify.py -tf -ps -synth -ff_depth 4 -pckt_w 16 -row_n 3 -col_m 3
 
       - name: VC
         run: |
@@ -141,7 +141,7 @@ jobs:
       - name: Wormhole XY NoC
         run: |
           cd sim/functional/mesh_wh_xy_noc
-          python3 run_and_verify.py -ps -synth -tf
+          python3 run_and_verify.py -ps -synth -tf -channel_w 9 -ff_depth 3
 
   synth:
     # The type of runner that the job will run on
