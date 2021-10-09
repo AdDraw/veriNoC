@@ -107,7 +107,7 @@ jobs:
       - name: Wormhole XY NoC
         run: |
           cd sim/functional/mesh_wh_xy_noc
-          python3 run_and_verify.py -tf -ff_depth 3
+          python3 run_and_verify.py -tf -ff_depth 3 -channel_w 9
 
   functional_postsynth:
     # The type of runner that the job will run on
