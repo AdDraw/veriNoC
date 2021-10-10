@@ -192,6 +192,7 @@ def main() -> None:
   plot_rows(["wormhole", "3-3-8"], dataframe, y, "bar", "wplyw_rozmiaru_bufora_na_ilosc_elementow", "Wormhole | Wpływ rozmiaru bufora na ilość elementów", "Typ elementu", "Ilość", stacked=False)
 
   plot_rows(["3-3", "2"], dataframe, y, "bar", "wplyw_typu_i_pckt_w_na_ilosc_elementow", "Wpływ typu sieci i szerokości części informacyjnej phit'a na ilość elementów", "Typ elementu", "Ilość", stacked=False, transpose=True)
+  plot_rows(["3-3", "8"], dataframe, y, "bar", "wplyw_typu_i_rozmiaru_bufora_na_ilosc_elementow", "Wpływ typu sieci i rozmiaru bufora na ilość elementów", "Typ elementu", "Ilość", stacked=False, transpose=True)
 
   print("Finished Plotting!")
   sys.exit(0)
