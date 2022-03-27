@@ -1,6 +1,6 @@
 ## Magiament
 ![example workflow](https://github.com/AdDraw/magiament/actions/workflows/blank.yml/badge.svg)
-### Master Thesis 2020/2022 Network on Chip Router
+### Master Thesis 2020/2022 Network on Chip
 
 ---
 > results are kept in the `results` directory
