@@ -79,6 +79,7 @@ do
       echo "${green}Setting STD_LIB="$2"${white}"
       STD_LIB="$2"
       shift # past argument
+      shift
       ;;
       -h|--help)
       display_help
