@@ -16,8 +16,8 @@ Started as a simple Mesh NoC with Flow control based on 1 phit buffers and not p
 
 **Flow controls** supported:
 
-- 1 phit buffers
-- Wormhole
+- Store & Forward but only with 1 phit long packets
+- Wormhole with N flit long packets
 
 **Arbitration:**
 
@@ -37,7 +37,7 @@ Started as a simple Mesh NoC with Flow control based on 1 phit buffers and not p
 - **SymbiYosys** as a formal verification tool
 - Scripts should be written in Bash/Python/Tcl
 - Verilator should be at least `v4.022` to work with cocotb
-- IcarusVerilog has to be of version `11.0`
+- IcarusVerilog has to be of version greater than `11.0`
 
 > Cocotb Verilator support is experimental so for now it's not supported
 
