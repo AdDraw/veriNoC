@@ -5,3 +5,4 @@ exclude:
   - articles.md
   - phy.md
   - plan_magisterki.md
+safe: false
