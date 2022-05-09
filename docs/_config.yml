@@ -1,2 +1,2 @@
 include: [results]
-exclude: [name_base.md articles.md phy.md plan_magisterki.md]
+exclude: [name_base.md, articles.md, phy.md, plan_magisterki.md]
