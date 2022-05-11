@@ -73,21 +73,21 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Runs a set of commands using the runners shell
-      # - name: FIFO
-      #   run: |
-      #     cd sim/functional/circ_fifo
-      #     python3 run_and_verify.py
+      - name: FIFO
+        run: |
+          cd sim/functional/circ_fifo
+          python3 run_and_verify.py
 
-      # - name: XY_switch
-      #   run: |
-      #     cd sim/functional/xy_switch
-      #     python3 run_and_verify.py -tf
+      - name: XY_switch
+        run: |
+          cd sim/functional/xy_switch
+          python3 run_and_verify.py -tf
 
-      # - name: Mesh XY Single
-      #   run: |
-      #     export CI=1
-      #     cd sim/functional/mesh_xy_noc
-      #     python3 run_and_verify.py -tf -ff_depth 6 -pckt_w 16
+      - name: Mesh XY Single
+        run: |
+          export CI=1
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf -ff_depth 6 -pckt_w 16 -row_n 3 -col_m 3
 
       # - name: Mesh XY Regression
       #   run: |
@@ -116,17 +116,17 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Runs a set of commands using the runners shell
-      # - name: FIFO
-      #   run: |
-      #     cd sim/functional/circ_fifo
-      #     python3 run_and_verify.py -ps -synth
+      Runs a set of commands using the runners shell
+      - name: FIFO
+        run: |
+          cd sim/functional/circ_fifo
+          python3 run_and_verify.py -ps -synth
 
-      # - name: Mesh XY 3x3
-      #   run: |
-      #     export CI=1
-      #     cd sim/functional/mesh_xy_noc
-      #     python3 run_and_verify.py -tf -ps -synth -ff_depth 4 -pckt_w 16 -row_n 3 -col_m 3
+      - name: Mesh XY 3x3
+        run: |
+          export CI=1
+          cd sim/functional/mesh_xy_noc
+          python3 run_and_verify.py -tf -ps -synth -ff_depth 6 -pckt_w 16 -row_n 3 -col_m 3
 
       - name: VC
         run: |
