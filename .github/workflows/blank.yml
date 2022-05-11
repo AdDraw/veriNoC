@@ -101,7 +101,7 @@ jobs:
 
       - name: Wormhole XY Node
         run: |
-          cd sim/functional/mesh_wormhole_node
+          cd sim/functional/mesh_wormhole_switch
           python3 run_and_verify.py
 
       - name: Wormhole XY NoC
@@ -135,7 +135,7 @@ jobs:
 
       - name: Wormhole XY Node
         run: |
-          cd sim/functional/mesh_wormhole_node
+          cd sim/functional/mesh_wormhole_switch
           python3 run_and_verify.py -ps -synth
 
       - name: Wormhole XY NoC
