@@ -542,6 +542,7 @@ if int(os.environ["TESTFACTORY"]) == 1:
     tf.add_option("permutation", ["complement", "shuffle", "reverse", "rotate"])
     tf.generate_tests()
   else:
+    # in the CI run I don't really care about most detailed data
     tf = TestFactory(uniform_random)
-    tf.add_option("injection_rate", [.01, .1, .2, .225, .25, .275, .3, .4, .5, .6, .8, 1])
+    tf.add_option("injection_rate", [.01, .2, .4, .6, .8, 1])
     tf.generate_tests()
