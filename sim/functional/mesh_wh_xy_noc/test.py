@@ -6,7 +6,7 @@ import os
 from random import randint
 from utils.functions import *
 from noc import WHNoCTB
-from noc import NoCMetrics
+from utils.noc_metrics import NoCMetrics
 from cocotb import fork
 from utils.address import NodeAddr
 CLK_PERIOD = int(os.environ["CLK_PERIOD"])
