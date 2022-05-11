@@ -1,6 +1,6 @@
 import cocotb
 from cocotb.clock import Clock
-from cocotb.result import TestSuccess, TestError
+from cocotb.result import TestSuccess
 from cocotb.triggers import ClockCycles
 from cocotb_bus.scoreboard import Scoreboard
 

@@ -5,9 +5,6 @@ import json
 import argparse
 from pathlib import Path
 from pprint import pprint as pp
-import numpy as np
-from matplotlib import cm
-from mpl_toolkits.mplot3d.axes3d import get_test_data
 
 def extract_rows(df, regex):
     tmp_dict = {}

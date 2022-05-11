@@ -3,7 +3,7 @@ import os
 import time
 import argparse
 from utils.rav import *
-from utils.adam_logger import *
+from utils.logger import *
 import glob
 
 def main(tf, ps, synth, row_n, col_m, ff_depth, channel_w, regression, log_lvl) -> None:

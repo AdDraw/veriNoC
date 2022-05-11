@@ -1,5 +1,4 @@
 from cocotb.binary import BinaryValue
-from random import getrandbits, randint
 from math import ceil, log2
 from utils.functions import *
 

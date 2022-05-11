@@ -1,7 +1,6 @@
 import cocotb
 from cocotb.result import TestSuccess, TestFailure
-from cocotb.triggers import ClockCycles, RisingEdge, ReadOnly, Combine, FallingEdge
-from cocotb.binary import BinaryValue
+from cocotb.triggers import ClockCycles, RisingEdge, ReadOnly, Combine
 from cocotb.log import SimLog
 from cocotb.regression import TestFactory
 

@@ -1,15 +1,7 @@
 import subprocess
-import os
 import time
-import xml.etree.ElementTree as ET
 import argparse
-import git
-import logging
-import sys
-from logging.handlers import TimedRotatingFileHandler, RotatingFileHandler
-FORMATTER = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s — %(funcName)s — %(message)s")
-LOG_FILE = "sim.log"
-from utils.adam_logger import *
+from utils.logger import *
 from utils.rav import *
 
 def main(tf, ps, synth, port_n, pckt_data_w, fifo_depth_w, row_cord, col_cord,

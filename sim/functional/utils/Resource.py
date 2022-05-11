@@ -1,9 +1,9 @@
 from cocotb_bus.drivers import BusDriver
 from cocotb_bus.monitors import BusMonitor
-from cocotb.triggers import RisingEdge, ClockCycles, ReadOnly, FallingEdge, Edge, ReadWrite
+from cocotb.triggers import RisingEdge, ReadOnly, ReadWrite
 from cocotb.binary import BinaryValue
 from cocotb.log import SimLog
-from cocotb.utils import get_sim_steps, get_time_from_sim_steps, get_sim_time, _get_simulator_precision
+from cocotb.utils import get_sim_time
 from cocotb import fork
 
 from logging import INFO, DEBUG

@@ -1,7 +1,7 @@
 import os
 import subprocess
 import xml.etree.ElementTree as ElTree
-from utils.adam_logger import *
+from utils.logger import *
 FORMATTER = logging.Formatter("%(asctime)s — %(name)s — %(levelname)s — %(funcName)s — %(message)s")
 LOG_FILE = "sim.log"
 

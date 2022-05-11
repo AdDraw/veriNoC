@@ -1,7 +1,7 @@
 from cocotb_bus.drivers import BusDriver
 from cocotb.triggers import RisingEdge, ReadOnly, FallingEdge
 from logging import INFO, DEBUG
-from cocotb.utils import get_sim_steps, get_time_from_sim_steps, get_sim_time, _get_simulator_precision
+from cocotb.utils import get_sim_time
 from cocotb import fork
 
 class ChanDriver(BusDriver):

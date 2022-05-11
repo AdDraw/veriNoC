@@ -1,9 +1,9 @@
 from cocotb_bus.drivers import BusDriver
-from cocotb.triggers import RisingEdge, ClockCycles, ReadOnly, FallingEdge
+from cocotb.triggers import RisingEdge, ReadOnly, FallingEdge
 from cocotb.binary import BinaryValue
 from cocotb.result import TestError
 
-from random import getrandbits, sample
+from random import getrandbits
 from logging import INFO, DEBUG
 
 

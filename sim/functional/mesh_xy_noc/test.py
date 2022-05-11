@@ -7,18 +7,15 @@ from cocotb.triggers import ClockCycles, RisingEdge
 from logging import INFO, DEBUG
 from cocotb.log import SimLog
 from cocotb.regression import TestFactory
-from cocotb.binary import BinaryValue
 # Global Imports
 import os
-from random import sample, randint, random
+from random import sample, randint
 from math import log, ceil
 import math
 import numpy as np
 import json
 
 from utils.functions import *
-import utils.bit_permutation as bit_p
-import utils.digit_permutation as digit_p
 from utils.Resource import Resource
 
 CLK_PERIOD = int(os.environ["CLK_PERIOD"])
