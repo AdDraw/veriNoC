@@ -75,7 +75,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: FIFO
         run: |
-          cd sim/functional/circ_fifo_sim
+          cd sim/functional/circ_fifo
           python3 run_and_verify.py
 
       - name: XY_switch
@@ -96,12 +96,12 @@ jobs:
 
       - name: VC
         run: |
-          cd sim/functional/virtual_channel_sim
+          cd sim/functional/virtual_channel
           python3 run_and_verify.py
 
       - name: Wormhole XY Node
         run: |
-          cd sim/functional/mesh_wormhole_node_sim
+          cd sim/functional/mesh_wormhole_node
           python3 run_and_verify.py
 
       - name: Wormhole XY NoC
@@ -119,7 +119,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: FIFO
         run: |
-          cd sim/functional/circ_fifo_sim
+          cd sim/functional/circ_fifo
           python3 run_and_verify.py -ps -synth
 
       - name: Mesh XY 3x3
@@ -130,12 +130,12 @@ jobs:
 
       - name: VC
         run: |
-          cd sim/functional/virtual_channel_sim
+          cd sim/functional/virtual_channel
           python3 run_and_verify.py -ps -synth
 
       - name: Wormhole XY Node
         run: |
-          cd sim/functional/mesh_wormhole_node_sim
+          cd sim/functional/mesh_wormhole_node
           python3 run_and_verify.py -ps -synth
 
       - name: Wormhole XY NoC
