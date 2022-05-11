@@ -52,7 +52,7 @@ class VCTB:
         self.vc_drv = VCDriver(dut, "", dut.clk_i, self.config, log_lvl)
         self.packets_to_send = []
         self.packets_received = []
-        self.dut.chan_rdy_i.setimmediatevalue(0x1F)
+        self.dut.chan_rdy_i.setimmediatevalue(0x1)
 
     def populate_packets_to_send(self, packet_n=10, packet_length=4):
         for i in range(packet_n):
