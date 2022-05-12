@@ -1,4 +1,4 @@
-from cocotb.triggers import RisingEdge, FallingEdge, ClockCycles, ReadOnly
+from cocotb.triggers import RisingEdge, ClockCycles, ReadOnly
 from cocotb.result import TestSuccess, TestFailure
 from logging import INFO, DEBUG
 from cocotb.log import SimLog
@@ -8,12 +8,10 @@ from driver import ChanDriver
 from utils.data_units import Packet, all_ones
 from utils.functions import bernouli
 import cocotb
-from utils.noc_metrics import NoCMetrics
 import numpy as np
-from cocotb.utils import get_sim_steps, get_time_from_sim_steps, get_sim_time, _get_simulator_precision
+from cocotb.utils import get_sim_time
 import time
 import json
-from utils.address import NodeAddr
 from utils.traffic_pattern import TrafficPattern
 from random import getrandbits
 METRICS_FILENAME = str(os.environ["METRICS_FILENAME"])

@@ -1,7 +1,7 @@
 import cocotb
 from cocotb.clock import Clock
-from cocotb.result import TestSuccess, TestError, TestFailure
-from cocotb.triggers import ClockCycles, RisingEdge, Combine
+from cocotb.result import TestSuccess, TestFailure
+from cocotb.triggers import ClockCycles, RisingEdge
 from driver import SWPacketDriver
 from mon_i import SWIMon
 from mon_o import SWOMon
@@ -9,7 +9,7 @@ from logging import INFO, DEBUG
 from cocotb.log import SimLog
 from cocotb.regression import TestFactory
 import os
-from random import randint, getrandbits, sample
+from random import randint, getrandbits
 
 CLOCK_PERIOD_NS = 10
 

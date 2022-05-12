@@ -7,18 +7,15 @@ from cocotb.triggers import ClockCycles, RisingEdge
 from logging import INFO, DEBUG
 from cocotb.log import SimLog
 from cocotb.regression import TestFactory
-from cocotb.binary import BinaryValue
 # Global Imports
 import os
-from random import sample, randint, random
+from random import sample, randint
 from math import log, ceil
 import math
 import numpy as np
 import json
 
 from utils.functions import *
-import utils.bit_permutation as bit_p
-import utils.digit_permutation as digit_p
 from utils.Resource import Resource
 
 CLK_PERIOD = int(os.environ["CLK_PERIOD"])
@@ -545,6 +542,7 @@ if int(os.environ["TESTFACTORY"]) == 1:
     tf.add_option("permutation", ["complement", "shuffle", "reverse", "rotate"])
     tf.generate_tests()
   else:
+    # in the CI run I don't really care about most detailed data
     tf = TestFactory(uniform_random)
-    tf.add_option("injection_rate", [.01, .1, .2, .225, .25, .275, .3, .4, .5, .6, .8, 1])
+    tf.add_option("injection_rate", [.01, .2, .4, .6, .8, 1])
     tf.generate_tests()

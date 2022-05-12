@@ -1,10 +1,6 @@
-import subprocess
 import os
-import time
-import argparse
 import glob
 import sys
-import numpy as np
 import re
 import pandas
 import matplotlib.pyplot as plt
@@ -122,7 +118,7 @@ def parse_file(file):
 
 
 def main() -> None:
-  glob_log_files = fileList = glob.glob(f'*.log')
+  glob_log_files = glob.glob(f'*.log')
   glob_log_files = sorted(glob_log_files, key=len)
   sorted_files = []
   for file in glob_log_files:

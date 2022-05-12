@@ -1,12 +1,12 @@
 from logging import INFO, DEBUG
 from cocotb.regression import TestFactory
-from cocotb.triggers import RisingEdge, FallingEdge, ReadOnly, ClockCycles, Combine
+from cocotb.triggers import ClockCycles
 from cocotb.result import TestSuccess
 import os
-import numpy as np
+from random import randint
 from utils.functions import *
 from noc import WHNoCTB
-from noc import NoCMetrics
+from utils.noc_metrics import NoCMetrics
 from cocotb import fork
 from utils.address import NodeAddr
 CLK_PERIOD = int(os.environ["CLK_PERIOD"])

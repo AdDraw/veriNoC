@@ -1,9 +1,7 @@
 from random import random
 import cocotb
-from cocotb.result import TestSuccess, TestFailure
-from cocotb.triggers import ClockCycles, RisingEdge, ReadOnly, Combine, FallingEdge
 from cocotb.binary import BinaryValue
-from random import getrandbits, randint
+from random import getrandbits
 
 def null_string(lenght):
   null = ""
