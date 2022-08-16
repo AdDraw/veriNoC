@@ -62,12 +62,14 @@ module allocator #(
     parameter IN_N        = `YS_IN_N,
     parameter OUT_M       = `YS_OUT_M,
     parameter FLIT_ID_W   = `YS_FLIT_ID_W,
-    parameter OUT_CHAN_ID = `YS_OUT_CHAN_ID
+    parameter OUT_CHAN_ID = `YS_OUT_CHAN_ID,
+    parameter ARB_TYPE    = `YS_ARB_TYPE
   `else
     parameter IN_N        = 5,  // to specify from how many inputs we should choose
     parameter OUT_M       = 5,  // for route result inputs
     parameter FLIT_ID_W   = 2,  // how many bits are taken for ID in each FLIT
-    parameter OUT_CHAN_ID = 0   // which output channel is this Alloc assigned to
+    parameter OUT_CHAN_ID = 0,  // which output channel is this Alloc assigned to
+    parameter ARB_TYPE    = 0   // what type of arbitration should be used (0 - matrix, 1 - round robin, 2 - static_priority)
   `endif
   ) (
     input                           clk_i,
@@ -130,15 +132,39 @@ module allocator #(
     end
   end
 
-  matrix_arb #( // secondary arbitration if primary arb is not conclusive
-    .IN_N(IN_N)
-    )
-  arb (
-    .clk_i    (clk_i),
-    .rst_ni   (rst_ni),
-    .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
-    .grant_o  (grant_w)
-    );
+  generate
+    if (ARB_TYPE == 0) begin //matrix arb
+      matrix_arb #(
+        .IN_N(IN_N)
+      ) arb (
+        .clk_i    (clk_i),
+        .rst_ni   (rst_ni),
+        .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
+        .grant_o  (grant_w)
+      );
+    end
+    else if (ARB_TYPE == 1) begin
+      round_robin_arb #(
+        .IN_N(IN_N)
+      ) arb (
+        .clk_i    (clk_i),
+        .rst_ni   (rst_ni),
+        .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
+        .grant_o  (grant_w)
+      );
+    end
+    else if (ARB_TYPE == 2) begin
+      static_priority_arbiter #(
+        .IN_N(IN_N)
+      ) arb (
+        .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
+        .grant_o  (grant_w)
+      );
+    end
+    else begin
+      $error("Wrong Arbitration Type, possible options 0,1,2"); 
+    end
+  endgenerate
 
   // Allocation of VC
   assign chan_alloc_o = chan_alloc;
