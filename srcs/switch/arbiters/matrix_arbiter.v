@@ -32,7 +32,7 @@ module matrix_arb
   // Last granted requested moves to the end of the que
   reg   [IN_N-1:0]  p_matrix [IN_N-1:0];
   wire  [IN_N-1:0]  grant_w;
-  wire [$clog2(IN_N)-1:0] grant_bcd_w;
+  reg [$clog2(IN_N)-1:0] grant_bcd_w;
 
   // MATRIX UPDATE CIRC
   integer i,j;
@@ -71,11 +71,12 @@ module matrix_arb
   endgenerate
 
   // from ONEHOT to DECIMAL
-  assign grant_bcd_w = (grant_w[0]) ? 0 :
-                       (grant_w[1]) ? 1 :
-                       (grant_w[2]) ? 2 :
-                       (grant_w[3]) ? 3 :
-                       (grant_w[4]) ? 4 : 0;
+  always @(*) begin
+    grant_bcd_w <= 0;
+    for (integer i = 0; i < IN_N; i = i + 1) begin
+      if (grant_w[i]) grant_bcd_w <= i;
+    end
+  end
   assign grant_o = grant_bcd_w;
 
 endmodule // matrix

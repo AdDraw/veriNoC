@@ -9,7 +9,7 @@
 `timescale 1ns / 1ps
 module static_priority_arbiter
   #(
-    parameter IN_N = 5 // this should be 5 right now
+    parameter IN_N = 5
   ) (
     input   [IN_N - 1 : 0]     req_i,
     output  [$clog2(IN_N)-1:0] grant_o
