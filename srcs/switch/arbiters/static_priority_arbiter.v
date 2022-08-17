@@ -12,7 +12,8 @@ module static_priority_arbiter
     parameter IN_N = 5
   ) (
     input   [IN_N - 1 : 0]     req_i,
-    output  [$clog2(IN_N)-1:0] grant_o
+    output  [$clog2(IN_N)-1:0] grant_o,
+    output                     grant_vld_o
   );
 
   wire [IN_N-1 : 0]      grant_w;
@@ -28,7 +29,7 @@ module static_priority_arbiter
   assign x_carry_w[0] = 0; 
   genvar gi;
   generate
-    for ( gi = 0; gi < IN_N-1; gi = gi + 1) begin
+    for ( gi = 0; gi < IN_N; gi = gi + 1) begin
       grant_with_carry x_grant (
         .req_i   (req_i[gi]),
         .carry_i (x_carry_w[gi]),
@@ -38,7 +39,8 @@ module static_priority_arbiter
     end
   endgenerate 
 
-  assign grant_o = grant_bcd_w;
+  assign grant_o     = grant_bcd_w;
+  assign grant_vld_o = |grant_w;
 
 endmodule
 

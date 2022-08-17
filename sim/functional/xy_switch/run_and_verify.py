@@ -5,7 +5,7 @@ from utils.logger import *
 from utils.rav import *
 
 def main(tf, ps, synth, port_n, pckt_data_w, fifo_depth_w, row_cord, col_cord,
-             row_addr_w, col_addr_w, log_lvl) -> None:
+             row_addr_w, col_addr_w, arb_type, log_lvl) -> None:
   log = get_logger(__name__, int(log_lvl))
   log.info(f"RUN {time.asctime()}")
   log.info("----------------------------------------------------------------------------------------------------"
@@ -18,7 +18,8 @@ def main(tf, ps, synth, port_n, pckt_data_w, fifo_depth_w, row_cord, col_cord,
                "COL_CORD": col_cord,
                "ROW_ADDR_W": row_addr_w,
                "COL_ADDR_W": col_addr_w,
-               "FIFO_DEPTH_W": fifo_depth_w}
+               "FIFO_DEPTH_W": fifo_depth_w,
+               "ARB_TYPE": arb_type}
 
   run = simulate(log, tf, ps, synth, arguments, tcl_script)
   if run[0]:  # FAILED RUN
@@ -50,6 +51,7 @@ if __name__ == '__main__':
   parser.add_argument('-col_cord', default=1,     help='Cow Coordinate of the NODE(def=1)')
   parser.add_argument('-row_addr_w', default=4,   help='Width of Row Address(def=2)')
   parser.add_argument('-col_addr_w', default=4,   help='Width of Col Address(def=2)')
+  parser.add_argument('-arb_type', default=0,   help='Arbitration Type (0-matrix, 1-rr, 2-static')
 
   parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
 

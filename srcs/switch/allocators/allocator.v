@@ -162,7 +162,7 @@ module allocator #(
       );
     end
     else begin
-      $error("Wrong Arbitration Type, possible options 0,1,2"); 
+      initial $error("Wrong Arbitration Type, possible options 0,1,2"); 
     end
   endgenerate
 

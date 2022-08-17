@@ -15,6 +15,8 @@ VERILOG_SOURCES += $(VER_DIR)/simple_mesh_xy/switch_constants.v
 VERILOG_SOURCES += $(VER_DIR)/simple_mesh_xy/xy_switch.v
 VERILOG_SOURCES += $(VER_DIR)/simple_mesh_xy/control_unit.v
 VERILOG_SOURCES += $(VER_DIR)/arbiters/matrix_arbiter.v
+VERILOG_SOURCES += $(VER_DIR)/arbiters/round_robin.v
+VERILOG_SOURCES += $(VER_DIR)/arbiters/static_priority_arbiter.v
 VERILOG_SOURCES += $(VER_DIR)/crossbars/nxn_single_crossbar.v
 VERILOG_SOURCES += $(VER_DIR)/routers/xy_router.v
 ifeq ($(SYNTH), 1)
@@ -39,6 +41,7 @@ export PACKET_DATA_W     ?= 16
 PCKT_W_calc              =  $(shell expr $(PACKET_COL_ADDR_W) + $(PACKET_ROW_ADDR_W) + $(PACKET_DATA_W) )
 export PACKET_W          ?= $(PCKT_W_calc)
 export IN_FIFO_DEPTH_W   ?= 2
+export ARB_TYPE          ?= 0
 
 COCOTB_HDL_TIMEUNIT      = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ps
@@ -51,6 +54,7 @@ COMPILE_ARGS += -P $(TOPLEVEL).PACKET_COL_ADDR_W=$(PACKET_COL_ADDR_W)
 COMPILE_ARGS += -P $(TOPLEVEL).PACKET_ROW_ADDR_W=$(PACKET_ROW_ADDR_W)
 COMPILE_ARGS += -P $(TOPLEVEL).PACKET_DATA_W=$(PACKET_DATA_W)
 COMPILE_ARGS += -P $(TOPLEVEL).IN_FIFO_DEPTH_W=$(IN_FIFO_DEPTH_W)
+COMPILE_ARGS += -P $(TOPLEVEL).ARB_TYPE=$(ARB_TYPE)
 COMPILE_ARGS += -D SIMULATION=1
 
 include $(shell cocotb-config --makefiles)/Makefile.sim

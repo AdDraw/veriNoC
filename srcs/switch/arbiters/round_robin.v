@@ -17,7 +17,8 @@ module round_robin_arb
     input                      clk_i,
     input                      rst_ni,
     input   [IN_N-1 : 0]       req_i,  // N hot encoding
-    output  [$clog2(IN_N)-1:0] grant_o // BCD encoding
+    output  [$clog2(IN_N)-1:0] grant_o,
+    output                     grant_vld_o
   );
 
   reg [IN_N-1 : 0] priority_robin;
@@ -42,5 +43,6 @@ module round_robin_arb
   end
 
   assign grant_o = grant_bcd_w;
+  assign grant_vld_o = |grant_w;
 
 endmodule

@@ -81,6 +81,7 @@ module xy_switch
     // Wires
     wire [PORT_N -1 : 0]            vld_input_w;
     wire [$clog2(PORT_N) - 1 : 0]   mux_in_sel_w;
+    wire                            mux_in_sel_vld_w;
     wire [$clog2(PORT_N) - 1 : 0]   mux_out_sel_w;
     wire [PCKT_W * PORT_N - 1 : 0]  data_out_w;
     wire [PCKT_W - 1 : 0]           pckt_in_chosen_w;
@@ -134,32 +135,35 @@ module xy_switch
         matrix_arb #(
           .IN_N(PORT_N)
         ) arb (
-          .clk_i    (clk_i),
-          .rst_ni   (rst_ni),
-          .req_i    (vld_input_w),
-          .grant_o  (mux_in_sel_w)
+          .clk_i      (clk_i),
+          .rst_ni     (rst_ni),
+          .req_i      (vld_input_w),
+          .grant_o    (mux_in_sel_w),
+          .grant_vld_o(mux_in_sel_vld_w)
         );
       end
       else if (ARB_TYPE == 1) begin
         round_robin_arb #(
           .IN_N(PORT_N)
         ) arb (
-          .clk_i    (clk_i),
-          .rst_ni   (rst_ni),
-          .req_i    (vld_input_w ),
-          .grant_o  (mux_in_sel_w)
+          .clk_i      (clk_i),
+          .rst_ni     (rst_ni),
+          .req_i      (vld_input_w ),
+          .grant_o    (mux_in_sel_w),
+          .grant_vld_o(mux_in_sel_vld_w)
         );
       end
       else if (ARB_TYPE == 2) begin
         static_priority_arbiter #(
           .IN_N(PORT_N)
         ) arb (
-          .req_i    (vld_input_w ),
-          .grant_o  (mux_in_sel_w)
+          .req_i      (vld_input_w ),
+          .grant_o    (mux_in_sel_w),
+          .grant_vld_o(mux_in_sel_vld_w)
         );
       end
       else begin
-        $error("Wrong Arbitration Type, possible options 0,1,2"); 
+        initial $error("Wrong Arbitration Type, possible options 0,1,2");   
       end
     endgenerate
 
@@ -191,6 +195,7 @@ module xy_switch
         .full_i(nxt_fifo_full_i), // do we have FIFOs that will be full? IF yes this channel is blocked and we cant route the data to it
         .empty_i(empty_w), // look at the input FIFOs and check if any has data to be routed
         .mux_in_sel_i(mux_in_sel_w), // if there is data, pass the correct MUXINSEL value to the input MUX of the crossbar
+        .mux_in_sel_vld_i(mux_in_sel_vld_w),
         .mux_out_sel_i(mux_out_sel_w),
         .rd_en_o(rd_en_w),
         .wr_en_o(wr_en_sw_o),

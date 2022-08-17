@@ -26,7 +26,8 @@ module matrix_arb
     input                     clk_i,
     input                     rst_ni,
     input  [IN_N-1:0]         req_i,
-    output [$clog2(IN_N)-1:0] grant_o
+    output [$clog2(IN_N)-1:0] grant_o,
+    output                     grant_vld_o
   );
 
   // Last granted requested moves to the end of the que
@@ -78,5 +79,6 @@ module matrix_arb
     end
   end
   assign grant_o = grant_bcd_w;
+  assign grant_vld_o = |grant_w;
 
 endmodule // matrix
