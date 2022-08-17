@@ -4,7 +4,9 @@ set std_lib $::env(STD_LIB)
 read_verilog  -defer ../srcs/components/circ_fifo.v
 read_verilog  -defer ../srcs/switch/constants.v
 read_verilog  -defer ../srcs/switch/virtual_channels/virtual_channel.v
-read_verilog  -defer ../srcs/switch/arbiters/matrix_arbiter.v
+read_verilog -sv -defer ../srcs/switch/arbiters/matrix_arbiter.v
+read_verilog -sv -defer ../srcs/switch/arbiters/round_robin.v
+read_verilog -sv -defer ../srcs/switch/arbiters/static_priority_arbiter.v
 read_verilog  -defer ../srcs/switch/routers/xy_router.v
 read_verilog  -defer ../srcs/switch/crossbars/nxn_parrallel_crossbar.v
 read_verilog  -defer ../srcs/switch/allocators/allocator.v
@@ -20,6 +22,7 @@ set params(2) NODE_RADIX
 set params(3) CHANNEL_W
 set params(4) FLIT_ID_W
 set params(5) NODE_BUFFER_DEPTH_W
+set params(6) ARB_TYPE
 
 set values(0) 3
 set values(1) 3
@@ -27,6 +30,7 @@ set values(2) 5
 set values(3) 10
 set values(4) 2
 set values(5) 2
+set values(6) 0
 
 chparam -list
 log "Parameters and their values:(after they were overriden with arguments)"
@@ -56,6 +60,7 @@ read_verilog  -DYS_MESH_WH_XY_TOP=1 \
               -DYS_$params(3)=$values(3) \
               -DYS_$params(4)=$values(4) \
               -DYS_$params(5)=$values(5) \
+              -DYS_$params(6)=$values(6) \
               ../srcs/noc/mesh_wormhole_xy_noc.v
 
 echo off

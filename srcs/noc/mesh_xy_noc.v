@@ -31,12 +31,14 @@ module mesh_xy_noc
       parameter ROW_N         = `YS_ROW_N,
       parameter COL_M         = `YS_COL_M,
       parameter PCKT_DATA_W   = `YS_PCKT_DATA_W,
-      parameter FIFO_DEPTH_W  = `YS_FIFO_DEPTH_W
+      parameter FIFO_DEPTH_W  = `YS_FIFO_DEPTH_W,
+      parameter ARB_TYPE      = `YS_ARB_TYPE,
       `else
       parameter ROW_N         = 3,
       parameter COL_M         = 3,
       parameter PCKT_DATA_W   = 8,
-      parameter FIFO_DEPTH_W  = 3
+      parameter FIFO_DEPTH_W  = 3,
+      parameter ARB_TYPE      = 0
       `endif
       )
     (
@@ -130,7 +132,8 @@ module mesh_xy_noc
             .COL_ADDR_W($clog2(COL_M)),
             .ROW_ADDR_W($clog2(ROW_N)),
             .PCKT_DATA_W(PCKT_DATA_W),
-            .PCKT_W(`PACKET_W)
+            .PCKT_W(`PACKET_W),
+            .ARB_TYPE(ARB_TYPE)
             )
           x_sw
           (

@@ -25,7 +25,8 @@ module mesh_wormhole_node #(
     parameter COL_ADDR_W      = `YS_COL_ADDR_W,
     parameter ROW_CORD        = `YS_ROW_CORD,
     parameter COL_CORD        = `YS_COL_CORD,
-    parameter BUFFER_DEPTH_W  = `YS_BUFFER_DEPTH_W
+    parameter BUFFER_DEPTH_W  = `YS_BUFFER_DEPTH_W,
+    parameter ARB_TYPE        = `YS_ARB_TYPE
   `else
     parameter IN_N            = 5,
     parameter OUT_M           = 5,
@@ -35,7 +36,8 @@ module mesh_wormhole_node #(
     parameter COL_ADDR_W      = 2,
     parameter ROW_CORD        = 1,
     parameter COL_CORD        = 1,
-    parameter BUFFER_DEPTH_W  = 2
+    parameter BUFFER_DEPTH_W  = 2,
+    parameter ARB_TYPE        = 0
   `endif
   ) (
     input clk_i,
@@ -120,7 +122,8 @@ module mesh_wormhole_node #(
         .IN_N(IN_N),
         .OUT_M(OUT_M),
         .FLIT_ID_W(FLIT_ID_W),
-        .OUT_CHAN_ID(gi)
+        .OUT_CHAN_ID(gi),
+        .ARB_TYPE(ARB_TYPE)
         )
       x_alloc (
         .clk_i(clk_i),

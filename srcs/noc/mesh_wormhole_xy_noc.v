@@ -32,14 +32,16 @@ module mesh_wormhole_xy_noc#(
     parameter NODE_RADIX          = `YS_NODE_RADIX, // CONSTANT
     parameter CHANNEL_W           = `YS_CHANNEL_W,
     parameter FLIT_ID_W           = `YS_FLIT_ID_W,
-    parameter NODE_BUFFER_DEPTH_W = `YS_NODE_BUFFER_DEPTH_W
+    parameter NODE_BUFFER_DEPTH_W = `YS_NODE_BUFFER_DEPTH_W,
+    parameter ARB_TYPE            = `YS_ARB_TYPE
   `else
     parameter ROW_N               = 3,
     parameter COL_M               = 3,
     parameter NODE_RADIX          = 5, // CONSTANT
     parameter CHANNEL_W           = 8,
     parameter FLIT_ID_W           = 2, // HEAD, BODY, TAIL, NULL(not defined), CONSTANT
-    parameter NODE_BUFFER_DEPTH_W = 4
+    parameter NODE_BUFFER_DEPTH_W = 4,
+    parameter ARB_TYPE            = 0
   `endif
   ) (
     // GLOBAL
@@ -110,7 +112,8 @@ module mesh_wormhole_xy_noc#(
           .COL_ADDR_W     ($clog2(COL_M)),
           .ROW_CORD       (row_idx),
           .COL_CORD       (col_idx),
-          .BUFFER_DEPTH_W (NODE_BUFFER_DEPTH_W)
+          .BUFFER_DEPTH_W (NODE_BUFFER_DEPTH_W),
+          .ARB_TYPE       (ARB_TYPE)
           )
         x_node (
           .clk_i            (clk_i),

@@ -1,7 +1,7 @@
 yosys -import
 set std_lib $::env(STD_LIB)
 
-read_verilog -defer ../srcs/switch/constants.v
+read_verilog -sv -defer ../srcs/switch/constants.v
 
 set top_module matrix_arb
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
@@ -22,13 +22,13 @@ for { set index 0 }  { $index < [array size params] }  { incr index } {
 # IF SHOW_PARAMS is set to 1, it only specifies what the TOPMODULE parameters are
 # it also shows params and values lists of parameters that are modifiable and their default values
 if {$::env(SHOW_PARAMS) == 1} {
-  read_verilog ../srcs/switch/arbiters/matrix_arbiter.v
+  read_verilog -sv ../srcs/switch/arbiters/matrix_arbiter.v
   log "Parameters from the top-module"
   chparam -list
   exit 0
 }
 
-read_verilog ../srcs/switch/arbiters/matrix_arbiter.v
+read_verilog -sv ../srcs/switch/arbiters/matrix_arbiter.v
 
 echo off
 hierarchy -top $top_module -keep_portwidths -check

@@ -22,13 +22,13 @@ for { set index 0 }  { $index < [array size params] }  { incr index } {
 # IF SHOW_PARAMS is set to 1, it only specifies what the TOPMODULE parameters are
 # it also shows params and values lists of parameters that are modifiable and their default values
 if {$::env(SHOW_PARAMS) == 1} {
-  read_verilog ../srcs/switch/arbiters/static_priority_arbiter.v
+  read_verilog -sv ../srcs/switch/arbiters/static_priority_arbiter.v
   log "Parameters from the top-module"
   chparam -list
   exit 0
 }
 
-read_verilog  -DYS_STATIC_PRIORITY_ARBITER_TOP=1 \
+read_verilog -sv -DYS_STATIC_PRIORITY_ARBITER_TOP=1 \
               -DYS_$params(0)=$values(0) \
               ../srcs/switch/arbiters/static_priority_arbiter.v
 
