@@ -6,7 +6,7 @@ from utils.rav import simulate
 
 
 def main(tf, ps, synth, in_n, out_m, flit_data_w, flit_id_w, row_cord,
-         col_cord, row_addr_w, col_addr_w, buffer_depth_w, log_lvl) -> None:
+         col_cord, row_addr_w, col_addr_w, buffer_depth_w, arb_type, log_lvl) -> None:
     log = get_logger(__name__, int(log_lvl))
     log.info(f"RUN {time.asctime()}")
     log.info("----------------------------------------------------------------------------------------------------"
@@ -21,7 +21,8 @@ def main(tf, ps, synth, in_n, out_m, flit_data_w, flit_id_w, row_cord,
                  "COL_CORD": col_cord,
                  "ROW_ADDR_W": row_addr_w,
                  "COL_ADDR_W": col_addr_w,
-                 "BUFFER_DEPTH_W": buffer_depth_w}
+                 "BUFFER_DEPTH_W": buffer_depth_w,
+                 "ARB_TYPE": arb_type}
 
     run = simulate(log, tf, ps, synth, arguments, tcl_script)
     if run[0]:  # FAILED RUN
@@ -54,6 +55,7 @@ if __name__ == '__main__':
     parser.add_argument('-row_addr_w', default=2,    help='Width of Row Address(def=2)')
     parser.add_argument('-col_addr_w', default=2,    help='Width of Col Address(def=2)')
     parser.add_argument('-buffer_depth_w', default=2,    help='Buffer Depth Width(def=2)')
+    parser.add_argument('-arb_type', default=0, help="Arbitration Type(0-matrix, 1-round robin, 2-static")
     parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
 
     args = parser.parse_args()

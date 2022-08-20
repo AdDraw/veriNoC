@@ -8,7 +8,8 @@ module tb
     parameter COL_M = 3,
     parameter FIFO_DEPTH_W = 3,
     parameter PCKT_DATA_W = 8,
-    parameter CLK_PERIOD = 10
+    parameter CLK_PERIOD = 10,
+    parameter ARB_TYPE = 0
     )
   (
     // GLOBAL
@@ -34,6 +35,7 @@ module tb
       $display("COL_M %d", COL_M);
       $display("FIFO_DEPTH_W %d", FIFO_DEPTH_W);
       $display("PCKT_DATA_W %d", PCKT_DATA_W);
+      $display("ARB_TYPE %d", ARB_TYPE);
     end
 
     reg clk_i = 1'b0;
@@ -57,7 +59,8 @@ module tb
       .ROW_N(ROW_N),
       .COL_M(COL_M),
       .FIFO_DEPTH_W(FIFO_DEPTH_W),
-      .PCKT_DATA_W(PCKT_DATA_W)
+      .PCKT_DATA_W(PCKT_DATA_W),
+      .ARB_TYPE(ARB_TYPE)
       )
     inst_mesh_xy_noc
     (

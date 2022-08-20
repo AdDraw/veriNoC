@@ -98,6 +98,7 @@ module allocator #(
   // WIRES
   wire [IN_N-1:0]           req_w;
   wire [$clog2(OUT_M)-1:0]  grant_w;
+  wire                      grant_vld_w;
   wire [FLIT_ID_W-1:0]      flit_id_w [IN_N-1:0];
   wire [IN_N-1:0]           rtr_res_w;            // transformed to 1bit ENABLE signals
   genvar gi;
@@ -123,10 +124,16 @@ module allocator #(
         end
       end
       else begin
-        if (|req_w) begin
-          chan_alloc           <= 0;
-          chan_alloc[grant_w]  <= 1'b1;
-          sel                  <= grant_w;
+        if (grant_vld_w) begin
+          if (|req_w ) begin
+            chan_alloc           <= 0;
+            chan_alloc[grant_w]  <= 1'b1;
+            sel                  <= grant_w;
+          end
+        end
+        else begin
+          chan_alloc <= 0;
+          sel        <= 0;
         end
       end
     end
@@ -137,28 +144,31 @@ module allocator #(
       matrix_arb #(
         .IN_N(IN_N)
       ) arb (
-        .clk_i    (clk_i),
-        .rst_ni   (rst_ni),
-        .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
-        .grant_o  (grant_w)
+        .clk_i       (clk_i),
+        .rst_ni      (rst_ni),
+        .req_i       ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
+        .grant_o     (grant_w),
+        .grant_vld_o (grant_vld_w)
       );
     end
     else if (ARB_TYPE == 1) begin
       round_robin_arb #(
         .IN_N(IN_N)
       ) arb (
-        .clk_i    (clk_i),
-        .rst_ni   (rst_ni),
-        .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
-        .grant_o  (grant_w)
+        .clk_i       (clk_i),
+        .rst_ni      (rst_ni),
+        .req_i       ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
+        .grant_o     (grant_w),
+        .grant_vld_o (grant_vld_w)
       );
     end
     else if (ARB_TYPE == 2) begin
       static_priority_arbiter #(
         .IN_N(IN_N)
       ) arb (
-        .req_i    ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
-        .grant_o  (grant_w)
+        .req_i       ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
+        .grant_o     (grant_w),
+        .grant_vld_o (grant_vld_w)
       );
     end
     else begin

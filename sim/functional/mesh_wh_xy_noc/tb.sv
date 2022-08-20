@@ -9,6 +9,7 @@ module tb
     parameter FLIT_ID_W = 2,
     parameter NODE_BUFFER_DEPTH_W = 3,
     parameter CHANNEL_W = 10,
+    parameter ARB_TYPE = 0,
     parameter CLK_PERIOD = 10
     )
   (
@@ -33,6 +34,7 @@ module tb
       $display("COL_M %d", COL_M);
       $display("NODE_BUFFER_DEPTH_W %d", NODE_BUFFER_DEPTH_W);
       $display("CHANNEL_W %d", CHANNEL_W);
+      $display("ARB_TYPE %d", ARB_TYPE);
     end
 
     reg clk_i = 1'b0;
@@ -57,7 +59,8 @@ module tb
       .FLIT_ID_W(FLIT_ID_W),
       .NODE_RADIX(NODE_RADIX),
       .CHANNEL_W(CHANNEL_W),
-      .NODE_BUFFER_DEPTH_W(NODE_BUFFER_DEPTH_W)
+      .NODE_BUFFER_DEPTH_W(NODE_BUFFER_DEPTH_W),
+      .ARB_TYPE(ARB_TYPE)
       )
     x_mesh_wh_xy_noc (
       .clk_i(clk_i),
