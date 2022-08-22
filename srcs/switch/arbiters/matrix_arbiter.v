@@ -72,10 +72,11 @@ module matrix_arb
   endgenerate
 
   // from ONEHOT to DECIMAL
+  integer k;
   always @(*) begin
     grant_bcd_w <= 0;
-    for (integer i = 0; i < IN_N; i = i + 1) begin
-      if (grant_w[i]) grant_bcd_w <= i;
+    for (k = 0; k < IN_N; k = k + 1) begin
+      if (grant_w[k]) grant_bcd_w <= k;
     end
   end
   assign grant_o = grant_bcd_w;
