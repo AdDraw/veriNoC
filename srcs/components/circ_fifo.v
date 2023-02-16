@@ -26,7 +26,9 @@ module circ_fifo
     input   [DATA_W-1 : 0] data_i,
     output  [DATA_W-1 : 0] data_o,
     output  full_o,
-    output  empty_o
+    output  empty_o,
+    output  overflow_o,
+    output  underflow_o
     );
     localparam FIFO_DEPTH = 2**FIFO_DEPTH_W;
 
@@ -102,6 +104,8 @@ module circ_fifo
   assign data_o       = data_v;
   assign full_o       = full_w;
   assign empty_o      = empty_w;
+  assign underflow_o  = (empty_w == 1'b1) ? underflow_v : 1'b0;
+  assign overflow_o   = (full_w == 1'b1)  ? overflow_v  : 1'b0;
 
   `ifdef COCOTB_SIM
   initial begin
