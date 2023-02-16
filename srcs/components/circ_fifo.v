@@ -1,5 +1,9 @@
 /*
   Circular FIFO made with ZipCPU FIFO Guide
+
+  - Synchronous Resets
+  - utilizes N-1 spaces
+
 */
 `timescale 1ns / 1ps
 
@@ -22,9 +26,7 @@ module circ_fifo
     input   [DATA_W-1 : 0] data_i,
     output  [DATA_W-1 : 0] data_o,
     output  full_o,
-    output  empty_o,
-    output  underflow_o,
-    output  overflow_o
+    output  empty_o
     );
     localparam FIFO_DEPTH = 2**FIFO_DEPTH_W;
 
@@ -48,11 +50,8 @@ module circ_fifo
   assign empty_w  = (wr_ptr_v == rd_ptr_v)        ? 1'b1 : 1'b0;
 
   // FIFO WRITE
-  always @ ( posedge clk_i or negedge rst_ni ) begin
+  always @ ( posedge clk_i) begin
     if (!rst_ni) begin
-  		for (i=0; i < FIFO_DEPTH; i=i+1) begin
-  			fifo_v[i] = 0;
-  		end
       wr_ptr_v    <= 0;
       overflow_v  <= 1'b0;
     end
@@ -75,7 +74,7 @@ module circ_fifo
   end
 
   //FIFO READ
-  always @ ( posedge clk_i or negedge rst_ni ) begin
+  always @ ( posedge clk_i) begin
     if (!rst_ni) begin
       data_v      <= 0;
       rd_ptr_v    <= 0;
@@ -103,8 +102,14 @@ module circ_fifo
   assign data_o       = data_v;
   assign full_o       = full_w;
   assign empty_o      = empty_w;
-  assign underflow_o  = (empty_w == 1'b1) ? underflow_v : 1'b0;
-  assign overflow_o   = (full_w == 1'b1)  ? overflow_v  : 1'b0;
+
+  `ifdef COCOTB_SIM
+  initial begin
+    $dumpfile ("dump.vcd");
+    $dumpvars (0, circ_fifo);
+    #1;
+  end
+  `endif
 
   `ifdef FORMAL
     initial assume(!rst_ni);
