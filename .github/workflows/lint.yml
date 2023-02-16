@@ -1,0 +1,11 @@
+name: Lint
+on:
+  pull_request:
+    paths:
+      - '**.sv'
+      - '**.v'
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: AdDraw/verible-linter-action@main
