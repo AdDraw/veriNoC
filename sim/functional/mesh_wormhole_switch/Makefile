@@ -1,31 +1,26 @@
-export PYTHON_BIN=/usr/bin/python3
-export SHELL=/bin/bash
-
-export TOPLEVEL_LANG ?= verilog
-SRC_DIR=$(shell git rev-parse --show-toplevel)/srcs
+include ../common.mk
 
 # files
-VERILOG_SOURCES = $(SRC_DIR)/switch/constants.v
-VERILOG_SOURCES += $(SRC_DIR)/components/circ_fifo.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/matrix_arbiter.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/round_robin.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/static_priority_arbiter.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/allocators/allocator.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/routers/xy_router.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/virtual_channels/virtual_channel.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/crossbars/nxn_parrallel_crossbar.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/mesh_wormhole/mesh_wormhole_node.v
+VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
+VERILOG_SOURCES += $(SRCS_DIR)/components/circ_fifo.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/arbiters/matrix_arbiter.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/arbiters/round_robin.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/arbiters/static_priority_arbiter.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/allocators/allocator.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/routers/xy_router.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/virtual_channels/virtual_channel.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/crossbars/nxn_parrallel_crossbar.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/mesh_wormhole/mesh_wormhole_node.v
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES = $(SRC_DIR)/switch/constants.v
-  VERILOG_SOURCES += $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
-  VERILOG_SOURCES += $(SRC_DIR)/switch/mesh_wormhole/mesh_wormhole_node_synth.v
+  VERILOG_SOURCES += $(CMOS_CELLS)
+  VERILOG_SOURCES += $(SYNTH_DIR)/mesh_wormhole_node-netlist.v
 endif
 VERILOG_SOURCES += ./tb.sv
 # Specifies essentials of the DUT and the cocotb TB
 TOPLEVEL := tb
 MODULE   := test
-SIM      ?= icarus
 
+export CLK_PERIOD     ?= 10
 # Depending on the Simulator we want to choose different sets of arguments to pass
 export IN_N           ?= 5 # 1
 export OUT_M          ?= 5 # 2
@@ -37,8 +32,6 @@ export FLIT_ID_W      ?= 2 # 7
 export FLIT_DATA_W    ?= 8 # 8
 export BUFFER_DEPTH_W ?= 2 # 9
 export ARB_TYPE       ?= 0 # 10
-
-export CLK_PERIOD     ?= 10
 
 ifeq ($(SIM), icarus)
   COMPILE_ARGS += -P $(TOPLEVEL).IN_N=$(IN_N)                      # 1

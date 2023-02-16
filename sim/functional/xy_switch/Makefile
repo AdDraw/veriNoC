@@ -1,8 +1,5 @@
-export PYTHON_BIN=/usr/bin/python3
-export SHELL=/bin/bash
-
-export TOPLEVEL_LANG ?= verilog
-VER_DIR=$(shell git rev-parse --show-toplevel)/srcs/switch
+include ../common.mk
+VER_DIR=$(SRCS_DIR)/switch
 
 export DEBUG_ATTACH ?=0
 export TESTFACTORY ?=0
@@ -20,17 +17,14 @@ VERILOG_SOURCES += $(VER_DIR)/arbiters/static_priority_arbiter.v
 VERILOG_SOURCES += $(VER_DIR)/crossbars/nxn_single_crossbar.v
 VERILOG_SOURCES += $(VER_DIR)/routers/xy_router.v
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES = $(VER_DIR)/constants.v
-  VERILOG_SOURCES += $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
-  VERILOG_SOURCES += $(VER_DIR)/simple_mesh_xy/xy_synth.v
+  VERILOG_SOURCES += $(CMOS_CELLS)
+  VERILOG_SOURCES += $(SYNTH_DIR)/xy_router-netlist.v
 endif
-
 VERILOG_SOURCES += ./tb.v
 
 # Specifies essentials of the DUT and the cocotb TB
 TOPLEVEL := tb
 MODULE   := test
-SIM      ?= icarus
 
 export PORT_N            ?= 5
 export COL_CORD          ?= 1
@@ -43,8 +37,6 @@ export PACKET_W          ?= $(PCKT_W_calc)
 export IN_FIFO_DEPTH_W   ?= 2
 export ARB_TYPE          ?= 0
 
-COCOTB_HDL_TIMEUNIT      = 1ns
-COCOTB_HDL_TIMEPRECISION = 1ps
 #COMPILE_ARGS+= -m /usr/local/libexec/covered.vpi covered_vpi.v
 COMPILE_ARGS += -P $(TOPLEVEL).PORT_N=$(PORT_N)
 COMPILE_ARGS += -P $(TOPLEVEL).COL_CORD=$(COL_CORD)

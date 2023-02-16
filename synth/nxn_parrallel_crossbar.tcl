@@ -20,6 +20,3 @@ set files {
 
 # Executes the basic backend for synth + opt + report
 source common.tcl
-
-yosys -import
-set std_lib $::env(STD_LIB)
