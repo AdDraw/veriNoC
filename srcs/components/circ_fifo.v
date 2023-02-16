@@ -99,8 +99,22 @@ module circ_fifo
   assign data_o       = data_v;
   assign full_o       = full_w;
   assign empty_o      = empty_w;
-  assign underflow_o  = (empty_w == 1'b1) ? underflow_v : 1'b0;
-  assign overflow_o   = (full_w == 1'b1)  ? overflow_v  : 1'b0;
+
+  `ifdef COCOTB_SIM
+  initial begin
+    $dumpfile ("dump.vcd");
+    $dumpvars (0, circ_fifo);
+    #1;
+  end
+  `endif
+
+  `ifdef COCOTB_SIM
+  initial begin
+    $dumpfile ("dump.vcd");
+    $dumpvars (0, circ_fifo);
+    #1;
+  end
+  `endif
 
   `ifdef COCOTB_SIM
   initial begin
