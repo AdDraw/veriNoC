@@ -56,7 +56,7 @@ class SWTB:
         self.sw_i_mon = SWIMon(dut, "", dut.clk_i, self.config, log_lvl, callback=self.mon_i_callback)
         self.sw_o_mon = SWOMon(dut, "", dut.clk_i, self.config, log_lvl, callback=self.mon_o_callback)
 
-    def setup_dut(self, cycle_n):
+    def setup_dut(self):
         cocotb.fork(self.reset_hdl())
 
     def reset_swtb(self):
@@ -92,9 +92,6 @@ class SWTB:
             full_input.append(record)
         full_input = sorted(full_input, key=lambda k: k['id'])
         self.log.debug(f"Lenght of Full {full_input.__len__()}")
-
-        # for rid, record in enumerate(full_input):
-        #     self.log.info(f"{rid}. full {record}")
 
         sorted_seen = sorted(self.seen_out, key=lambda k: k['id'])
         self.log.info(f"Lenght of received packets {sorted_seen.__len__()}")
@@ -144,7 +141,7 @@ class SWTB:
 
 
 @cocotb.test()
-async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fifo_rand=True, cycles=100000):
+async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8):
     cocotb.log.info("----------------------------------------------------------------------------- Simulation Started!")
 
     if int(os.environ['DEBUG_ATTACH']) > 0:
@@ -152,7 +149,7 @@ async def test_rand_single_input(dut, log_lvl=INFO, transaction_w=8, with_nxt_fi
         pydevd_pycharm.settrace('localhost', port=9090, stdoutToServer=True, stderrToServer=True)
 
     swtb = SWTB(dut.xy_switch_inst, log_lvl)
-    swtb.setup_dut(cycle_n=cycles)
+    swtb.setup_dut()
 
     # Clear FIFO inputs
     swtb.reset_swtb()

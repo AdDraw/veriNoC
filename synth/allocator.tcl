@@ -2,7 +2,9 @@ yosys -import
 set std_lib $::env(STD_LIB)
 
 read_verilog -defer ../srcs/switch/constants.v
-read_verilog -defer ../srcs/switch/arbiters/matrix_arbiter.v
+read_verilog -sv -defer ../srcs/switch/arbiters/matrix_arbiter.v
+read_verilog -sv -defer ../srcs/switch/arbiters/round_robin.v
+read_verilog -sv -defer ../srcs/switch/arbiters/static_priority_arbiter.v
 
 set top_module allocator
 # Set parameter values (values taken from EnvVars set by yosys_wrapper.sh)
@@ -10,12 +12,16 @@ set params(0) IN_N
 set params(1) OUT_M
 set params(2) FLIT_ID_W
 set params(3) OUT_CHAN_ID
+set params(4) ARB_TYPE
 
 #default values for synth
 set values(0) 5
 set values(1) 5
 set values(2) 2
 set values(3) 1
+# ARB TYPE 
+# 0 - matrix, 1 round robin 2 static
+set values(4) 1
 
 chparam -list
 log "Parameters and their values:"
@@ -35,11 +41,12 @@ if {$::env(SHOW_PARAMS) == 1} {
   exit 0
 }
 
-read_verilog  -DYS_ALLOCATOR_TOP=1 \
+read_verilog -sv -DYS_ALLOCATOR_TOP=1 \
               -DYS_$params(0)=$values(0) \
               -DYS_$params(1)=$values(1) \
               -DYS_$params(2)=$values(2) \
               -DYS_$params(3)=$values(3) \
+              -DYS_$params(4)=$values(4) \
               ../srcs/switch/allocators/allocator.v
 
 echo off

@@ -4,8 +4,9 @@ set std_lib $::env(STD_LIB)
 read_verilog -defer ../srcs/switch/constants.v
 read_verilog -defer ../srcs/components/circ_fifo.v
 read_verilog -defer ../srcs/switch/simple_mesh_xy/switch_constants.v
-read_verilog -defer ../srcs/switch/arbiters/static_priority_arbiter.v
-read_verilog -defer ../srcs/switch/arbiters/matrix_arbiter.v
+read_verilog -sv -defer ../srcs/switch/arbiters/static_priority_arbiter.v
+read_verilog -sv -defer ../srcs/switch/arbiters/round_robin.v
+read_verilog -sv -defer ../srcs/switch/arbiters/matrix_arbiter.v
 read_verilog -defer ../srcs/switch/routers/xy_router.v
 read_verilog -defer ../srcs/switch/crossbars/nxn_single_crossbar.v
 read_verilog -defer ../srcs/switch/simple_mesh_xy/control_unit.v
@@ -19,12 +20,14 @@ set params(0) ROW_N
 set params(1) COL_M
 set params(2) PCKT_DATA_W
 set params(3) FIFO_DEPTH_W
+set params(4) ARB_TYPE
 
 #default values for synth
 set values(0) 4
 set values(1) 4
 set values(2) 8
 set values(3) 4
+set values(4) 0
 
 chparam -list
 log "Parameters and their values:(after they were overriden with arguments)"
@@ -52,6 +55,7 @@ read_verilog  -DYS_MESH_XY_TOP=1 \
               -DYS_$params(1)=$values(1) \
               -DYS_$params(2)=$values(2) \
               -DYS_$params(3)=$values(3) \
+              -DYS_$params(4)=$values(4) \
               ../srcs/noc/mesh_xy_noc.v
 echo off
 hierarchy -top $top_module -keep_portwidths -check

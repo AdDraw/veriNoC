@@ -22,15 +22,15 @@ module control_unit
 
     // Router Input
     input [$clog2(PORT_N)-1 : 0] mux_in_sel_i,
+    input                        mux_in_sel_vld_i,
     input [$clog2(PORT_N)-1 : 0] mux_out_sel_i
-
     );
 
     reg   [PORT_N-1 : 0]    vld_input_v;
     integer i;
 
     wire  [PORT_N-1 : 0]    rd_en_w = ~( empty_i | vld_input_v );
-    wire  [PORT_N - 1 : 0]  wr_en_w = (|vld_input_v) ? (1 << mux_out_sel_i) & (~full_i) : 0;
+    wire  [PORT_N - 1 : 0]  wr_en_w = (|vld_input_v & mux_in_sel_vld_i) ? (1 << mux_out_sel_i) & (~full_i) : 0;
 
     // Read while HOT
     // rd_en control

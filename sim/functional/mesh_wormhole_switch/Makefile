@@ -8,6 +8,8 @@ SRC_DIR=$(shell git rev-parse --show-toplevel)/srcs
 VERILOG_SOURCES = $(SRC_DIR)/switch/constants.v
 VERILOG_SOURCES += $(SRC_DIR)/components/circ_fifo.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/matrix_arbiter.v
+VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/round_robin.v
+VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/static_priority_arbiter.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/allocators/allocator.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/routers/xy_router.v
 VERILOG_SOURCES += $(SRC_DIR)/switch/virtual_channels/virtual_channel.v
@@ -34,6 +36,7 @@ export ROW_ADDR_W     ?= 2 # 6
 export FLIT_ID_W      ?= 2 # 7
 export FLIT_DATA_W    ?= 8 # 8
 export BUFFER_DEPTH_W ?= 2 # 9
+export ARB_TYPE       ?= 0 # 10
 
 export CLK_PERIOD     ?= 10
 
@@ -47,6 +50,7 @@ ifeq ($(SIM), icarus)
   COMPILE_ARGS += -P $(TOPLEVEL).COL_ADDR_W=$(COL_ADDR_W)          # 7
   COMPILE_ARGS += -P $(TOPLEVEL).COL_CORD=$(COL_CORD)              # 8
   COMPILE_ARGS += -P $(TOPLEVEL).BUFFER_DEPTH_W=$(BUFFER_DEPTH_W)  # 9
+  COMPILE_ARGS += -P $(TOPLEVEL).ARB_TYPE=$(ARB_TYPE)              # 10
   COMPILE_ARGS += -P $(TOPLEVEL).CLK_PERIOD=$(CLK_PERIOD)
 endif
 

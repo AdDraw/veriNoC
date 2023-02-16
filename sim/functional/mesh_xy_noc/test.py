@@ -60,6 +60,7 @@ class NocTB:
             "fifo_depth_w": int(os.environ["FIFO_DEPTH_W"]),
             "col_addr_w": ceil(log(int(os.environ["COL_M"]), 2)),
             "row_addr_w": ceil(log(int(os.environ["ROW_N"]), 2)),
+            "arb_type": ceil(int(os.environ["ARB_TYPE"])),
             "clk_period": int(os.environ["CLK_PERIOD"])
         }
 

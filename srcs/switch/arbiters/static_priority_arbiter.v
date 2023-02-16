@@ -5,25 +5,56 @@
   This in turn allows to choose which input has priority in the case when inputs
   are competing for the same channel and other arbitration doesn't provide a
   clear result.
+  req_i LSB is at the lowest priority.
+  req_i MSB is at the highest priority.
 */
 `timescale 1ns / 1ps
 module static_priority_arbiter
-# (
-    parameter IN_N = 5 // this should be 5 right now
-    )
-  (
-    input   [IN_N - 1 : 0]     vld_input_i,
-    output  [$clog2(IN_N)-1:0] arb_res_o
-    );
-    reg [$clog2(IN_N)-1:0] arb_res_v;
-    always @(*)
-    begin
-      if      (vld_input_i[4])  arb_res_v = 4;
-      else if (vld_input_i[3])  arb_res_v = 3;
-      else if (vld_input_i[2])  arb_res_v = 2;
-      else if (vld_input_i[1])  arb_res_v = 1;
-      else if (vld_input_i[0])  arb_res_v = 0;
-      else                      arb_res_v = 0;
+  #(
+    parameter IN_N = 5
+  ) (
+    input   [IN_N - 1 : 0]     req_i,
+    output  [$clog2(IN_N)-1:0] grant_o,
+    output                     grant_vld_o
+  );
+
+  wire [IN_N-1 : 0]      grant_w;
+  reg [$clog2(IN_N)-1:0] grant_bcd_w;
+  always @(*) begin
+    grant_bcd_w <= 0;
+    for (integer i = 0; i < IN_N; i = i + 1) begin
+      if (grant_w[i]) grant_bcd_w <= i;
     end
-    assign arb_res_o = arb_res_v;
+  end
+
+  wire [IN_N : 0] x_carry_w;
+  assign x_carry_w[0] = 0; 
+  genvar gi;
+  generate
+    for ( gi = 0; gi < IN_N; gi = gi + 1) begin
+      grant_with_carry x_grant (
+        .req_i   (req_i[IN_N-1-gi]),
+        .carry_i (x_carry_w[gi]),
+        .carry_o (x_carry_w[gi+1]),
+        .grant_o (grant_w[IN_N-1-gi])
+      );
+    end
+  endgenerate 
+
+  assign grant_o     = grant_bcd_w;
+  assign grant_vld_o = |grant_w;
+
+endmodule
+
+module grant_with_carry
+(
+  input req_i,
+  input carry_i,
+  output carry_o,
+  output grant_o
+);
+
+  assign grant_o = ~carry_i & req_i;
+  assign carry_o = carry_i | req_i;
+
 endmodule

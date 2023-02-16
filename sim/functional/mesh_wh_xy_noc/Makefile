@@ -17,6 +17,8 @@ LOG_DEBUG?=0
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/constants.v
 VERILOG_SOURCES += $(COMPONENT_VER_DIR)/circ_fifo.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/matrix_arbiter.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/round_robin.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/static_priority_arbiter.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/crossbars/nxn_parrallel_crossbar.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/routers/xy_router.v
 VERILOG_SOURCES += $(SWITCH_VER_DIR)/virtual_channels/virtual_channel.v
@@ -41,6 +43,7 @@ export CHANNEL_W            ?= 8
 export FLIT_ID_W            ?= 2
 export NODE_RADIX           ?= 5
 export NODE_BUFFER_DEPTH_W  ?= 2
+export ARB_TYPE             ?= 0
 export CLK_PERIOD           ?= 10
 
 COCOTB_HDL_TIMEUNIT       = 1ns
@@ -53,6 +56,7 @@ COMPILE_ARGS += -P $(TOPLEVEL).FLIT_ID_W=$(FLIT_ID_W)
 COMPILE_ARGS += -P $(TOPLEVEL).NODE_RADIX=$(NODE_RADIX)
 COMPILE_ARGS += -P $(TOPLEVEL).CHANNEL_W=$(CHANNEL_W)
 COMPILE_ARGS += -P $(TOPLEVEL).NODE_BUFFER_DEPTH_W=$(NODE_BUFFER_DEPTH_W)
+COMPILE_ARGS += -P $(TOPLEVEL).ARB_TYPE=$(ARB_TYPE)
 COMPILE_ARGS += -P $(TOPLEVEL).CLK_PERIOD=$(CLK_PERIOD)
 COMPILE_ARGS += -D SIMULATION=1
 ifeq ($(LOG_DEBUG), 1)

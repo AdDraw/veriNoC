@@ -4,7 +4,7 @@ import argparse
 from utils.rav import *
 
 
-def main(tf, ps, synth, row_n, col_m, ff_depth, pckt_w, regression, log_lvl) -> None:
+def main(tf, ps, synth, row_n, col_m, ff_depth, pckt_w, arb_type, regression, log_lvl) -> None:
   log = get_logger(__name__, int(log_lvl))
   log.info(f"RUN {time.asctime()}")
 
@@ -12,7 +12,8 @@ def main(tf, ps, synth, row_n, col_m, ff_depth, pckt_w, regression, log_lvl) -> 
   arguments = {"ROW_N": row_n,
                "COL_M": col_m,
                "FIFO_DEPTH_W": ff_depth,
-               "PCKT_DATA_W": pckt_w}
+               "PCKT_DATA_W": pckt_w,
+               "ARB_TYPE": arb_type}
 
   if regression:
     runs = []
@@ -72,6 +73,7 @@ if __name__ == '__main__':
   parser.add_argument('-col_m', default=3, help='COL_M parameter')
   parser.add_argument('-ff_depth', default=2, help='FIFO_DEPTH_W parameter')
   parser.add_argument('-pckt_w', default=15, help='PCKT_DATA_W parameter')
+  parser.add_argument('-arb_type', default=0, help="Arbitration Type(0-matrix, 1-round robin, 2-static")
   parser.add_argument('-regression', default=0, help="IF '1' RUNS NOC simulations from 2x2 to 4x4"
                                                      " to check size problems")
   parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
@@ -80,10 +82,10 @@ if __name__ == '__main__':
 
   if args.ps:
     metrics_filename = f"mesh_noc_xy_postsynth_{args.row_n}_{args.col_m}" \
-                       f"_{args.ff_depth}_{args.pckt_w}.json"
+                       f"_{args.ff_depth}_{args.pckt_w}_arb{args.arb_type}.json"
   else:
     metrics_filename = f"mesh_noc_xy_presynth_{args.row_n}_{args.col_m}" \
-                       f"_{args.ff_depth}_{args.pckt_w}.json"
+                       f"_{args.ff_depth}_{args.pckt_w}_arb{args.arb_type}.json"
 
 
   if os.path.exists(metrics_filename):

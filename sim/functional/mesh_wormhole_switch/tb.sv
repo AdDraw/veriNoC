@@ -15,6 +15,7 @@ module tb
     parameter ROW_CORD        = 0,
     parameter COL_CORD        = 0,
     parameter BUFFER_DEPTH_W  = 2,
+    parameter ARB_TYPE        = 0,
     parameter CLK_PERIOD      = 10
     )
   (
@@ -72,7 +73,8 @@ module tb
     .COL_ADDR_W(COL_ADDR_W),
     .ROW_CORD(ROW_CORD),
     .COL_CORD(COL_CORD),
-    .BUFFER_DEPTH_W(BUFFER_DEPTH_W)
+    .BUFFER_DEPTH_W(BUFFER_DEPTH_W),
+    .ARB_TYPE(ARB_TYPE)
     )
   dut_inst
   (

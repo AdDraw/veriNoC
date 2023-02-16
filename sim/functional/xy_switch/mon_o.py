@@ -57,9 +57,6 @@ class SWOMon(BusMonitor):
             await ro
             bus_values = self.bus.capture()
 
-            in_fifo_full_o = bus_values["in_fifo_full_o"].value
-            in_fifo_overflow_o = bus_values["in_fifo_overflow_o"].value
-
             wr_en_sw_o = bus_values["wr_en_sw_o"].binstr
             pckt_sw_o = bus_values["pckt_sw_o"].binstr
 

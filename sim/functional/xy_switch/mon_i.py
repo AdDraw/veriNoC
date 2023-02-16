@@ -101,38 +101,39 @@ class SWIMon(BusMonitor):
                     y_addr = BinaryValue(chosen_pckt[0:self.config["packet_y_addr_w"]],
                                          self.config["packet_y_addr_w"], bigEndian=False).value
 
-                    if not in_fifo_full_cur[self.port_n-bid] or (in_fifo_full_cur[self.port_n-bid] and in_fifo_rd_en_i_cur[self.port_n-bid]):
+                    # if not in_fifo_full_cur[self.port_n-bid] or (in_fifo_full_cur[self.port_n-bid] and in_fifo_rd_en_i_cur[self.port_n-bid]):
                         # Router XY algorithm
 
-                        if x_addr == self.config["x_cord"]:
-                            if y_addr == self.config["y_cord"]:
-                                dst = self.directions["resource"]
-                            elif y_addr < self.config["y_cord"]:
-                                dst = self.directions["up"]
-                            else:
-                                dst = self.directions["down"]
-                        elif x_addr > self.config["x_cord"]:
-                            dst = self.directions["right"]
+                    if x_addr == self.config["x_cord"]:
+                        if y_addr == self.config["y_cord"]:
+                            dst = self.directions["resource"]
+                        elif y_addr < self.config["y_cord"]:
+                            dst = self.directions["up"]
                         else:
-                            dst = self.directions["left"]
-
-                        cycle_results = {"id": data, "dst": dst, "orig": chosen_pckt}
-                        self.log.debug(f"Acc {self.acc_packets.__len__()}. {cycle_results}, src: {self.port_n-bid}")
-
-                        self.acc_packets.append(cycle_results)
-                        self._recv(cycle_results)
-
+                            dst = self.directions["down"]
+                    elif x_addr > self.config["x_cord"]:
+                        dst = self.directions["right"]
                     else:
-                        cycle_results = {"id": data,
-                                         "bid": self.port_n-bid,
-                                         "full": in_fifo_full_cur[self.port_n-bid],
-                                         "fifo_id": self.input_fifos[self.port_n-bid].config["fifo_id"],
-                                         "ovrflow": in_fifo_overflow_cur[bid],
-                                         "wr_en": wr_en_sw_i.binstr}
+                        dst = self.directions["left"]
 
-                        self.log.debug(f"Loss {cycle_results}")
+                    cycle_results = {"id": data, "dst": dst, "orig": chosen_pckt}
+                    self.log.debug(f"Acc {self.acc_packets.__len__()}. {cycle_results}, src: {self.port_n-bid}")
 
-                        self.loss_packets.append(cycle_results)
+                    self.acc_packets.append(cycle_results)
+                    self._recv(cycle_results)
+
+                    # else:
+                    #     print("DROPAGE")
+                    #     cycle_results = {"id": data,
+                    #                      "bid": self.port_n-bid,
+                    #                      "full": in_fifo_full_cur[self.port_n-bid],
+                    #                      "fifo_id": self.input_fifos[self.port_n-bid].config["fifo_id"],
+                    #                      "ovrflow": in_fifo_overflow_cur[bid],
+                    #                      "wr_en": wr_en_sw_i.binstr}
+
+                    #     self.log.debug(f"Loss {cycle_results}")
+
+                    #     self.loss_packets.append(cycle_results)
 
     def reset(self):
         self.acc_packets = []

@@ -6,7 +6,7 @@ from utils.rav import *
 from utils.logger import *
 import glob
 
-def main(tf, ps, synth, row_n, col_m, ff_depth, channel_w, regression, log_lvl) -> None:
+def main(tf, ps, synth, row_n, col_m, ff_depth, channel_w, arb_type, regression, log_lvl) -> None:
   log = get_logger(__name__, int(log_lvl))
   log.info(f"RUN {time.asctime()}")
 
@@ -14,7 +14,8 @@ def main(tf, ps, synth, row_n, col_m, ff_depth, channel_w, regression, log_lvl) 
   arguments = {"ROW_N": row_n,
                "COL_M": col_m,
                "NODE_BUFFER_DEPTH_W": ff_depth,
-               "CHANNEL_W": channel_w}
+               "CHANNEL_W": channel_w,
+               "ARB_TYPE": arb_type}
 
   if regression:
     runs = []
@@ -24,7 +25,8 @@ def main(tf, ps, synth, row_n, col_m, ff_depth, channel_w, regression, log_lvl) 
     for ri in range(2, row_max + 1):
       for ci in range(2, col_max + 1):
         arguments = {"ROW_N": row_n,
-                     "COL_M": col_m, "NODE_BUFFER_DEPTH_W": ff_depth,
+                     "COL_M": col_m, 
+                     "NODE_BUFFER_DEPTH_W": ff_depth,
                      "CHANNEL_W": channel_w}
         runs.append(simulate(log, tf, ps, synth, arguments, tcl_script))
         failed_runs += runs[-1][0]
@@ -77,6 +79,7 @@ if __name__ == '__main__':
   parser.add_argument('-col_m', default=3, help='COL_M parameter')
   parser.add_argument('-ff_depth', default=2, help='FIFO_DEPTH_W parameter')
   parser.add_argument('-channel_w', default=8, help='CHANNEL_W parameter')
+  parser.add_argument('-arb_type', default=0, help="Arbitration Type(0-matrix, 1-round robin, 2-static")
   parser.add_argument('-regression', default=0, help="IF '1' RUNS NOC simulations from 2x2 to 4x4"
                                                      " to check size problems")
   parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
@@ -88,10 +91,10 @@ if __name__ == '__main__':
 
   if args.ps:
     metrics_filename = f"mesh_noc_wh_xy_postsynth_{args.row_n}_{args.col_m}" \
-                       f"_{args.ff_depth}_{args.channel_w}"
+                       f"_{args.ff_depth}_{args.channel_w}_arb{args.arb_type}"
   else:
     metrics_filename = f"mesh_noc_wh_xy_presynth_{args.row_n}_{args.col_m}" \
-                       f"_{args.ff_depth}_{args.channel_w}"
+                       f"_{args.ff_depth}_{args.channel_w}_arb{args.arb_type}"
                        
   if args.tf == 0:
     fileList = glob.glob(f'{metrics_filename}*.json')

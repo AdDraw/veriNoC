@@ -4,8 +4,9 @@ set std_lib $::env(STD_LIB)
 read_verilog  -defer ../srcs/switch/constants.v
 read_verilog  -defer ../srcs/components/circ_fifo.v
 read_verilog  -defer ../srcs/switch/simple_mesh_xy/switch_constants.v
-read_verilog  -defer ../srcs/switch/arbiters/static_priority_arbiter.v
-read_verilog  -defer ../srcs/switch/arbiters/matrix_arbiter.v
+read_verilog  -sv -defer ../srcs/switch/arbiters/static_priority_arbiter.v
+read_verilog  -sv -defer ../srcs/switch/arbiters/matrix_arbiter.v
+read_verilog  -sv -defer ../srcs/switch/arbiters/round_robin.v
 read_verilog  -defer ../srcs/switch/routers/xy_router.v
 read_verilog  -defer ../srcs/switch/crossbars/nxn_single_crossbar.v
 read_verilog  -defer ../srcs/switch/simple_mesh_xy/control_unit.v
@@ -21,6 +22,7 @@ set params(3) FIFO_DEPTH_W
 set params(4) COL_ADDR_W
 set params(5) ROW_ADDR_W
 set params(6) PCKT_DATA_W
+set params(7) ARB_TYPE
 
 set values(0) 1
 set values(1) 1
@@ -33,6 +35,8 @@ set values(4) 2
 set values(5) 2
 
 set values(6) 64
+
+set values(7) 0
 
 chparam -list
 log "Parameters and their values:(after they were overriden with arguments)"
@@ -62,6 +66,7 @@ read_verilog  -DYS_XY_SW_TOP=1 \
               -DYS_$params(4)=$values(4) \
               -DYS_$params(5)=$values(5) \
               -DYS_$params(6)=$values(6) \
+              -DYS_$params(7)=$values(7) \
               ../srcs/switch/simple_mesh_xy/xy_switch.v
 
 echo off

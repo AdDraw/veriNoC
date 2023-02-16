@@ -31,7 +31,8 @@ class WHNoCTB:
       "row_n": int(os.environ["ROW_N"]),
       "col_m": int(os.environ["COL_M"]),
       "channel_w": int(os.environ["CHANNEL_W"]),
-      "node_buffer_depth_w": int(os.environ["NODE_BUFFER_DEPTH_W"])
+      "node_buffer_depth_w": int(os.environ["NODE_BUFFER_DEPTH_W"]),
+      "arb_type": int(os.environ["ARB_TYPE"])
     }
 
     assert self.dut.NODE_RADIX == self.config["node_radix"], "Bad Value"
@@ -40,6 +41,7 @@ class WHNoCTB:
     assert self.dut.ROW_N == self.config["row_n"], "Bad Value"
     assert self.dut.COL_M == self.config["col_m"], "Bad Value"
     assert self.dut.CHANNEL_W == self.config["channel_w"], "Bad Value"
+    assert self.dut.ARB_TYPE == self.config["arb_type"], "Bad Value"
 
     self.log.info(f"Created NocTB! {self.config}")
     self.drv = ChanDriver(dut, "in_chan", dut.clk_i, -1, self.config, log_lvl)
@@ -290,7 +292,7 @@ class WHNoCTB:
 
         self.noc_metrics.print()
 
-        metrics_filepath = METRICS_FILENAME + f"_{self.noc_metrics.plen}" + ".json"
+        metrics_filepath = METRICS_FILENAME + f"_plen{self.noc_metrics.plen}" + ".json"
         self.json_dump(self.noc_metrics.json_gen(), metrics_filepath)
 
         await ClockCycles(self.dut.clk_i, 10)

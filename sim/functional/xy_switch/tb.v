@@ -7,7 +7,8 @@ module tb
     parameter PACKET_COL_ADDR_W = 4,
     parameter PACKET_ROW_ADDR_W = 4,
     parameter PACKET_DATA_W = 8,
-    parameter PACKET_W = PCKT_COL_ADDR_W + PCKT_ROW_ADDR_W + PCKT_DATA_W
+    parameter ARB_TYPE = 0,
+    parameter PACKET_W = PACKET_COL_ADDR_W + PACKET_ROW_ADDR_W + PACKET_DATA_W
     )
   (
 
@@ -37,8 +38,7 @@ module tb
     reg clk_i = 1'b0;
     always #5 clk_i <= ~clk_i;
 
-    xy_switch
-    #(
+    xy_switch #(
       .COL_CORD(COL_CORD),
       .ROW_CORD(ROW_CORD),
       .PORT_N(PORT_N),
@@ -46,10 +46,9 @@ module tb
       .PCKT_COL_ADDR_W(PACKET_COL_ADDR_W),
       .PCKT_ROW_ADDR_W(PACKET_ROW_ADDR_W),
       .PCKT_DATA_W(PACKET_DATA_W),
-      .PCKT_W(PACKET_W)
-      )
-    xy_switch_inst
-    (
+      .PCKT_W(PACKET_W),
+      .ARB_TYPE(ARB_TYPE)
+    ) xy_switch_inst (
       .clk_i(clk_i),
       .rst_ni(rst_ni),
       .wr_en_sw_i(wr_en_sw_i),
@@ -60,7 +59,7 @@ module tb
       .nxt_fifo_overflow_i(nxt_fifo_overflow_i),
       .wr_en_sw_o(wr_en_sw_o),
       .pckt_sw_o(pckt_sw_o)
-      );
+    );
 
     // the "macro" to dump signals
     `ifdef COCOTB_SIM
