@@ -12,19 +12,11 @@
 `timescale 1ns / 1ps
 module xy_router
 # (
-    `ifdef YS_ROUTER_TOP
-    parameter COL_CORD    = `YS_COL_CORD,
-    parameter ROW_CORD    = `YS_ROW_CORD,
-    parameter COL_ADDR_W  = `YS_COL_ADDR_W,
-    parameter ROW_ADDR_W  = `YS_ROW_ADDR_W,
-    parameter OUT_N_W     = `YS_OUT_N_W
-    `else
     parameter COL_CORD    = 4'd0,
     parameter ROW_CORD    = 4'd0,
     parameter COL_ADDR_W  = 4,
     parameter ROW_ADDR_W  = 4,
     parameter OUT_N_W     = 3
-    `endif
     )
   (
     input  [COL_ADDR_W-1 : 0]  col_addr_i,

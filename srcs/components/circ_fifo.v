@@ -9,13 +9,8 @@
 
 module circ_fifo
   #(
-    `ifdef YS_FIFO_TOP
-    parameter DATA_W        = `YS_DATA_W,
-    parameter FIFO_DEPTH_W  = `YS_FIFO_DEPTH_W,
-    `else
     parameter DATA_W        = 8,
     parameter FIFO_DEPTH_W  = 2,
-    `endif
     parameter ID            = 0
     )
   (

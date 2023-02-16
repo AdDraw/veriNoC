@@ -26,13 +26,8 @@
 `timescale 1ns / 1ps
 module hop_cnt_arbiter
   #(
-    `ifdef YS_HOP_CNT_ARB_TOP
-    parameter IN_N      = `YS_IN_N,
-    parameter HOP_CNT_W = `YS_HOP_CNT_W
-    `else
     parameter IN_N      = 5,
     parameter HOP_CNT_W = 3
-    `endif
     )
   ( input   [IN_N-1:0]                vld_input_i,
     input   [(IN_N*HOP_CNT_W)-1 : 0]  hop_cnt_i,

@@ -16,18 +16,6 @@
 */
 `timescale 1ns / 1ps
 module mesh_wormhole_node #(
-  `ifdef YS_MESH_WORMHOLE_NODE_TOP
-    parameter IN_N            = `YS_IN_N,
-    parameter OUT_M           = `YS_OUT_M,
-    parameter FLIT_DATA_W     = `YS_FLIT_DATA_W,
-    parameter FLIT_ID_W       = `YS_FLIT_ID_W,
-    parameter ROW_ADDR_W      = `YS_ROW_ADDR_W,
-    parameter COL_ADDR_W      = `YS_COL_ADDR_W,
-    parameter ROW_CORD        = `YS_ROW_CORD,
-    parameter COL_CORD        = `YS_COL_CORD,
-    parameter BUFFER_DEPTH_W  = `YS_BUFFER_DEPTH_W,
-    parameter ARB_TYPE        = `YS_ARB_TYPE
-  `else
     parameter IN_N            = 5,
     parameter OUT_M           = 5,
     parameter FLIT_DATA_W     = 8,
@@ -38,7 +26,6 @@ module mesh_wormhole_node #(
     parameter COL_CORD        = 1,
     parameter BUFFER_DEPTH_W  = 2,
     parameter ARB_TYPE        = 0
-  `endif
   ) (
     input clk_i,
     input rst_ni,

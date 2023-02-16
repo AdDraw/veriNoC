@@ -14,13 +14,8 @@
 `timescale 1ns / 1ps
 module nxn_single_crossbar
 # (
-    `ifdef YS_NXN_SINGLE_CROSSBAR_TOP
-    parameter DATA_W = `YS_DATA_W,
-    parameter PORT_N = `YS_PORT_N,
-    `else
     parameter DATA_W = 8,
     parameter PORT_N = 5
-    `endif
     )
   (
     input   [(PORT_N * DATA_W) - 1 : 0] data_i,

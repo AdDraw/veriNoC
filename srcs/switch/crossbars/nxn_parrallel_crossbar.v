@@ -12,15 +12,9 @@
 `timescale 1ns / 1ps
 module nxn_parrallel_crossbar
   #(
-    `ifdef YS_NXN_PARRALLEL_CROSSBAR_TOP
-    parameter DATA_W  = `YS_DATA_W,
-    parameter IN_N    = `YS_IN_N,
-    parameter OUT_M   = `YS_OUT_M
-    `else
     parameter DATA_W  = 10, //(2 bits for flit ID, 8 bits for the flit payload)
     parameter IN_N    = 5,
     parameter OUT_M   = 5
-    `endif
     )
   ( //N inputs N outputs
     input   [(IN_N*DATA_W)-1:0]         data_i, // data from input channels

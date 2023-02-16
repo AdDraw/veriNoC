@@ -27,19 +27,11 @@
 
 module mesh_xy_noc
   # (
-      `ifdef YS_MESH_XY_TOP
-      parameter ROW_N         = `YS_ROW_N,
-      parameter COL_M         = `YS_COL_M,
-      parameter PCKT_DATA_W   = `YS_PCKT_DATA_W,
-      parameter FIFO_DEPTH_W  = `YS_FIFO_DEPTH_W,
-      parameter ARB_TYPE      = `YS_ARB_TYPE,
-      `else
       parameter ROW_N         = 3,
       parameter COL_M         = 3,
       parameter PCKT_DATA_W   = 8,
       parameter FIFO_DEPTH_W  = 3,
       parameter ARB_TYPE      = 0
-      `endif
       )
     (
       input clk_i,
