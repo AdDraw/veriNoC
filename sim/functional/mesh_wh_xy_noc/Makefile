@@ -23,7 +23,7 @@ VERILOG_SOURCES += $(SWITCH_VER_DIR)/mesh_wormhole/mesh_wormhole_node.v
 VERILOG_SOURCES += $(NOC_VER_DIR)/mesh_wormhole_xy_noc.v
 
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES += $(CMOS_CELLS)
+  VERILOG_SOURCES = $(CMOS_CELLS)
   VERILOG_SOURCES += $(SYNTH_DIR)/mesh_wormhole_xy_noc-netlist.v
 endif
 
