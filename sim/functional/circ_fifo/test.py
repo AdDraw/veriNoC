@@ -50,12 +50,12 @@ async def overflow_underflow_test(dut, log_lvl=INFO, cycles=10000):
     # Read the data
     await fftb.fifo_drv.empty_fifo()
 
-    await ClockCycles(dut.clk_i, 2)
+    await ClockCycles(dut.clk_i, 10)
 
     # Reset The FIFO
     await fftb.fifo_drv.reset_fifo()
 
-    await ClockCycles(dut.clk_i, 2)
+    await ClockCycles(dut.clk_i, 10)
 
     raise TestSuccess("Sim finished sucessfully")
 

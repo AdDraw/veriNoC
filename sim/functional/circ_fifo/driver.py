@@ -64,19 +64,17 @@ class FifoDriver(BusDriver):
         Sends FIFO_DEPTH write transactions sequentially with random data_i values
         :return: None
         """
-        for i in range(2**self.fifo_depth_width-1):
-            await RisingEdge(self.clock)
-            self.bus.wr_en_i <= 1
-            self.bus.data_i <= getrandbits(self.data_width)
+        for i in range(2**self.fifo_depth_width):
+            await self.write_fifo(getrandbits(self.data_width))
+        await self.clear_fifo_input(sync=True)
 
     async def empty_fifo(self):
         """
         Sends FIFO_DEPTH read transactions sequentially regardless of FIFO fullness
         :return: None
         """
-        for i in range(2**self.fifo_depth_width-1):
-            self.bus.rd_en_i <= 1
-
+        for i in range(2**self.fifo_depth_width):
+            await self.read_fifo()
         await self.clear_fifo_input()
 
     async def reset_fifo(self):
