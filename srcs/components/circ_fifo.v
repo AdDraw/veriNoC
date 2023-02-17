@@ -52,7 +52,7 @@ module circ_fifo
   assign empty_w  = (wr_ptr_v == rd_ptr_v)        ? 1'b1 : 1'b0;
 
   // FIFO WRITE
-  always @ ( posedge clk_i) begin
+  always @ ( posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       wr_ptr_v    <= 0;
       overflow_v  <= 1'b0;
@@ -76,7 +76,7 @@ module circ_fifo
   end
 
   //FIFO READ
-  always @ ( posedge clk_i) begin
+  always @ ( posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       data_v      <= 0;
       rd_ptr_v    <= 0;
