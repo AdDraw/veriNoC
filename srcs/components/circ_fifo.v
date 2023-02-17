@@ -1,7 +1,7 @@
 /*
   Circular FIFO made with ZipCPU FIFO Guide
 
-  - Synchronous Resets
+  - Asynchronous Resets
   - utilizes N-1 spaces
 
 */
