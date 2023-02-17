@@ -17,7 +17,8 @@ VERILOG_SOURCES += $(VER_DIR)/arbiters/static_priority_arbiter.v
 VERILOG_SOURCES += $(VER_DIR)/crossbars/nxn_single_crossbar.v
 VERILOG_SOURCES += $(VER_DIR)/routers/xy_router.v
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES = $(CMOS_CELLS)
+	VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
+  VERILOG_SOURCES += $(CMOS_CELLS)
   VERILOG_SOURCES += $(SYNTH_DIR)/xy_router-netlist.v
 endif
 VERILOG_SOURCES += ./tb.v

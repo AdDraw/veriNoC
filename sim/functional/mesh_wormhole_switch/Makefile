@@ -12,7 +12,8 @@ VERILOG_SOURCES += $(SRCS_DIR)/switch/virtual_channels/virtual_channel.v
 VERILOG_SOURCES += $(SRCS_DIR)/switch/crossbars/nxn_parrallel_crossbar.v
 VERILOG_SOURCES += $(SRCS_DIR)/switch/mesh_wormhole/mesh_wormhole_node.v
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES = $(CMOS_CELLS)
+	VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
+  VERILOG_SOURCES += $(CMOS_CELLS)
   VERILOG_SOURCES += $(SYNTH_DIR)/mesh_wormhole_node-netlist.v
 endif
 VERILOG_SOURCES += ./tb.sv
