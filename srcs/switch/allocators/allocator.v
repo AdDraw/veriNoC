@@ -58,19 +58,11 @@
 */
 `timescale 1ns / 1ps
 module allocator #(
-  `ifdef YS_ALLOCATOR_TOP
-    parameter IN_N        = `YS_IN_N,
-    parameter OUT_M       = `YS_OUT_M,
-    parameter FLIT_ID_W   = `YS_FLIT_ID_W,
-    parameter OUT_CHAN_ID = `YS_OUT_CHAN_ID,
-    parameter ARB_TYPE    = `YS_ARB_TYPE
-  `else
     parameter IN_N        = 5,  // to specify from how many inputs we should choose
     parameter OUT_M       = 5,  // for route result inputs
     parameter FLIT_ID_W   = 2,  // how many bits are taken for ID in each FLIT
     parameter OUT_CHAN_ID = 0,  // which output channel is this Alloc assigned to
     parameter ARB_TYPE    = 0   // what type of arbitration should be used (0 - matrix, 1 - round robin, 2 - static_priority)
-  `endif
   ) (
     input                           clk_i,
     input                           rst_ni,
@@ -172,7 +164,7 @@ module allocator #(
       );
     end
     else begin
-      initial $error("Wrong Arbitration Type, possible options 0,1,2"); 
+      initial $error("Wrong Arbitration Type, possible options 0,1,2");
     end
   endgenerate
 

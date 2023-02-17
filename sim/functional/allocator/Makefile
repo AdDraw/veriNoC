@@ -1,22 +1,17 @@
-export PYTHON_BIN=/usr/bin/python3
-export SHELL=/bin/bash
-
-export TOPLEVEL_LANG ?= verilog
-SRC_DIR=$(shell git rev-parse --show-toplevel)/srcs
+include ../common.mk
 
 # files
-VERILOG_SOURCES = $(SRC_DIR)/switch/constants.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/arbiters/matrix_arbiter.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/allocators/allocator.v
+VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/arbiters/matrix_arbiter.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/allocators/allocator.v
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES = $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
-  VERILOG_SOURCES += $(SRC_DIR)/switch/allocators/allocator_synth.v
+  VERILOG_SOURCES = $(CMOS_CELLS)
+  VERILOG_SOURCES += $(SYNTH_DIR)/allocator-netlist.v
 endif
 VERILOG_SOURCES += ./tb.v
 # Specifies essentials of the DUT and the cocotb TB
 TOPLEVEL := tb
 MODULE   := test
-SIM      ?= icarus
 
 # Depending on the Simulator we want to choose different sets of arguments to pass
 export IN_N        = 5

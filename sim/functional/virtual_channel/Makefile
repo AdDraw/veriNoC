@@ -1,24 +1,19 @@
-export PYTHON_BIN=/usr/bin/python3
-export SHELL=/bin/bash
-
-export TOPLEVEL_LANG ?= verilog
-SRC_DIR=$(shell git rev-parse --show-toplevel)/srcs/
+include ../common.mk
 
 # files
-VERILOG_SOURCES = $(SRC_DIR)/switch/constants.v
-VERILOG_SOURCES += $(SRC_DIR)/components/circ_fifo.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/routers/xy_router.v
-VERILOG_SOURCES += $(SRC_DIR)/switch/virtual_channels/virtual_channel.v
+VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
+VERILOG_SOURCES += $(SRCS_DIR)/components/circ_fifo.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/routers/xy_router.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/virtual_channels/virtual_channel.v
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES = $(SRC_DIR)/switch/constants.v
-  VERILOG_SOURCES += $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
-  VERILOG_SOURCES += $(SRC_DIR)/switch/virtual_channels/virtual_channel_synth.v
+	VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
+  VERILOG_SOURCES += $(CMOS_CELLS)
+  VERILOG_SOURCES += $(SYNTH_DIR)/virtual_channel-netlist.v
 endif
 VERILOG_SOURCES+= ./tb.v
 # Specifies essentials of the DUT and the cocotb TB
 TOPLEVEL := tb
 MODULE   := test
-SIM      ?= icarus
 
 # Depending on the Simulator we want to choose different sets of arguments to pass
 export VC_DEPTH_W   ?= 2

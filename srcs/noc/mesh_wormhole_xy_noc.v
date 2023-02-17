@@ -25,24 +25,14 @@
 `define RIGHT 3
 `define DOWN  4
 
-module mesh_wormhole_xy_noc#(
-  `ifdef YS_MESH_WH_XY_TOP
-    parameter ROW_N               = `YS_ROW_N,
-    parameter COL_M               = `YS_COL_M,
-    parameter NODE_RADIX          = `YS_NODE_RADIX, // CONSTANT
-    parameter CHANNEL_W           = `YS_CHANNEL_W,
-    parameter FLIT_ID_W           = `YS_FLIT_ID_W,
-    parameter NODE_BUFFER_DEPTH_W = `YS_NODE_BUFFER_DEPTH_W,
-    parameter ARB_TYPE            = `YS_ARB_TYPE
-  `else
-    parameter ROW_N               = 3,
-    parameter COL_M               = 3,
-    parameter NODE_RADIX          = 5, // CONSTANT
-    parameter CHANNEL_W           = 8,
-    parameter FLIT_ID_W           = 2, // HEAD, BODY, TAIL, NULL(not defined), CONSTANT
-    parameter NODE_BUFFER_DEPTH_W = 4,
-    parameter ARB_TYPE            = 0
-  `endif
+module mesh_wormhole_xy_noc #(
+  parameter ROW_N               = 3,
+  parameter COL_M               = 3,
+  parameter NODE_RADIX          = 5, // CONSTANT
+  parameter CHANNEL_W           = 8,
+  parameter FLIT_ID_W           = 2, // HEAD, BODY, TAIL, NULL(not defined), CONSTANT
+  parameter NODE_BUFFER_DEPTH_W = 4,
+  parameter ARB_TYPE            = 0
   ) (
     // GLOBAL
     input                           clk_i,

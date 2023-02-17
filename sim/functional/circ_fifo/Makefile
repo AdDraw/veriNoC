@@ -1,20 +1,15 @@
-export PYTHON_BIN=/usr/bin/python3
-export SHELL=/bin/bash
-
-export TOPLEVEL_LANG ?= verilog
-VER_DIR=$(shell git rev-parse --show-toplevel)/srcs/components
+include ../common.mk
 
 # files
-VERILOG_SOURCES=$(VER_DIR)/circ_fifo.v
+VERILOG_SOURCES=$(SRCS_DIR)/components/circ_fifo.v
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES = $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
-  VERILOG_SOURCES += $(VER_DIR)/circ_fifo_synth.v
+  VERILOG_SOURCES = $(CMOS_CELLS)
+  VERILOG_SOURCES += $(SYNTH_DIR)/circ_fifo-netlist.v
 endif
 
 # Specifies essentials of the DUT and the cocotb TB
 TOPLEVEL := circ_fifo
 MODULE   := test
-SIM      ?= icarus
 
 # Depending on the Simulator we want to choose different sets of arguments to pass
 export FIFO_DEPTH_W ?= 4

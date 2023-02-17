@@ -16,8 +16,7 @@ def simulate(log, tf, ps, synth, parameters, tcl_script):
         log.debug(f"ReSynthesize! {tcl_script}")
         os.chdir(f"{git_root}/synth")
 
-        synth_cmd = [f"{git_root}/synth/yosys_wrapper.sh", f"-sf", f"{tcl_script}",
-                     "--no-xdot"]
+        synth_cmd = [f"{git_root}/synth/yosys_wrapper.sh", f"-sf", f"{tcl_script}"]
         for arg in parameters.items():
             synth_cmd.append(f"{arg[0]}={arg[1]}")
 

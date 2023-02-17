@@ -1,8 +1,4 @@
-export PYTHON_BIN=/usr/bin/python3
-export SHELL=/bin/bash
-
-export TOPLEVEL_LANG ?= verilog
-SRCS_DIR=$(shell git rev-parse --show-toplevel)/srcs
+include ../common.mk
 SWITCH_VER_DIR=$(SRCS_DIR)/switch
 COMPONENT_VER_DIR=$(SRCS_DIR)/components
 NOC_VER_DIR=$(SRCS_DIR)/noc
@@ -27,15 +23,13 @@ VERILOG_SOURCES += $(SWITCH_VER_DIR)/mesh_wormhole/mesh_wormhole_node.v
 VERILOG_SOURCES += $(NOC_VER_DIR)/mesh_wormhole_xy_noc.v
 
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES = $(shell git rev-parse --show-toplevel)/synth/cmos_cells.v
-  VERILOG_SOURCES += $(NOC_VER_DIR)/mesh_wormhole_xy_noc_synth.v
+  VERILOG_SOURCES = $(CMOS_CELLS)
+  VERILOG_SOURCES += $(SYNTH_DIR)/mesh_wormhole_xy_noc-netlist.v
 endif
-
 
 # Specifies essentials of the DUT and the cocotb TB
 TOPLEVEL  := tb
 MODULE    := test
-SIM       ?= icarus
 
 export ROW_N                ?= 3
 export COL_M                ?= 3
@@ -45,9 +39,6 @@ export NODE_RADIX           ?= 5
 export NODE_BUFFER_DEPTH_W  ?= 2
 export ARB_TYPE             ?= 0
 export CLK_PERIOD           ?= 10
-
-COCOTB_HDL_TIMEUNIT       = 1ns
-COCOTB_HDL_TIMEPRECISION  = 10ps
 
 VERILOG_SOURCES += ./tb.sv
 COMPILE_ARGS += -P $(TOPLEVEL).ROW_N=$(ROW_N)

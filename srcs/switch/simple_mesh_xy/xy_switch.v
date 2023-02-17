@@ -38,25 +38,14 @@
 `timescale 1ns / 1ps
 module xy_switch
 # (
-    `ifdef YS_XY_SW_TOP // only For YOSYS parameter setting (it's not possible to override parameters for singular modules)
-      parameter COL_CORD      = `YS_COL_CORD,
-      parameter ROW_CORD      = `YS_ROW_CORD,
-      parameter PORT_N        = `YS_PORT_N, // 1 is minimum because of connection to RESOURCE,
-      parameter FIFO_DEPTH_W  = `YS_FIFO_DEPTH_W,
-      parameter COL_ADDR_W    = `YS_COL_ADDR_W,
-      parameter ROW_ADDR_W    = `YS_ROW_ADDR_W,
-      parameter PCKT_DATA_W   = `YS_PCKT_DATA_W,
-      parameter ARB_TYPE      = `YS_ARB_TYPE,
-    `else
-      parameter COL_CORD      = 0,
-      parameter ROW_CORD      = 0,
-      parameter PORT_N        = 5, // 1 is minimum because of connection to RESOURCE,
-      parameter FIFO_DEPTH_W  = 3,
-      parameter COL_ADDR_W    = 4,
-      parameter ROW_ADDR_W    = 4,
-      parameter PCKT_DATA_W   = 8,
-      parameter ARB_TYPE      = 0,
-    `endif
+    parameter COL_CORD      = 0,
+    parameter ROW_CORD      = 0,
+    parameter PORT_N        = 5, // 1 is minimum because of connection to RESOURCE,
+    parameter FIFO_DEPTH_W  = 3,
+    parameter COL_ADDR_W    = 4,
+    parameter ROW_ADDR_W    = 4,
+    parameter PCKT_DATA_W   = 8,
+    parameter ARB_TYPE      = 0,
     parameter PCKT_W = COL_ADDR_W + ROW_ADDR_W + PCKT_DATA_W
     )
   (
@@ -163,7 +152,7 @@ module xy_switch
         );
       end
       else begin
-        initial $error("Wrong Arbitration Type, possible options 0,1,2");   
+        initial $error("Wrong Arbitration Type, possible options 0,1,2");
       end
     endgenerate
 

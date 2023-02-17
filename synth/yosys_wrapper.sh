@@ -29,7 +29,7 @@ function display_help {
   echo ">>"
   echo ">>            --show-params     - presents the parameters of the top module only (no synthesis)"
   echo ">>"
-  echo ">>            --no-xdot         - disables yosys show command"
+  echo ">>            --xdot            - enables yosys show command"
   echo ">>"
   echo ">>            --std-lib         - path to std cell library, default: std_libs/osu018_std.lib"
   echo ">>"
@@ -70,9 +70,9 @@ do
       export SHOW_PARAMS=1
       shift # past argument
       ;;
-      --no-xdot)
-      echo "${green}Setting NO_XDOT=1${white}"
-      export NO_XDOT=1
+      --xdot)
+      echo "${green}Setting XDOT=1${white}"
+      export XDOT=1
       shift # past argument
       ;;
       --std-lib)
@@ -116,7 +116,6 @@ yosys -tl $synth_log_name $SCRIPT_FILE || error_func $script_name
 
 if [[ -e ~/.yosys_show.dot ]]; then
   #statements
-
   if [[ ! -d $repo_path/synth/dot_files ]]; then
     #statements
     mkdir $repo_path/synth/dot_files
