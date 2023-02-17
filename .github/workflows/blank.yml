@@ -154,59 +154,59 @@ jobs:
       - name: circ_fifo
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf fifo_synth.tcl --no-xdot
+          ./yosys_wrapper.sh -sf fifo_synth.tcl
 
       - name: nxn_single_crossbar
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf nxn_single_crossbar.tcl --no-xdot
+          ./yosys_wrapper.sh -sf nxn_single_crossbar.tcl
 
       - name: nxn parrallel crossbar
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf nxn_parrallel_crossbar.tcl --no-xdot
+          ./yosys_wrapper.sh -sf nxn_parrallel_crossbar.tcl
 
       - name: allocator
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf allocator.tcl --no-xdot
+          ./yosys_wrapper.sh -sf allocator.tcl
 
       - name: hop_cnt_arbiter
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf hop_cnt_arb.tcl --no-xdot
+          ./yosys_wrapper.sh -sf hop_cnt_arb.tcl
 
       - name: static_priority_arbiter
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf static_arb.tcl --no-xdot
+          ./yosys_wrapper.sh -sf static_arb.tcl
 
       - name: router
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf router_synth.tcl --no-xdot
+          ./yosys_wrapper.sh -sf router_synth.tcl
 
       - name: vc
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf virtual_channel.tcl --no-xdot
+          ./yosys_wrapper.sh -sf virtual_channel.tcl
 
       - name: wormhole xy node
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf mesh_wormhole_node.tcl --no-xdot
+          ./yosys_wrapper.sh -sf mesh_wormhole_node.tcl
 
       - name: sw_xy
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf sw_xy_synth.tcl --no-xdot
+          ./yosys_wrapper.sh -sf sw_xy_synth.tcl
 
       - name: mesh_xy noc
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf mesh_xy_noc.tcl --no-xdot
+          ./yosys_wrapper.sh -sf mesh_xy_noc.tcl
 
       - name: wormhole xy noc
         run: |
           cd synth
-          ./yosys_wrapper.sh -sf mesh_wh_xy_noc.tcl --no-xdot
+          ./yosys_wrapper.sh -sf mesh_wh_xy_noc.tcl

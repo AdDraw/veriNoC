@@ -1,9 +1,9 @@
 include ../common.mk
 
 # files
-VERILOG_SOURCES=$(SRCS_DIR)/componentscirc_fifo.v
+VERILOG_SOURCES=$(SRCS_DIR)/components/circ_fifo.v
 ifeq ($(SYNTH), 1)
-  VERILOG_SOURCES += $(CMOS_CELLS)
+  VERILOG_SOURCES = $(CMOS_CELLS)
   VERILOG_SOURCES += $(SYNTH_DIR)/circ_fifo-netlist.v
 endif
 
