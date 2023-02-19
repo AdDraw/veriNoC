@@ -17,7 +17,7 @@ async def simple_test(dut):
     dut.rst_ni.setimmediatevalue(0)
     await ClockCycles(dut.clk_i, 10)
     dut.rst_ni.setimmediatevalue(1)
-    
+
     await RisingEdge(dut.clk_i)
     await ReadWrite()
 

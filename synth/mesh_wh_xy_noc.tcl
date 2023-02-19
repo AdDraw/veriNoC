@@ -23,7 +23,8 @@ set files {
   switch/arbiters/hop_cnt_arbiter.v
   switch/virtual_channels/virtual_channel.v
   switch/arbiters/matrix_arbiter.v
-  switch/arbiters/round_robin.v
+  switch/arbiters/round_robin_arbiter.v
+  switch/arbiters/grant_with_carry.v
   switch/arbiters/static_priority_arbiter.v
   switch/routers/xy_router.v
   switch/crossbars/nxn_parrallel_crossbar.v

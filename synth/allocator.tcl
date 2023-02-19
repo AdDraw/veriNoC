@@ -18,7 +18,8 @@ array set params {
 set files {
   switch/constants.v
   switch/arbiters/matrix_arbiter.v
-  switch/arbiters/round_robin.v
+  switch/arbiters/round_robin_arbiter.v
+  switch/arbiters/grant_with_carry.v
   switch/arbiters/static_priority_arbiter.v
   switch/allocators/allocator.v
 }

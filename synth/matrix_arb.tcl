@@ -3,7 +3,7 @@ yosys -import
 echo on
 
 set src ../srcs
-set top_module matrix_arb
+set top_module matrix_arbiter
 
 # Define parameter names + values (values taken from EnvVars set by yosys_wrapper.sh)
 array set params {

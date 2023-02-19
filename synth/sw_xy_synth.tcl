@@ -23,7 +23,8 @@ set files {
   components/circ_fifo.v
   switch/simple_mesh_xy/switch_constants.v
   switch/arbiters/matrix_arbiter.v
-  switch/arbiters/round_robin.v
+  switch/arbiters/round_robin_arbiter.v
+  switch/arbiters/grant_with_carry.v
   switch/arbiters/static_priority_arbiter.v
   switch/routers/xy_router.v
   switch/crossbars/nxn_single_crossbar.v

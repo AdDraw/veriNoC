@@ -9,7 +9,7 @@ from math import log
 
 class AllocDriver(BusDriver):
     _signals = ["flit_id_i", "rtr_res_i", "rtr_res_vld_i", "data_vld_i",
-                "forward_node_rdy_i", "rst_ni"]
+                "ochan_rdy_i", "rst_ni"]
 
     _default_config = {
         "in_n": 5,
@@ -37,12 +37,11 @@ class AllocDriver(BusDriver):
             self.log.setLevel(INFO)
 
         self.bus.flit_id_i.setimmediatevalue(0)
-        # self.bus.hop_count_i.setimmediatevalue(0)
         self.bus.rtr_res_i.setimmediatevalue(0)
         self.bus.rtr_res_vld_i.setimmediatevalue(0)
         self.bus.rst_ni.setimmediatevalue(1)
         self.bus.data_vld_i.setimmediatevalue(0)
-        self.bus.forward_node_rdy_i.setimmediatevalue(0)
+        self.bus.ochan_rdy_i.setimmediatevalue(0)
 
     async def send(self):
         await RisingEdge(self.clock)
@@ -64,7 +63,7 @@ class AllocDriver(BusDriver):
         self.bus.rtr_res_i.setimmediatevalue(0)
         self.bus.rst_ni.setimmediatevalue(1)
         self.bus.data_vld_i.setimmediatevalue(0)
-        self.bus.backpressure_fifo_full_i.setimmediatevalue(0)
+        self.bus.ochan_rdy_i.setimmediatevalue(0)
 
     async def reset(self):
         await ClockCycles(self.clock, 5)
