@@ -58,72 +58,68 @@
 */
 `timescale 1ns / 1ps
 module allocator #(
-    parameter IN_N        = 5,  // to specify from how many inputs we should choose
-    parameter OUT_M       = 5,  // for route result inputs
-    parameter FLIT_ID_W   = 2,  // how many bits are taken for ID in each FLIT
-    parameter OUT_CHAN_ID = 0,  // which output channel is this Alloc assigned to
-    parameter ARB_TYPE    = 0   // what type of arbitration should be used (0 - matrix, 1 - round robin, 2 - static_priority)
-  ) (
-    input                           clk_i,
-    input                           rst_ni,
-    // Routing result (states which signals want to use this output channel)
-    input [(IN_N*`RTR_RES_W)-1 : 0] rtr_res_i,    // this could be a 1 bit signal that simply states that an input
-    input [IN_N-1:0]                rtr_res_vld_i,
+  parameter IN_N = 5,  // to specify from how many inputs we should choose
+  parameter OUT_M = 5,  // for route result inputs
+  parameter FLIT_ID_W = 2,  // how many bits are taken for ID in each FLIT
+  parameter OUT_CHAN_ID = 0,  // which output channel is this Alloc assigned to
+  parameter ARB_TYPE = 0  // what type of arbitration should be used (0 - matrix, 1 - round robin, 2 - static_priority)
+) (
+  input                           clk_i,
+  input                           rst_ni,
+  // Routing result (states which signals want to use this output channel)
+  input [(IN_N*`RTR_RES_W)-1 : 0] rtr_res_i,     // this could be a 1 bit signal that simply states that an input
+  input [               IN_N-1:0] rtr_res_vld_i,
 
-    // wants to use this output
-    input [(IN_N*FLIT_ID_W)-1 : 0]  flit_id_i,
-    input [IN_N-1:0]                data_vld_i,
-    // Backpressure (information from the forward node connected to the channel)
-    input                           forward_node_rdy_i,
-    // Select the input to route
-    output [`CHAN_SEL_W-1 : 0]      sel_o,     // answers which input (based on the input arbitration)
-    output                          out_vld_o,
-    // output out_vld_o,                       //answers when the data is being routed(can be routed) (based on backpressure)
-    // Data to send to VCs (Virtual Channel)
-    output [IN_N-1:0]               chan_alloc_o
-  );
+  // wants to use this output
+  input  [(IN_N*FLIT_ID_W)-1 : 0] flit_id_i,
+  input  [              IN_N-1:0] data_vld_i,
+  // Backpressure (information from the forward node connected to the channel)
+  input                           ochan_rdy_i,
+  // Select the input to route
+  output [     `CHAN_SEL_W-1 : 0] sel_o,        // answers which input (based on the input arbitration)
+  output                          out_vld_o,
+  // output out_vld_o,                       //answers when the data is being routed(can be routed) (based on backpressure)
+  // Data to send to VCs (Virtual Channel)
+  output [              IN_N-1:0] chan_alloc_o
+);
 
   // REGS
-  reg [IN_N-1:0 ]         chan_alloc;
-  reg [`CHAN_SEL_W-1 : 0] sel;
+  reg  [         IN_N-1:0] chan_alloc;
+  reg  [`CHAN_SEL_W-1 : 0] sel;
 
   // WIRES
-  wire [IN_N-1:0]           req_w;
-  wire [$clog2(OUT_M)-1:0]  grant_w;
-  wire                      grant_vld_w;
-  wire [FLIT_ID_W-1:0]      flit_id_w [IN_N-1:0];
-  wire [IN_N-1:0]           rtr_res_w;            // transformed to 1bit ENABLE signals
+  wire [         IN_N-1:0] req_w;
+  wire [$clog2(OUT_M)-1:0] grant_w;
+  wire                     grant_vld_w;
+  wire [    FLIT_ID_W-1:0] flit_id_w   [IN_N];
+  wire [         IN_N-1:0] rtr_res_w;
   genvar gi;
   generate
-    for(gi=0; gi<IN_N; gi=gi+1)
-    begin
-      assign flit_id_w[gi] = flit_id_i[FLIT_ID_W*(gi+1)-1   : FLIT_ID_W*gi];
+    for (gi = 0; gi < IN_N; gi = gi + 1) begin
+      assign flit_id_w[gi] = flit_id_i[FLIT_ID_W*(gi+1)-1 : FLIT_ID_W*gi];
       assign rtr_res_w[gi] = (rtr_res_i[`RTR_RES_W*(gi+1)-1 : `RTR_RES_W*gi] == OUT_CHAN_ID) ? rtr_res_vld_i[gi] : 1'b0;
     end
   endgenerate
 
   assign req_w = rtr_res_w & data_vld_i;
 
-  always @ ( posedge(clk_i), negedge(rst_ni) ) begin
+  always @(posedge (clk_i), negedge (rst_ni)) begin
     if (!rst_ni) begin
-      chan_alloc  <= 0;
-      sel         <= 0;
-    end
-    else begin
+      chan_alloc <= 0;
+      sel        <= 0;
+    end else begin
       if (|chan_alloc) begin
-        if (flit_id_w[sel] == `TAIL_ID && forward_node_rdy_i) begin
+        if (flit_id_w[sel] == `TAIL_ID && ochan_rdy_i) begin
           chan_alloc <= 0;
         end
-      end
-      else begin
+      end else begin
         if (grant_vld_w) begin
-          if (|req_w ) begin
-            chan_alloc           <= 0;
-            chan_alloc[grant_w]  <= 1'b1;
-            sel                  <= grant_w;
+          if (|req_w) begin
+            chan_alloc          <= 0;
+            chan_alloc[grant_w] <= 1'b1;
+            sel                 <= grant_w;
           end
-        end
-        else begin
+        end else begin
           chan_alloc <= 0;
           sel        <= 0;
         end
@@ -132,38 +128,35 @@ module allocator #(
   end
 
   generate
-    if (ARB_TYPE == 0) begin //matrix arb
-      matrix_arb #(
+    if (ARB_TYPE == 0) begin  //matrix arb
+      matrix_arbiter #(
         .IN_N(IN_N)
       ) arb (
-        .clk_i       (clk_i),
-        .rst_ni      (rst_ni),
-        .req_i       ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
-        .grant_o     (grant_w),
-        .grant_vld_o (grant_vld_w)
+        .clk_i      (clk_i),
+        .rst_ni     (rst_ni),
+        .req_i      ((|chan_alloc) ? {IN_N{1'b0}} : req_w),
+        .grant_o    (grant_w),
+        .grant_vld_o(grant_vld_w)
       );
-    end
-    else if (ARB_TYPE == 1) begin
-      round_robin_arb #(
+    end else if (ARB_TYPE == 1) begin
+      round_robin_arbiter #(
         .IN_N(IN_N)
       ) arb (
-        .clk_i       (clk_i),
-        .rst_ni      (rst_ni),
-        .req_i       ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
-        .grant_o     (grant_w),
-        .grant_vld_o (grant_vld_w)
+        .clk_i      (clk_i),
+        .rst_ni     (rst_ni),
+        .req_i      ((|chan_alloc) ? {IN_N{1'b0}} : req_w),
+        .grant_o    (grant_w),
+        .grant_vld_o(grant_vld_w)
       );
-    end
-    else if (ARB_TYPE == 2) begin
+    end else if (ARB_TYPE == 2) begin
       static_priority_arbiter #(
         .IN_N(IN_N)
       ) arb (
-        .req_i       ((|chan_alloc) ? {IN_N{1'b0}} : req_w ),
-        .grant_o     (grant_w),
-        .grant_vld_o (grant_vld_w)
+        .req_i      ((|chan_alloc) ? {IN_N{1'b0}} : req_w),
+        .grant_o    (grant_w),
+        .grant_vld_o(grant_vld_w)
       );
-    end
-    else begin
+    end else begin
       initial $error("Wrong Arbitration Type, possible options 0,1,2");
     end
   endgenerate
@@ -171,6 +164,6 @@ module allocator #(
   // Allocation of VC
   assign chan_alloc_o = chan_alloc;
   assign sel_o        = sel;
-  assign out_vld_o    = chan_alloc[sel] & data_vld_i[sel] & forward_node_rdy_i;
+  assign out_vld_o    = chan_alloc[sel] & data_vld_i[sel] & ochan_rdy_i;
 
-endmodule // allocator
+endmodule  // allocator

@@ -12,10 +12,10 @@ LOG_DEBUG?=0
 # files
 # VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/static_priority_arbiter.v
 # VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/matrix_arbiter.v
-VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/round_robin.v
+VERILOG_SOURCES += $(SWITCH_VER_DIR)/arbiters/round_robin_arbiter.v
 
 # Specifies essentials of the DUT and the cocotb TB
-TOPLEVEL := round_robin_arb
+TOPLEVEL := round_robin_arbiter
 MODULE   := test
 SIM      ?= icarus
 
