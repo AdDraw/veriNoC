@@ -29,8 +29,8 @@ module circ_fifo
 
   `ifdef LOG_DEBUG
 	initial begin
-		$display("Verilog: FIFO%d -FIFO_DEPTH_W %d",ID, FIFO_DEPTH_W);
-		$display("Verilog: FIFO%d -DATA_W\t%d",ID, DATA_W);
+		$display("Verilog: FIFO%0d -FIFO_DEPTH_W %0d",ID, FIFO_DEPTH_W);
+		$display("Verilog: FIFO%0d -DATA_W       %0d",ID, DATA_W);
 	end
   `endif
 
@@ -45,6 +45,8 @@ module circ_fifo
   wire full_w, empty_w;
   assign full_w   = (wr_ptr_v + 1'b1 == rd_ptr_v) ? 1'b1 : 1'b0;
   assign empty_w  = (wr_ptr_v == rd_ptr_v)        ? 1'b1 : 1'b0;
+
+  wire [FIFO_DEPTH_W-1:0] words_in_fifo  = wr_ptr_v - rd_ptr_v;
 
   // FIFO WRITE
   always @ ( posedge clk_i or negedge rst_ni) begin
