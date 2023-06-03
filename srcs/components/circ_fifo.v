@@ -9,9 +9,11 @@
 
 module circ_fifo
   #(
-    parameter DATA_W        = 8,
-    parameter FIFO_DEPTH_W  = 2,
-    parameter ID            = 0
+    parameter DATA_W                 = 8,
+    parameter FIFO_DEPTH_W           = 2,
+    parameter ALMOST_EMPTY_THRESHOLD = 1,
+    parameter ALMOST_FULL_THRESHOLD  = 10,
+    parameter ID                     = 0
     )
   (
     input   clk_i,
@@ -22,6 +24,8 @@ module circ_fifo
     output  [DATA_W-1 : 0] data_o,
     output  full_o,
     output  empty_o,
+    output  a_full_o,
+    output  a_empty_o,
     output  overflow_o,
     output  underflow_o
     );
@@ -47,6 +51,11 @@ module circ_fifo
   assign empty_w  = (wr_ptr_v == rd_ptr_v)        ? 1'b1 : 1'b0;
 
   wire [FIFO_DEPTH_W-1:0] words_in_fifo  = wr_ptr_v - rd_ptr_v;
+
+  // ALMOST EMPTY/FULL
+  wire a_full_w, a_empty_w;
+  assign a_full_w  = (words_in_fifo >= ALMOST_FULL_THRESHOLD);
+  assign a_empty_w = (words_in_fifo <= ALMOST_EMPTY_THRESHOLD);
 
   // FIFO WRITE
   always @ ( posedge clk_i or negedge rst_ni) begin
@@ -103,11 +112,15 @@ module circ_fifo
   assign empty_o      = empty_w;
   assign underflow_o  = (empty_w == 1'b1) ? underflow_v : 1'b0;
   assign overflow_o   = (full_w == 1'b1)  ? overflow_v  : 1'b0;
+  assign a_empty_o    = a_empty_w;
+  assign a_full_o     = a_full_w;
 
   `ifdef COCOTB_SIM
   initial begin
     $dumpfile ("dump.vcd");
     $dumpvars (0, circ_fifo);
+    assert (ALMOST_EMPTY_THRESHOLD >= 0);
+    assert (ALMOST_FULL_THRESHOLD <= FIFO_DEPTH-1);
     #1;
   end
   `endif
