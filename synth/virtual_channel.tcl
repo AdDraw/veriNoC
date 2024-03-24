@@ -12,7 +12,7 @@ array set params {
   FLIT_ID_W 2
   ROW_CORD 1
   COL_CORD 1
-  OUT_N_W 3
+  OUT_M 5
   ROW_ADDR_W 2
   COL_ADDR_W 2
 }
