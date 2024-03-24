@@ -14,53 +14,52 @@
 */
 
 `timescale 1ns / 1ps
+`default_nettype none
 module xy_router #(
   parameter COL_CORD   = 4'd0,
   parameter ROW_CORD   = 4'd0,
   parameter COL_ADDR_W = 4,
   parameter ROW_ADDR_W = 4,
-  parameter OUT_N_W    = 3
+  parameter OUT_M      = 5
 ) (
-  input  [COL_ADDR_W-1 : 0] col_addr_i,
-  input  [ROW_ADDR_W-1 : 0] row_addr_i,
-  output [   OUT_N_W-1 : 0] out_chan_sel_o
+  input  wire [COL_ADDR_W-1:0] col_addr_i,
+  input  wire [ROW_ADDR_W-1:0] row_addr_i,
+  output wire [     OUT_M-1:0] oc_sel_o
 );
-
-  reg  [   OUT_N_W-1 : 0]                        out_chan_sel_v;
-
-  // For YOSYS to truncate the values
-  wire [COL_ADDR_W-1 : 0] col_cord_w = COL_CORD;
-  wire [ROW_ADDR_W-1 : 0] row_cord_w = ROW_CORD;
-
   // mapped Directions to PORT IDs
-  wire [   OUT_N_W-1 : 0] resource_id = 0;
-  wire [   OUT_N_W-1 : 0] left_id = 1;
-  wire [   OUT_N_W-1 : 0] up_id = 2;
-  wire [   OUT_N_W-1 : 0] right_id = 3;
-  wire [   OUT_N_W-1 : 0] down_id = 4;
+  localparam RESOURCE = 0;
+  localparam LEFT = 1;
+  localparam NORTH = 2;
+  localparam RIGHT = 3;
+  localparam SOUTH = 4;
+
+  reg  [     OUT_M-1:0] oc_sel;
+  wire [COL_ADDR_W-1:0] col_cord_w = COL_CORD;
+  wire [ROW_ADDR_W-1:0] row_cord_w = ROW_CORD;
 
   always @(*) begin
+    oc_sel = {OUT_M{1'b0}};
     if (col_addr_i == col_cord_w) begin
       // X movement Finished, start in Y dimension
       if (row_addr_i == row_cord_w) begin
         // Y movement Finished, route to resource_id
-        out_chan_sel_v = resource_id;
+        oc_sel[RESOURCE] = 1'b1;
       end else if (row_addr_i < row_cord_w) begin
-        out_chan_sel_v = up_id;
+        oc_sel[NORTH] = 1'b1;
       end else begin
-        out_chan_sel_v = down_id;
+        oc_sel[SOUTH] = 1'b1;
       end
     end else begin
       if (col_addr_i > col_cord_w) begin
         // X movement not finished
-        out_chan_sel_v = right_id;
+        oc_sel[RIGHT] = 1'b1;
       end else begin
-        out_chan_sel_v = left_id;
+        oc_sel[LEFT] = 1'b1;
       end
     end
   end
 
-  assign out_chan_sel_o = out_chan_sel_v;
+  assign oc_sel_o = oc_sel;
 
 `ifdef LOG_DEBUG
   initial begin
@@ -72,3 +71,4 @@ module xy_router #(
   end
 `endif
 endmodule
+`default_nettype wire
