@@ -9,7 +9,7 @@ set top_module xy_router
 array set params {
   ROW_CORD 1
   COL_CORD 1
-  OUT_N_W 3
+  OUT_M 5
   COL_ADDR_W 3
   ROW_ADDR_W 3
 }
