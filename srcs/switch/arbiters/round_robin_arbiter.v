@@ -13,36 +13,19 @@
 module round_robin_arbiter #(
   parameter IN_N = 5  // this should be 5 right now
 ) (
-  input                     clk_i,
-  input                     rst_ni,
-  input  [      IN_N-1 : 0] req_i,       // N hot encoding
-  output [$clog2(IN_N)-1:0] grant_o,
-  output                    grant_vld_o
+  input               clk_i,
+  input               rst_ni,
+  input  [IN_N-1 : 0] req_i,   // N hot encoding
+  output [  IN_N-1:0] grant_o
 );
-
-  reg  [      IN_N-1 : 0]                                   priority_robin;
-  reg  [$clog2(IN_N)-1:0]                                   grant_bcd_w;
-
-  wire [      IN_N-1 : 0] grant_w = priority_robin & req_i;
-
-
-  always @(*) begin
-    grant_bcd_w <= 0;
-    for (integer i = 0; i < IN_N; i = i + 1) begin
-      if (grant_w[i]) grant_bcd_w <= i;
-    end
-  end
-
+  reg  [IN_N-1 : 0]                                   priority_robin;
+  wire [IN_N-1 : 0] grant_w = priority_robin & req_i;
   always @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
-      priority_robin <= 1;
+      priority_robin <= {{IN_N - 1{1'b0}}, 1'b1};
     end else begin
-      priority_robin[0]          <= priority_robin[IN_N-1];
-      priority_robin[IN_N-1 : 1] <= priority_robin[IN_N-2 : 0];
+      priority_robin <= {priority_robin[IN_N-2 : 0], priority_robin[IN_N-1]};
     end
   end
-
-  assign grant_o     = grant_bcd_w;
-  assign grant_vld_o = |grant_w;
-
+  assign grant_o = grant_w;
 endmodule

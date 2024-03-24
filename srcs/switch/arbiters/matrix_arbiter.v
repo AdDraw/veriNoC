@@ -16,22 +16,19 @@
   TODO: reduce number of flip flops in the matrix, because only 1 triangular
   part of the matrix needs to be maintained
 */
-`timescale 1ns / 1ps
-
+`timescale 1ns / 1ps `default_nettype none
 module matrix_arbiter #(
   parameter IN_N = 5  // this should be 5 right now
 ) (
-  input                     clk_i,
-  input                     rst_ni,
-  input  [        IN_N-1:0] req_i,
-  output [$clog2(IN_N)-1:0] grant_o,
-  output                    grant_vld_o
+  input  wire            clk_i,
+  input  wire            rst_ni,
+  input  wire [IN_N-1:0] req_i,
+  output wire [IN_N-1:0] grant_o
 );
 
   // Last granted requested moves to the end of the que
-  reg  [        IN_N-1:0] p_matrix    [IN_N];
-  wire [        IN_N-1:0] grant_w;
-  reg  [$clog2(IN_N)-1:0] grant_bcd_w;
+  reg  [IN_N-1:0] p_matrix[IN_N-1:0];
+  wire [IN_N-1:0] grant_w;
 
   // MATRIX UPDATE CIRC
   integer i, j;
@@ -68,15 +65,7 @@ module matrix_arbiter #(
     end
   endgenerate
 
-  // from ONEHOT to DECIMAL
-  integer k;
-  always @(*) begin
-    grant_bcd_w <= 0;
-    for (k = 0; k < IN_N; k = k + 1) begin
-      if (grant_w[k]) grant_bcd_w <= k;
-    end
-  end
-  assign grant_o     = grant_bcd_w;
-  assign grant_vld_o = |grant_w;
+  assign grant_o = grant_w;
 
 endmodule  // matrix_arbiter
+`default_nettype wire
