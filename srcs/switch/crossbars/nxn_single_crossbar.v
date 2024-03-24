@@ -24,14 +24,14 @@ module nxn_single_crossbar #(
   output [(PORT_N * DATA_W) - 1 : 0] data_o
 );
 
-  reg [DATA_W - 1 : 0] mux_out_data_v[PORT_N];
+  reg [DATA_W - 1 : 0] mux_out_data_v[PORT_N-1:0];
 
   genvar gi;
   generate
-    wire [DATA_W -1 : 0] mux_in[PORT_N];
+    wire [DATA_W - 1 : 0] mux_in[PORT_N-1:0];
     // Input data unroll
     for (gi = 0; gi < PORT_N; gi = gi + 1) begin
-      assign mux_in[gi] = data_i[DATA_W*(gi+1)-1 : DATA_W*gi];
+      assign mux_in[gi] = data_i[gi*DATA_W+:DATA_W];
     end
     // INPUT MUX
     wire [DATA_W - 1 : 0] mux_in_data_chosen_w = mux_in[in_sel_i];
@@ -49,7 +49,7 @@ module nxn_single_crossbar #(
   // Wrapping data_o
   generate
     for (gi = 0; gi < PORT_N; gi = gi + 1) begin
-      assign data_o[DATA_W*(gi+1)-1 : DATA_W*gi] = mux_out_data_v[gi];
+      assign data_o[gi*DATA_W+:DATA_W] = mux_out_data_v[gi];
     end
   endgenerate
   assign pckt_in_chosen_o = mux_in_data_chosen_w;
