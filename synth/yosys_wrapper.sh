@@ -9,7 +9,7 @@ path2jsons=$repo_path/synth/json_files
 path2logs=$repo_path/synth/logs
 export "JSON_PATH=$path2jsons"
 export "LOG_PATH=$path2logs"
-echo $(pwd)
+echo "$(pwd)"
 script_name=$BASH_SOURCE
 
 #-------------------------------------------------------------------------------------------
@@ -45,11 +45,11 @@ function display_help {
 
 # Create and check if directories are created
 if [[ ! -d $path2logs ]]; then
-  mkdir $path2logs
+  mkdir "$path2logs"
 fi
 
 if [[ ! -d $path2jsons ]]; then
-  mkdir $path2jsons
+  mkdir "$path2jsons"
 fi
 
 POSITIONAL=() # list that should store parameters as positional arguments
@@ -83,8 +83,6 @@ do
       ;;
       -h|--help)
       display_help
-      shift # past argument
-      shift # past value
       ;;
       *)    # unknown option
       POSITIONAL+=("$1") # save it in an array for later
@@ -102,25 +100,25 @@ fi
 
 # For every PARAMETER that was passed SET EXPORT it
 # so that they its visible from inside YOSYS
-for param in ${POSITIONAL[@]};
+for param in "${POSITIONAL[@]}";
 do
   echo "${green}Setting ENVVAR: "$param" "${white}
-  export $param || error_func $script_name
+  export "${param?}" || error_func "$script_name"
 done
 
 # SCRIPT_FILE parsing (remove .tcl from the file name)
 script_file_edit=${SCRIPT_FILE%".tcl"}
 synth_log_name=$path2logs/$script_file_edit".log"
 
-yosys -tl $synth_log_name $SCRIPT_FILE || error_func $script_name
+yosys -tl "$synth_log_name" "$SCRIPT_FILE" || error_func "$script_name"
 
 if [[ -e ~/.yosys_show.dot ]]; then
   #statements
   if [[ ! -d $repo_path/synth/dot_files ]]; then
     #statements
-    mkdir $repo_path/synth/dot_files
+    mkdir "$repo_path/synth/dot_files"
   fi
-  cp ~/.yosys_show.dot $repo_path/synth/dot_files/.$script_file_edit.dot
+  cp ~/.yosys_show.dot "$repo_path/synth/dot_files/.$script_file_edit.dot"
 fi
 
-success $script_name
+success "$script_name"

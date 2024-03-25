@@ -1,4 +1,4 @@
-// Adam Drawc 2021
+// Adam Drawc 2021-2024
 /*
   Description:
     Buffer + State that dictates how data should be read from the buffer
@@ -42,41 +42,39 @@ module virtual_channel #(
   parameter COL_ADDR_W  = 2,
   parameter ROW_ADDR_W  = 2,
   parameter HEADER_ID   = 0,
-  parameter TAIL_ID     = 0,
-  parameter FLIT_W      = 0
+  parameter TAIL_ID     = 2'b11,
+  parameter FLIT_W      = FLIT_DATA_W + FLIT_ID_W
 ) (
-  input                clk_i,
-  input                rst_ni,
-  // FIFO based input (data & wr_enable)
-  input  [ FLIT_W-1:0] data_i,
-  input                wr_en_i,
-  // Allocator info input
-  input                chan_alloc_i,     // HEADER won the competition info
-  input                chan_rdy_i,       // BUFFER on the other side is not full
-  // To Route
-  output [ FLIT_W-1:0] data_o,
-  output               data_vld_o,
-  output [OUT_M-1:0]   req_o,
-  // FIFO based output
-  output               rdy_o             // backpressure signal
+  input  wire              clk_i,
+  input  wire              rst_ni,
+  // FIFO based input
+  input  wire [FLIT_W-1:0] data_i,
+  input  wire              wr_en_i,
+  output wire              rdy_o,
+  // Output Channel
+  output wire [ OUT_M-1:0] oc_req_o,      // Output Channel Request
+  output wire              oc_flit_id_is_tail_o,
+  input  wire              oc_granted_i, // HEADER won the competition info
+  output wire [FLIT_W-1:0] oc_data_o,
+  output wire              oc_data_vld_o,
+  input  wire              oc_rdy_i     // BUFFER on the other side is not full
 );
-
   // FSM
   localparam FSM_SIZE = 3;
   localparam IDLE = 3'b001;
   localparam WAITING = 3'b010;
   localparam ACTIVE = 3'b100;
-  reg  [  FSM_SIZE-1:0] cur_fsm_state;
-  reg  [  FSM_SIZE-1:0] nxt_fsm_state;
+  reg  [  FSM_SIZE-1:0] fsm_state;
+  reg  [  FSM_SIZE-1:0] fsm_state_nxt;
 
   // Header
-  reg  [ FLIT_ID_W-1:0] cur_hdr_id;
-  reg  [COL_ADDR_W-1:0] cur_hdr_col_addr;
-  reg  [ROW_ADDR_W-1:0] cur_hdr_row_addr;
+  reg  [ FLIT_ID_W-1:0] hdr_id;
+  reg  [COL_ADDR_W-1:0] hdr_col_addr;
+  reg  [ROW_ADDR_W-1:0] hdr_row_addr;
 
-  reg  [ FLIT_ID_W-1:0] nxt_hdr_id;
-  reg  [COL_ADDR_W-1:0] nxt_hdr_col_addr;
-  reg  [ROW_ADDR_W-1:0] nxt_hdr_row_addr;
+  reg  [ FLIT_ID_W-1:0] hdr_id_nxt;
+  reg  [COL_ADDR_W-1:0] hdr_col_addr_nxt;
+  reg  [ROW_ADDR_W-1:0] hdr_row_addr_nxt;
 
   // FIFO signals
   wire [    FLIT_W-1:0] data_w;
@@ -90,71 +88,71 @@ module virtual_channel #(
   // updater
   always @(posedge clk_i or negedge rst_ni) begin : SYNC_UPDATE
     if (!rst_ni) begin
-      cur_fsm_state    <= IDLE;
-      cur_hdr_id       <= {FLIT_ID_W{1'b0}};
-      cur_hdr_col_addr <= {COL_ADDR_W{1'b0}};
-      cur_hdr_row_addr <= {ROW_ADDR_W{1'b0}};
+      fsm_state    <= IDLE;
+      hdr_id       <= {FLIT_ID_W{1'b0}};
+      hdr_col_addr <= {COL_ADDR_W{1'b0}};
+      hdr_row_addr <= {ROW_ADDR_W{1'b0}};
       data_vld         <= 0;
     end else begin
-      cur_fsm_state    <= nxt_fsm_state;
-      cur_hdr_id       <= nxt_hdr_id;
-      cur_hdr_col_addr <= nxt_hdr_col_addr;
-      cur_hdr_row_addr <= nxt_hdr_row_addr;
-      data_vld         <= data_vld_nxt;
+      fsm_state    <= fsm_state_nxt;
+      hdr_id       <= hdr_id_nxt;
+      hdr_col_addr <= hdr_col_addr_nxt;
+      hdr_row_addr <= hdr_row_addr_nxt;
+      data_vld     <= data_vld_nxt;
     end
   end
 
   // Finite State Machine
   always @(*) begin : FSM_COMBO
-    case (cur_fsm_state)
+    case (fsm_state)
       IDLE:
-      if (data_w[FLIT_W-:FLIT_ID_W] == HEADER_ID) nxt_fsm_state <= WAITING;
-      else nxt_fsm_state <= IDLE;
+      if (data_w[FLIT_W-:FLIT_ID_W] == HEADER_ID) fsm_state_nxt <= WAITING;
+      else fsm_state_nxt <= IDLE;
       WAITING:
-      if (chan_alloc_i && chan_rdy_i) nxt_fsm_state <= ACTIVE;
-      else nxt_fsm_state <= WAITING;
+      if (oc_granted_i && oc_rdy_i) fsm_state_nxt <= ACTIVE;
+      else fsm_state_nxt <= WAITING;
       ACTIVE:
-      if (data_w[FLIT_W-:FLIT_ID_W] == TAIL_ID && chan_rdy_i) nxt_fsm_state <= IDLE;
-      else nxt_fsm_state <= ACTIVE;
-      default: nxt_fsm_state <= IDLE;
+      if (data_w[FLIT_W-:FLIT_ID_W] == TAIL_ID && oc_rdy_i) fsm_state_nxt <= IDLE;
+      else fsm_state_nxt <= ACTIVE;
+      default: fsm_state_nxt <= IDLE;
     endcase
   end
 
   // RD_EN & CURRENT_HEADER CONTROL
   always @(*) begin : LOGIC_COMBO
-    case (nxt_fsm_state)
+    case (fsm_state_nxt)
       IDLE: begin
         rd_en_nxt          = ~empty_w & ~data_vld & !underflow_w;
-        nxt_hdr_id       = cur_hdr_id;
-        nxt_hdr_col_addr = cur_hdr_col_addr;
-        nxt_hdr_row_addr = cur_hdr_row_addr;
+        hdr_id_nxt       = hdr_id;
+        hdr_col_addr_nxt = hdr_col_addr;
+        hdr_row_addr_nxt = hdr_row_addr;
       end
       WAITING: begin
         rd_en_nxt          = 1'b0;
-        nxt_hdr_id       = data_w[ROW_ADDR_W+COL_ADDR_W+:FLIT_ID_W];
-        nxt_hdr_col_addr = data_w[ROW_ADDR_W+:COL_ADDR_W];
-        nxt_hdr_row_addr = data_w[0+:ROW_ADDR_W];
+        hdr_id_nxt       = data_w[ROW_ADDR_W+COL_ADDR_W+:FLIT_ID_W];
+        hdr_col_addr_nxt = data_w[ROW_ADDR_W+:COL_ADDR_W];
+        hdr_row_addr_nxt = data_w[0+:ROW_ADDR_W];
       end
       ACTIVE: begin
-        rd_en_nxt          = ~empty_w & chan_rdy_i & !underflow_w;
-        nxt_hdr_id       = cur_hdr_id;
-        nxt_hdr_col_addr = cur_hdr_col_addr;
-        nxt_hdr_row_addr = cur_hdr_row_addr;
+        rd_en_nxt          = ~empty_w & oc_rdy_i & !underflow_w;
+        hdr_id_nxt       = hdr_id;
+        hdr_col_addr_nxt = hdr_col_addr;
+        hdr_row_addr_nxt = hdr_row_addr;
       end
       default: begin
         rd_en_nxt          = 1'b0;
-        nxt_hdr_id       = {FLIT_ID_W{1'b0}};
-        nxt_hdr_col_addr = {COL_ADDR_W{1'b0}};
-        nxt_hdr_row_addr = {ROW_ADDR_W{1'b0}};
+        hdr_id_nxt       = {FLIT_ID_W{1'b0}};
+        hdr_col_addr_nxt = {COL_ADDR_W{1'b0}};
+        hdr_row_addr_nxt = {ROW_ADDR_W{1'b0}};
       end
     endcase
   end
 
   always @(*) begin
-    case (cur_fsm_state)
+    case (fsm_state)
       IDLE:    data_vld_nxt <= 1'b0;
       WAITING: data_vld_nxt <= 1'b1;
-      ACTIVE:  if (!chan_rdy_i && data_vld) data_vld_nxt <= 1'b1;
+      ACTIVE:  if (!oc_rdy_i && data_vld) data_vld_nxt <= 1'b1;
                else data_vld_nxt <= rd_en_nxt;
       default: data_vld_nxt <= 0;
     endcase
@@ -185,15 +183,15 @@ module virtual_channel #(
     .ROW_ADDR_W(ROW_ADDR_W),
     .OUT_M     (OUT_M)
   ) x_router (
-    .col_addr_i(cur_hdr_col_addr),
-    .row_addr_i(cur_hdr_row_addr),
-    .oc_sel_o  (req_o)
+    .col_addr_i(hdr_col_addr),
+    .row_addr_i(hdr_row_addr),
+    .oc_sel_o  (oc_req_o)
   );
 
   // Change routing to requests
-  assign data_o          = (cur_fsm_state != IDLE) ? data_w : 0;
-  assign rdy_o           = ~full_w;
-  assign route_res_vld_o = (cur_fsm_state == WAITING) ? 1'b1 : 1'b0;
-  assign data_vld_o      = (chan_rdy_i) ? data_vld : 1'b0;
+  assign oc_data_o             = (fsm_state != IDLE) ? data_w : 0;
+  assign rdy_o                 = ~full_w;
+  assign oc_data_vld_o         = (oc_rdy_i) ? data_vld : 1'b0;
+  assign oc_flit_id_is_tail_o  = (hdr_id == TAIL_ID);
 
 endmodule  // virtual_channel

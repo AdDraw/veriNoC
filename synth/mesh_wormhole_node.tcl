@@ -23,16 +23,17 @@ array set params {
 set files {
   components/circ_fifo.v
   switch/constants.v
-  switch/arbiters/hop_cnt_arbiter.v
+  components/mux_Nx1.sv
+  switch/arbiters/hop_cnt_arbiter.sv
   switch/virtual_channels/virtual_channel.v
   switch/arbiters/matrix_arbiter.v
   switch/arbiters/round_robin_arbiter.v
   switch/arbiters/grant_with_carry.v
   switch/arbiters/static_priority_arbiter.v
   switch/routers/xy_router.v
-  switch/crossbars/nxn_parrallel_crossbar.v
-  switch/allocators/allocator.v
-  switch/mesh_wormhole/mesh_wormhole_node.v
+  switch/allocators/allocator.sv
+  switch/mesh_wormhole/output_channel.sv
+  switch/mesh_wormhole/mesh_wormhole_node.sv
 }
 
 # Executes the basic backend for synth + opt + report

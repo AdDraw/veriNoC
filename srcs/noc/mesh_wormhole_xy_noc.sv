@@ -17,7 +17,7 @@
 
 `define RSC_RANGE (CHANNEL_W * ROW_N * COL_M) - 1 : 0
 `define CALC_CHAN_RANGE(rid, cid) (((rid*COL_M)+cid+1)*CHANNEL_W)-1 : ((rid*COL_M)+cid)*CHANNEL_W
-`define CHAN_RANGE(id) `UNPACK(id, CHANNEL_W)
+`define CHAN_RANGE(id) id*CHANNEL_W+:CHANNEL_W
 
 `define TERM 0
 `define LEFT 1

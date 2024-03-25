@@ -57,10 +57,7 @@
 `timescale 1ns / 1ps
 module allocator #(
   parameter IN_N = 5,  // to specify from how many inputs we should choose
-  parameter FLIT_ID_W = 2,  // how many bits are taken for ID in each FLIT
-  parameter OUT_CHAN_ID = 0,  // which output channel is this Alloc assigned to
-  parameter ARB_TYPE = 0,  // what type of arbitration should be used (0 - matrix, 1 - round robin, 2 - static_priority)
-  parameter TAIL_ID = 2'b11
+  parameter ARB_TYPE = 0  // what type of arbitration should be used (0 - matrix, 1 - round robin, 2 - static_priority)
 ) (
   input                  clk_i,
   input                  rst_ni,
@@ -84,7 +81,7 @@ module allocator #(
       grant_d <= {IN_N{1'b0}};
     end else begin
       if (|grant_d) begin
-        if (flit_id_is_tail_i & oc_rdy_i) begin
+        if (|(flit_id_is_tail_i & grant_o) & oc_rdy_i) begin
           grant_d <= {IN_N{1'b0}};
         end
       end else grant_d <= grant_w;

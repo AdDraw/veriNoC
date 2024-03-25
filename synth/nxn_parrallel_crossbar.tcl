@@ -14,8 +14,8 @@ array set params {
 
 # File list
 set files {
-  switch/constants.v
-  switch/crossbars/nxn_parrallel_crossbar.v
+  components/mux_Nx1.sv
+  switch/crossbars/nxn_parrallel_crossbar.sv
 }
 
 # Executes the basic backend for synth + opt + report

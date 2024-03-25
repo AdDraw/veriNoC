@@ -13,8 +13,7 @@ array set params {
 
 # File list
 set files {
-  switch/constants.v
-  switch/arbiters/hop_cnt_arbiter.v
+  switch/arbiters/hop_cnt_arbiter.sv
 }
 
 # Executes the basic backend for synth + opt + report
