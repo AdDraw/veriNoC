@@ -1,2 +1,6 @@
 .tmp.drivedownload/
 .svn/
+*.err
+*.out
+*__pycache__
+sim.log
