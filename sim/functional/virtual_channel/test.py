@@ -32,7 +32,7 @@ class VCTB:
             "col_cord": int(os.environ["COL_CORD"]),
             "col_addr_w": int(os.environ["COL_ADDR_W"]),
             "row_addr_w": int(os.environ["ROW_ADDR_W"]),
-            "out_n_w":int(os.environ["OUT_N_W"]),
+            "out_m":int(os.environ["OUT_M"]),
             "flit_w": int(os.environ["FLIT_DATA_W"]) + int(os.environ["FLIT_ID_W"])
         }
 
@@ -47,12 +47,12 @@ class VCTB:
         assert self.dut.COL_CORD == self.config["col_cord"], "Bad Value"
         assert self.dut.COL_ADDR_W == self.config["col_addr_w"], "Bad Value"
         assert self.dut.ROW_ADDR_W == self.config["row_addr_w"], "Bad Value"
-        assert self.dut.OUT_N_W == self.config["out_n_w"], "Bad Value"
+        assert self.dut.OUT_M == self.config["out_m"], "Bad Value"
 
         self.vc_drv = VCDriver(dut, "", dut.clk_i, self.config, log_lvl)
         self.packets_to_send = []
         self.packets_received = []
-        self.dut.chan_rdy_i.setimmediatevalue(0x1)
+        self.dut.oc_rdy_i.setimmediatevalue(0x1)
 
     def populate_packets_to_send(self, packet_n=10, packet_length=4):
         for i in range(packet_n):
@@ -89,24 +89,24 @@ class VCTB:
             while True:
                 await risedge
                 await rdonly
-                if self.dut.data_vld_o.value == 1:
-                    if self.dut.data_o.value.binstr[0:2] == "10":  # header
+                if self.dut.oc_data_vld_o.value == 1:
+                    if self.dut.oc_data_o.value.binstr[0:2] == "10":  # header
                         packet = []
                         await FallingEdge(self.dut.clk_i)
-                        self.dut.chan_alloc_i <= 1
+                        self.dut.oc_granted_i <= 1
 
-                    if self.dut.data_o.value.binstr[0:2] != "00":
-                        packet.append(int(self.dut.data_o.value))
+                    if self.dut.oc_data_o.value.binstr[0:2] != "00":
+                        packet.append(int(self.dut.oc_data_o.value))
 
-                    if self.dut.data_o.value.binstr[0:2] == "11": # tail
+                    if self.dut.oc_data_o.value.binstr[0:2] == "11": # tail
                         self.packets_received.append(packet)
                         await FallingEdge(self.dut.clk_i)
-                        self.dut.chan_alloc_i <= 0
+                        self.dut.oc_granted_i <= 0
                         break
 
         await FallingEdge(self.dut.clk_i)
-        self.dut.chan_rdy_i <= 0
-        self.dut.chan_alloc_i <= 0
+        self.dut.oc_rdy_i <= 0
+        self.dut.oc_granted_i <= 0
 
     def compare(self):
         mismatches = 0

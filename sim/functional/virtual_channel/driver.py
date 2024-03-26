@@ -6,7 +6,7 @@ from logging import INFO, DEBUG
 
 
 class VCDriver(BusDriver):
-    _signals = ["wr_en_i", "data_i", "chan_alloc_i", "chan_rdy_i", "rst_ni"]
+    _signals = ["wr_en_i", "data_i", "oc_granted_i", "oc_rdy_i", "rst_ni"]
 
     _default_config = {
         "flit_id_w": 2,
@@ -33,8 +33,8 @@ class VCDriver(BusDriver):
 
         self.data_zero = BinaryValue(0, self.config["flit_w"], bigEndian=False)
         self.bus.wr_en_i.setimmediatevalue(0)
-        self.bus.chan_alloc_i.setimmediatevalue(0)
-        self.bus.chan_rdy_i.setimmediatevalue(0)
+        self.bus.oc_granted_i.setimmediatevalue(0)
+        self.bus.oc_rdy_i.setimmediatevalue(0)
         self.bus.rst_ni.setimmediatevalue(1)
         self.bus.data_i.setimmediatevalue(self.data_zero)
 
@@ -85,8 +85,8 @@ class VCDriver(BusDriver):
         if sync is True:
             await RisingEdge(self.clock)
         self.bus.wr_en_i.setimmediatevalue(0)
-        self.bus.chan_alloc_i.setimmediatevalue(0)
-        self.bus.chan_rdy_i.setimmediatevalue(0)
+        self.bus.oc_granted_i.setimmediatevalue(0)
+        self.bus.oc_rdy_i.setimmediatevalue(0)
         self.bus.rst_ni.setimmediatevalue(1)
         self.bus.data_i.setimmediatevalue(self.data_zero)
 

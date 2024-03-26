@@ -6,7 +6,7 @@ from utils.logger import *
 
 def main(tf, ps, synth, flit_id_w, flit_data_w, vc_depth_w,
              row_cord, col_cord, row_addr_w, col_addr_w,
-             out_n_w, log_lvl) -> None:
+             out_m, log_lvl) -> None:
   log = get_logger(__name__, int(log_lvl))
   log.info(f"RUN {time.asctime()}")
   log.info("----------------------------------------------------------------------------------------------------"
@@ -19,7 +19,7 @@ def main(tf, ps, synth, flit_id_w, flit_data_w, vc_depth_w,
                "COL_CORD": col_cord,
                "ROW_ADDR_W": row_addr_w,
                "COL_ADDR_W": col_addr_w,
-               "OUT_N_W": out_n_w,
+               "OUT_M": out_m,
                "VC_DEPTH_W": vc_depth_w}
 
   run = simulate(log, tf, ps, synth, arguments, tcl_script)
@@ -52,7 +52,7 @@ if __name__ == '__main__':
   parser.add_argument('-col_cord', default=1,     help='Cow Coordinate of the NODE(def=1)')
   parser.add_argument('-row_addr_w', default=2,    help='Width of Row Address(def=2)')
   parser.add_argument('-col_addr_w', default=2,    help='Width of Col Address(def=2)')
-  parser.add_argument('-out_n_w', default=3, help="$clog2(OUT_M)(def=3)")
+  parser.add_argument('-out_m', default=5, help="OUT_M")
 
   parser.add_argument('-log_lvl', default=1, help="Logging LEVEL (INFO=0, DEBUG=1)")
 

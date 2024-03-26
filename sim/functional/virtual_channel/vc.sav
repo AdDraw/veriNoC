@@ -1,75 +1,98 @@
 [*]
-[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Sat May 22 16:41:20 2021
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Tue Mar 26 22:39:18 2024
 [*]
-[dumpfile] "/home/adam/studia/magiament/sim/functional/virtual_channel_sim/dump.vcd"
-[dumpfile_mtime] "Sat May 22 16:38:04 2021"
-[dumpfile_size] 38284
-[savefile] "/home/adam/studia/magiament/sim/functional/virtual_channel_sim/vc.sav"
-[timestart] 9956
-[size] 3840 2098
+[dumpfile] "/home/adam/git_repos/veriNoC/sim/functional/virtual_channel/dump.vcd"
+[dumpfile_mtime] "Tue Mar 26 22:36:37 2024"
+[dumpfile_size] 3374209
+[savefile] "/home/adam/git_repos/veriNoC/sim/functional/virtual_channel/vc.sav"
+[timestart] 0
+[size] 3840 2010
 [pos] -1 -1
-*-6.000000 10246 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-6.000000 178 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb.
-[treeopen] tb.vc_inst.
-[sst_width] 201
+[treeopen] tb.virtual_channel_inst.
+[sst_width] 233
 [signals_width] 254
 [sst_expanded] 1
 [sst_vpaned_height] 667
 @800200
--BUFFER
+-vc
 @28
-tb.vc_inst.buffer.clk_i
-tb.vc_inst.buffer.rst_ni
+tb.virtual_channel_inst.clk_i
 @22
-tb.vc_inst.buffer.data_i[9:0]
-tb.vc_inst.buffer.data_o[9:0]
+tb.virtual_channel_inst.data_i[9:0]
 @28
-tb.vc_inst.buffer.empty_o
-tb.vc_inst.buffer.full_o
+tb.virtual_channel_inst.data_vld
+tb.virtual_channel_inst.data_vld_nxt
+@22
+tb.virtual_channel_inst.data_w[9:0]
+@28
+tb.virtual_channel_inst.empty_w
 @420
-tb.vc_inst.buffer.i
+tb.virtual_channel_inst.fsm_state
+tb.virtual_channel_inst.fsm_state_nxt
 @28
-tb.vc_inst.buffer.overflow_o
-tb.vc_inst.buffer.rd_en_i
-tb.vc_inst.buffer.underflow_o
-tb.vc_inst.buffer.wr_en_i
+tb.virtual_channel_inst.full_w
+tb.virtual_channel_inst.hdr_col_addr[1:0]
+tb.virtual_channel_inst.hdr_col_addr_nxt[1:0]
+tb.virtual_channel_inst.hdr_id[1:0]
+tb.virtual_channel_inst.hdr_id_nxt[1:0]
+tb.virtual_channel_inst.hdr_row_addr[1:0]
+tb.virtual_channel_inst.hdr_row_addr_nxt[1:0]
+@22
+tb.virtual_channel_inst.oc_data_o[9:0]
+@28
+tb.virtual_channel_inst.oc_data_vld_o
+tb.virtual_channel_inst.oc_flit_id_is_tail_o
+tb.virtual_channel_inst.oc_granted_i
+tb.virtual_channel_inst.oc_rdy_i
+@22
+tb.virtual_channel_inst.oc_req_o[4:0]
+@28
+tb.virtual_channel_inst.rd_en_nxt
+tb.virtual_channel_inst.rdy_o
+tb.virtual_channel_inst.rst_ni
+tb.virtual_channel_inst.underflow_w
+tb.virtual_channel_inst.wr_en_i
 @1000200
--BUFFER
+-vc
 @800200
--vc_
+-router
 @28
-tb.vc_inst.chan_alloc_i
-tb.vc_inst.chan_rdy_i
-tb.vc_inst.clk_i
-tb.vc_inst.cur_fsm_state[2:0]
+tb.virtual_channel_inst.x_router.col_addr_i[1:0]
+tb.virtual_channel_inst.x_router.col_cord_w[1:0]
 @22
-tb.vc_inst.cur_header[9:0]
-tb.vc_inst.data_i[9:0]
-tb.vc_inst.data_o[9:0]
+tb.virtual_channel_inst.x_router.oc_sel[4:0]
+tb.virtual_channel_inst.x_router.oc_sel_o[4:0]
 @28
-tb.vc_inst.data_vld_o
-@22
-tb.vc_inst.data_w[9:0]
-@28
-tb.vc_inst.empty_w
-tb.vc_inst.full_w
-@22
-tb.vc_inst.header_o[9:0]
-@28
-tb.vc_inst.nxt_fsm_state_v[2:0]
-@22
-tb.vc_inst.nxt_header_v[9:0]
-@28
-tb.vc_inst.rd_en
-tb.vc_inst.rd_en_v
-tb.vc_inst.rdy_o
-tb.vc_inst.route_res_o[2:0]
-tb.vc_inst.route_res_vld_o
-tb.vc_inst.rst_ni
-tb.vc_inst.underflow_w
-tb.vc_inst.wr_en_i
+tb.virtual_channel_inst.x_router.row_addr_i[1:0]
+tb.virtual_channel_inst.x_router.row_cord_w[1:0]
 @1000200
--vc_
+-router
+@800201
+-buffer
+@29
+tb.virtual_channel_inst.buffer.clk_i
+@23
+tb.virtual_channel_inst.buffer.data_i[9:0]
+tb.virtual_channel_inst.buffer.data_o[9:0]
+tb.virtual_channel_inst.buffer.data_v[9:0]
+@29
+tb.virtual_channel_inst.buffer.empty_o
+tb.virtual_channel_inst.buffer.empty_w
+tb.virtual_channel_inst.buffer.full_o
+tb.virtual_channel_inst.buffer.full_w
+tb.virtual_channel_inst.buffer.overflow_o
+tb.virtual_channel_inst.buffer.overflow_v
+tb.virtual_channel_inst.buffer.rd_en_i
+tb.virtual_channel_inst.buffer.rd_ptr_v[1:0]
+tb.virtual_channel_inst.buffer.rst_ni
+tb.virtual_channel_inst.buffer.underflow_o
+tb.virtual_channel_inst.buffer.underflow_v
+tb.virtual_channel_inst.buffer.wr_en_i
+tb.virtual_channel_inst.buffer.wr_ptr_v[1:0]
+@1000201
+-buffer
 [pattern_trace] 1
 [pattern_trace] 0

@@ -1,12 +1,12 @@
 include ../common.mk
 
 # files
-VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
+# VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
 VERILOG_SOURCES += $(SRCS_DIR)/components/circ_fifo.v
 VERILOG_SOURCES += $(SRCS_DIR)/switch/routers/xy_router.v
-VERILOG_SOURCES += $(SRCS_DIR)/switch/virtual_channels/virtual_channel.v
+VERILOG_SOURCES += $(SRCS_DIR)/switch/virtual_channels/virtual_channel.sv
 ifeq ($(SYNTH), 1)
-	VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
+# VERILOG_SOURCES = $(SRCS_DIR)/switch/constants.v
   VERILOG_SOURCES += $(CMOS_CELLS)
   VERILOG_SOURCES += $(SYNTH_DIR)/virtual_channel-netlist.v
 endif
@@ -24,7 +24,7 @@ export ROW_CORD     ?= 1
 export COL_CORD     ?= 1
 export COL_ADDR_W   ?= 2
 export ROW_ADDR_W   ?= 2
-export OUT_N_W      ?= 3
+export OUT_M        ?= 5
 
 
 COMPILE_ARGS += -P $(TOPLEVEL).FLIT_DATA_W=$(FLIT_DATA_W)
@@ -34,7 +34,7 @@ COMPILE_ARGS += -P $(TOPLEVEL).ROW_CORD=$(ROW_CORD)
 COMPILE_ARGS += -P $(TOPLEVEL).COL_CORD=$(COL_CORD)
 COMPILE_ARGS += -P $(TOPLEVEL).ROW_ADDR_W=$(ROW_ADDR_W)
 COMPILE_ARGS += -P $(TOPLEVEL).COL_ADDR_W=$(COL_ADDR_W)
-COMPILE_ARGS += -P $(TOPLEVEL).OUT_N_W=$(OUT_N_W)
+COMPILE_ARGS += -P $(TOPLEVEL).OUT_M=$(OUT_M)
 COMPILE_ARGS += -P $(TOPLEVEL).CLK_PERIOD=$(CLK_PERIOD)
 
 

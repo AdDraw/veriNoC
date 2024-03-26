@@ -41,7 +41,7 @@ module virtual_channel #(
   parameter OUT_M       = 5,
   parameter COL_ADDR_W  = 2,
   parameter ROW_ADDR_W  = 2,
-  parameter HEADER_ID   = 0,
+  parameter HEADER_ID   = 2'b10,
   parameter TAIL_ID     = 2'b11,
   parameter FLIT_W      = FLIT_DATA_W + FLIT_ID_W
 ) (
@@ -60,12 +60,11 @@ module virtual_channel #(
   input  wire              oc_rdy_i     // BUFFER on the other side is not full
 );
   // FSM
-  localparam FSM_SIZE = 3;
-  localparam IDLE = 3'b001;
-  localparam WAITING = 3'b010;
-  localparam ACTIVE = 3'b100;
-  reg  [  FSM_SIZE-1:0] fsm_state;
-  reg  [  FSM_SIZE-1:0] fsm_state_nxt;
+  enum {
+      IDLE,
+      WAITING,
+      ACTIVE
+  } fsm_state, fsm_state_nxt;
 
   // Header
   reg  [ FLIT_ID_W-1:0] hdr_id;
@@ -106,13 +105,13 @@ module virtual_channel #(
   always @(*) begin : FSM_COMBO
     case (fsm_state)
       IDLE:
-      if (data_w[FLIT_W-:FLIT_ID_W] == HEADER_ID) fsm_state_nxt <= WAITING;
+      if (data_w[FLIT_W-1-:FLIT_ID_W] == HEADER_ID) fsm_state_nxt <= WAITING;
       else fsm_state_nxt <= IDLE;
       WAITING:
       if (oc_granted_i && oc_rdy_i) fsm_state_nxt <= ACTIVE;
       else fsm_state_nxt <= WAITING;
       ACTIVE:
-      if (data_w[FLIT_W-:FLIT_ID_W] == TAIL_ID && oc_rdy_i) fsm_state_nxt <= IDLE;
+      if (data_w[FLIT_W-1-:FLIT_ID_W] == TAIL_ID && oc_rdy_i) fsm_state_nxt <= IDLE;
       else fsm_state_nxt <= ACTIVE;
       default: fsm_state_nxt <= IDLE;
     endcase
@@ -166,7 +165,7 @@ module virtual_channel #(
     .clk_i      (clk_i),
     .rst_ni     (rst_ni),
     .wr_en_i    (wr_en_i),
-    .rd_en_i    (rd_en_v),
+    .rd_en_i    (rd_en_nxt),
     .data_i     (data_i),
     .data_o     (data_w),
     .full_o     (full_w),
@@ -192,6 +191,6 @@ module virtual_channel #(
   assign oc_data_o             = (fsm_state != IDLE) ? data_w : 0;
   assign rdy_o                 = ~full_w;
   assign oc_data_vld_o         = (oc_rdy_i) ? data_vld : 1'b0;
-  assign oc_flit_id_is_tail_o  = (hdr_id == TAIL_ID);
+  assign oc_flit_id_is_tail_o  = (data_w[FLIT_W-1-:FLIT_ID_W] == TAIL_ID);
 
 endmodule  // virtual_channel
