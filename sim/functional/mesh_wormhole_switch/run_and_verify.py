@@ -1,6 +1,7 @@
+import argparse
 import subprocess
 import time
-import argparse
+
 from utils.logger import get_logger
 from utils.rav import simulate
 

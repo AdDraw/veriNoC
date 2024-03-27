@@ -1,17 +1,15 @@
-import cocotb
-from cocotb.result import TestSuccess, TestFailure
-from cocotb.triggers import ClockCycles, RisingEdge, ReadOnly, Combine
-from cocotb.log import SimLog
-from cocotb.regression import TestFactory
-
-from driver import NodeVCDriver
-
 import os
 from collections import Counter
-
-from utils.functions import *
+from logging import DEBUG, INFO
 from random import getrandbits, randint
-from logging import INFO, DEBUG
+
+import cocotb
+from cocotb.log import SimLog
+from cocotb.regression import TestFactory
+from cocotb.result import TestFailure, TestSuccess
+from cocotb.triggers import ClockCycles, Combine, ReadOnly, RisingEdge
+from driver import NodeVCDriver
+from utils.functions import *
 
 CLOCK_PERIOD_NS = int(os.environ["CLK_PERIOD"])
 

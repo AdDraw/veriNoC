@@ -1,7 +1,7 @@
-from multiprocessing import Value
+from logging import DEBUG, INFO
+
+from cocotb.triggers import RisingEdge
 from cocotb_bus.drivers import BusDriver
-from cocotb.triggers import RisingEdge, ReadOnly, FallingEdge
-from logging import INFO, DEBUG
 
 
 class NodeVCDriver(BusDriver):
@@ -40,7 +40,6 @@ class NodeVCDriver(BusDriver):
             self.log.info(f"NodeVCDriver {self.id} created!")
 
     async def send_packet(self, packet, input_id=None):
-        i = 0
         assert len(packet) > 1, f"Packet is not long enough, needs to have 2 flit, this has only {len(packet)}"
         if input_id is None:
           raise ValueError("input ID has to be set")
