@@ -72,14 +72,11 @@ class WormholeNodeTB:
 
   async def node_out_chan_reader(self, i, cycle_n=10):
     risedge = RisingEdge(self.dut.clk_i)
-    rdonly = ReadOnly()
-
     await ClockCycles(self.dut.clk_i, cycle_n)
 
     packet = []
     while True:
       await risedge
-      await rdonly
       if self.dut.out_chan_vld_o[i].value == 1:
         if self.dut.out_chan_data_o[i].value.binstr[0:2] == "10":  # header
           packet = []
