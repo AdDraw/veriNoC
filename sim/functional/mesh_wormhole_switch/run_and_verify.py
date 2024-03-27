@@ -5,7 +5,7 @@ from utils.logger import get_logger
 from utils.rav import simulate
 
 
-def main(tf, ps, synth, in_n, out_m, flit_data_w, flit_id_w, row_cord,
+def main(tf, ps, synth, node_radix, flit_data_w, flit_id_w, row_cord,
          col_cord, row_addr_w, col_addr_w, buffer_depth_w, arb_type, log_lvl) -> None:
     log = get_logger(__name__, int(log_lvl))
     log.info(f"RUN {time.asctime()}")
@@ -13,8 +13,7 @@ def main(tf, ps, synth, in_n, out_m, flit_data_w, flit_id_w, row_cord,
              "-------")
 
     tcl_script = "mesh_wormhole_node.tcl"
-    arguments = {"IN_N": in_n,
-                 "OUT_M": out_m,
+    arguments = {"NODE_RADIX": node_radix,
                  "FLIT_DATA_W": flit_data_w,
                  "FLIT_ID_W": flit_id_w,
                  "ROW_CORD": row_cord,
@@ -46,8 +45,7 @@ if __name__ == '__main__':
                         help='run simulation using a post-synth netlist. Not enabled by Default')
     parser.add_argument('-synth', default=0, action="store_const", const=1,
                         help='rerun the synthesis using parameter values taken from arguments. Not enabled by Default')
-    parser.add_argument('-in_n', default=5,         help='number of input channels(default=5)')
-    parser.add_argument('-out_m', default=5,        help='number of output channels(default=5)')
+    parser.add_argument('-node_radix', default=5,         help='node radix(default=5)')
     parser.add_argument('-flit_id_w', default=2,    help="Width of Flit's ID part(default=2)")
     parser.add_argument('-flit_data_w', default=8,  help="Width of Flit's data part(default=8)")
     parser.add_argument('-row_cord', default=1,     help='Row Coordinate of the NODE(def=1)')

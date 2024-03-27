@@ -8,9 +8,9 @@
   States:
   - IDLE    - fifo is empty, when it's not empty read 1 value and
               check if it's the header flit and change state to WAIT
-  - WAIT    - waiting for resources because header flit came (no reading) waits
+  - WAIT    - REQUESTING for resources because header flit came (no reading) waits
               for allocator to allocate resources
-  - ACTIVE  - read the data when fifo is not empty, Tail flit that comes changes
+  - GRANTED  - read the data when fifo is not empty, Tail flit that comes changes
               the state to idle because it deallocates the resources
               sends the data over an allocated channel
 
@@ -24,7 +24,7 @@
 
   Internal:
   - FIFO read signals
-  - VIRTUAL CHANNEL STATE (IDLE, WAIT, ACTIVE)
+  - VIRTUAL CHANNEL STATE (IDLE, WAIT, GRANTED)
   - HEADER reg (to store the HEADER)
 
   Outputs:
@@ -62,8 +62,8 @@ module virtual_channel #(
   // FSM
   enum {
       IDLE,
-      WAITING,
-      ACTIVE
+      REQUESTING,
+      GRANTED
   } fsm_state, fsm_state_nxt;
 
   // Header
@@ -75,85 +75,79 @@ module virtual_channel #(
   reg  [COL_ADDR_W-1:0] hdr_col_addr_nxt;
   reg  [ROW_ADDR_W-1:0] hdr_row_addr_nxt;
 
+  // Router
+  wire [OUT_M-1:0] oc_req_w;
+
   // FIFO signals
   wire [    FLIT_W-1:0] data_w;
   wire                  empty_w;
+  wire                  buffer_has_data_w = ~empty_w;
   wire                  full_w;
   wire                  underflow_w;
   reg                   rd_en_nxt;
+  reg rd_en;
   reg                   data_vld;
   reg                   data_vld_nxt;
 
   // updater
-  always @(posedge clk_i or negedge rst_ni) begin : SYNC_UPDATE
+  always_ff @(posedge clk_i or negedge rst_ni) begin : SYNC_UPDATE
     if (!rst_ni) begin
       fsm_state    <= IDLE;
       hdr_id       <= {FLIT_ID_W{1'b0}};
       hdr_col_addr <= {COL_ADDR_W{1'b0}};
       hdr_row_addr <= {ROW_ADDR_W{1'b0}};
-      data_vld         <= 0;
+      data_vld     <= 0;
     end else begin
       fsm_state    <= fsm_state_nxt;
       hdr_id       <= hdr_id_nxt;
       hdr_col_addr <= hdr_col_addr_nxt;
       hdr_row_addr <= hdr_row_addr_nxt;
       data_vld     <= data_vld_nxt;
+      rd_en        <= rd_en_nxt;
     end
   end
 
   // Finite State Machine
-  always @(*) begin : FSM_COMBO
+  always @(*) begin
+    fsm_state_nxt = IDLE;
     case (fsm_state)
       IDLE:
-      if (data_w[FLIT_W-1-:FLIT_ID_W] == HEADER_ID) fsm_state_nxt <= WAITING;
-      else fsm_state_nxt <= IDLE;
-      WAITING:
-      if (oc_granted_i && oc_rdy_i) fsm_state_nxt <= ACTIVE;
-      else fsm_state_nxt <= WAITING;
-      ACTIVE:
-      if (data_w[FLIT_W-1-:FLIT_ID_W] == TAIL_ID && oc_rdy_i) fsm_state_nxt <= IDLE;
-      else fsm_state_nxt <= ACTIVE;
-      default: fsm_state_nxt <= IDLE;
+      if (buffer_has_data_w) fsm_state_nxt = REQUESTING;
+      else                   fsm_state_nxt = IDLE;
+      REQUESTING:
+      if (oc_granted_i && oc_rdy_i) fsm_state_nxt = GRANTED;
+      else                          fsm_state_nxt = REQUESTING;
+      GRANTED:
+      if (data_w[FLIT_W-1-:FLIT_ID_W] == TAIL_ID && oc_rdy_i) fsm_state_nxt = IDLE;
+      else                                                    fsm_state_nxt = GRANTED;
     endcase
   end
 
-  // RD_EN & CURRENT_HEADER CONTROL
-  always @(*) begin : LOGIC_COMBO
-    case (fsm_state_nxt)
-      IDLE: begin
-        rd_en_nxt          = ~empty_w & ~data_vld & !underflow_w;
-        hdr_id_nxt       = hdr_id;
-        hdr_col_addr_nxt = hdr_col_addr;
-        hdr_row_addr_nxt = hdr_row_addr;
-      end
-      WAITING: begin
-        rd_en_nxt          = 1'b0;
-        hdr_id_nxt       = data_w[ROW_ADDR_W+COL_ADDR_W+:FLIT_ID_W];
-        hdr_col_addr_nxt = data_w[ROW_ADDR_W+:COL_ADDR_W];
-        hdr_row_addr_nxt = data_w[0+:ROW_ADDR_W];
-      end
-      ACTIVE: begin
-        rd_en_nxt          = ~empty_w & oc_rdy_i & !underflow_w;
-        hdr_id_nxt       = hdr_id;
-        hdr_col_addr_nxt = hdr_col_addr;
-        hdr_row_addr_nxt = hdr_row_addr;
-      end
-      default: begin
-        rd_en_nxt          = 1'b0;
-        hdr_id_nxt       = {FLIT_ID_W{1'b0}};
-        hdr_col_addr_nxt = {COL_ADDR_W{1'b0}};
-        hdr_row_addr_nxt = {ROW_ADDR_W{1'b0}};
-      end
-    endcase
-  end
-
+  // RD_EN, DATA_VLD & CURRENT_HEADER CONTROL
   always @(*) begin
+    rd_en_nxt        = 1'b0;
+    hdr_id_nxt       = {FLIT_ID_W{1'b0}};
+    hdr_col_addr_nxt = {COL_ADDR_W{1'b0}};
+    hdr_row_addr_nxt = {ROW_ADDR_W{1'b0}};
     case (fsm_state)
-      IDLE:    data_vld_nxt <= 1'b0;
-      WAITING: data_vld_nxt <= 1'b1;
-      ACTIVE:  if (!oc_rdy_i && data_vld) data_vld_nxt <= 1'b1;
-               else data_vld_nxt <= rd_en_nxt;
-      default: data_vld_nxt <= 0;
+      IDLE: begin
+        rd_en_nxt        = buffer_has_data_w & !underflow_w;
+        hdr_id_nxt       = data_w[FLIT_W-1-:FLIT_ID_W];
+        hdr_row_addr_nxt = data_w[FLIT_W-FLIT_ID_W-1-:ROW_ADDR_W];
+        hdr_col_addr_nxt = data_w[FLIT_W-FLIT_ID_W-ROW_ADDR_W-1-:COL_ADDR_W];
+      end
+      REQUESTING: begin
+        rd_en_nxt        = 1'b0;
+        hdr_id_nxt       = data_w[FLIT_W-1-:FLIT_ID_W];
+        hdr_row_addr_nxt = data_w[FLIT_W-FLIT_ID_W-1-:ROW_ADDR_W];
+        hdr_col_addr_nxt = data_w[FLIT_W-FLIT_ID_W-ROW_ADDR_W-1-:COL_ADDR_W];
+      end
+      GRANTED: begin
+        rd_en_nxt        = ~oc_flit_id_is_tail_o & buffer_has_data_w & oc_rdy_i & !underflow_w;
+        hdr_id_nxt       = hdr_id;
+        hdr_col_addr_nxt = hdr_col_addr;
+        hdr_row_addr_nxt = hdr_row_addr;
+      end
     endcase
   end
 
@@ -164,7 +158,7 @@ module virtual_channel #(
   ) buffer (
     .clk_i      (clk_i),
     .rst_ni     (rst_ni),
-    .wr_en_i    (wr_en_i),
+    .wr_en_i    (wr_en_i & ~full_w),
     .rd_en_i    (rd_en_nxt),
     .data_i     (data_i),
     .data_o     (data_w),
@@ -182,15 +176,16 @@ module virtual_channel #(
     .ROW_ADDR_W(ROW_ADDR_W),
     .OUT_M     (OUT_M)
   ) x_router (
-    .col_addr_i(hdr_col_addr),
-    .row_addr_i(hdr_row_addr),
-    .oc_sel_o  (oc_req_o)
+    .col_addr_i(hdr_col_addr_nxt),
+    .row_addr_i(hdr_row_addr_nxt),
+    .oc_sel_o  (oc_req_w)
   );
 
   // Change routing to requests
-  assign oc_data_o             = (fsm_state != IDLE) ? data_w : 0;
+  assign oc_data_o             = (fsm_state == GRANTED) ? data_w : {FLIT_W{1'b0}};
   assign rdy_o                 = ~full_w;
-  assign oc_data_vld_o         = (oc_rdy_i) ? data_vld : 1'b0;
-  assign oc_flit_id_is_tail_o  = (data_w[FLIT_W-1-:FLIT_ID_W] == TAIL_ID);
+  assign oc_req_o              = (fsm_state == REQUESTING) ? oc_req_w : {OUT_M{1'b0}};
+  assign oc_data_vld_o         = (oc_rdy_i & fsm_state == GRANTED);
+  assign oc_flit_id_is_tail_o  = (data_w[FLIT_W-1-:FLIT_ID_W] == TAIL_ID) & oc_granted_i;
 
 endmodule  // virtual_channel

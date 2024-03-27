@@ -23,8 +23,7 @@ class WormholeNodeTB:
     self.log.setLevel(log_lvl)
 
     self.config = {
-      "in_n": int(os.environ["IN_N"]),
-      "out_m": int(os.environ["OUT_M"]),
+      "node_radix": int(os.environ["NODE_RADIX"]),
       "flit_id_w": int(os.environ["FLIT_ID_W"]),
       "flit_data_w": int(os.environ["FLIT_DATA_W"]),
       "row_cord":int(os.environ["ROW_CORD"]),
@@ -35,8 +34,7 @@ class WormholeNodeTB:
       "flit_w": int(os.environ["FLIT_ID_W"]) + int(os.environ["FLIT_DATA_W"])
     }
 
-    assert self.dut.IN_N == self.config["in_n"], "Bad Value"
-    assert self.dut.OUT_M == self.config["out_m"], "Bad Value"
+    assert self.dut.NODE_RADIX == self.config["node_radix"], "Bad Value"
     assert self.dut.FLIT_ID_W == self.config["flit_id_w"], "Bad Value"
     assert self.dut.FLIT_DATA_W == self.config["flit_data_w"], "Bad Value"
     assert self.dut.ROW_CORD == self.config["row_cord"], "Bad Value"
@@ -53,14 +51,14 @@ class WormholeNodeTB:
     self.dut.rst_ni.setimmediatevalue(1)
 
   def setup_dut(self, cycle_n, bp=False):
-    cocotb.fork(self.reset_dut(self.dut.rst_ni, active_high=False, clk_cyc_n=cycle_n))
+    cocotb.start_soon(self.reset_dut(self.dut.rst_ni, active_high=False, clk_cyc_n=cycle_n))
     readers = []
-    for out_chan in range(self.config["out_m"]):
-      readers.append(cocotb.fork(self.node_out_chan_reader(out_chan, cycle_n=cycle_n*2)))
+    for out_chan in range(self.config["node_radix"]):
+      readers.append(cocotb.start_soon(self.node_out_chan_reader(out_chan, cycle_n=cycle_n*2)))
     if bp:
       bp = []
-      for i in range(self.config["out_m"]):
-        bp.append(cocotb.fork(self.backpressure_gen(cycle_n=cycle_n*2)))
+      for i in range(self.config["node_radix"]):
+        bp.append(cocotb.start_soon(self.backpressure_gen(cycle_n=cycle_n*2)))
 
   async def reset_dut(self, rst_sig, active_high=True, clk_cyc_n=5):
     await ClockCycles(self.dut.clk_i, clk_cyc_n)
@@ -96,7 +94,7 @@ class WormholeNodeTB:
     await ClockCycles(self.dut.clk_i, cycle_n)
     while True:
       await risedge
-      self.dut.out_chan_rdy_i <= getrandbits(self.config["out_m"])
+      self.dut.out_chan_rdy_i <= getrandbits(self.config["node_radix"])
 
   def compare(self):
     mismatches = 0
@@ -133,30 +131,27 @@ class WormholeNodeTB:
       raise TestSuccess
 
 
-
-@cocotb.test()
 async def simple_test(dut, log_lvl=INFO, bp=False):
   tb = WormholeNodeTB(dut, log_lvl)
   tb.setup_dut(cycle_n=5, bp=bp)
   await ClockCycles(dut.clk_i, 10)
-  for i in range(tb.config["in_n"]):
-    for j in range(tb.config["out_m"]):
+  for i in range(tb.config["node_radix"]):
+    for j in range(tb.config["node_radix"]):
       await test_input(tb, i, j)
-      await ClockCycles(dut.clk_i, 10)
+    await ClockCycles(dut.clk_i, 10)
   await ClockCycles(dut.clk_i, 1000)
   tb.compare()
   raise TestSuccess("Sim finished sucessfully")
 
 
-@cocotb.test()
 async def competetive_test(dut, log_lvl=INFO, bp=False):
   tb = WormholeNodeTB(dut, log_lvl)
   tb.setup_dut(cycle_n=5, bp=bp)
   await ClockCycles(dut.clk_i, 10)
-  for j in range(tb.config["out_m"]):
+  for j in range(tb.config["node_radix"]):
     waiters = []
-    for i in range(tb.config["in_n"]):
-      waiters.append(cocotb.fork(test_input(tb, i, j)))
+    for i in range(tb.config["node_radix"]):
+      waiters.append(cocotb.start_soon(test_input(tb, i, j)))
     await ClockCycles(dut.clk_i, 10)
     await Combine(*waiters)
   await ClockCycles(dut.clk_i, 1000)
@@ -164,35 +159,33 @@ async def competetive_test(dut, log_lvl=INFO, bp=False):
   raise TestSuccess("Sim finished sucessfully")
 
 
-@cocotb.test()
 async def multi_output_no_compete(dut, log_lvl=INFO, bp=False):
   tb = WormholeNodeTB(dut, log_lvl)
   tb.setup_dut(cycle_n=5, bp=bp)
   await ClockCycles(dut.clk_i, 10)
   waiters = []
-  for i in range(tb.config["in_n"]):
-    waiters.append(cocotb.fork(test_input(tb, i, i)))
+  for i in range(tb.config["node_radix"]):
+    waiters.append(cocotb.start_soon(test_input(tb, i, i)))
   await Combine(*waiters)
   await ClockCycles(dut.clk_i, 1000)
   tb.compare()
   raise TestSuccess("Sim finished sucessfully")
 
 
-@cocotb.test()
 async def multi_output_compete(dut, log_lvl=INFO, bp=False):
   tb = WormholeNodeTB(dut, log_lvl)
   tb.setup_dut(cycle_n=5, bp=bp)
   await ClockCycles(dut.clk_i, 10)
 
-  for j in range(tb.config["out_m"]):
-    for num in range(tb.config["in_n"]):
+  for j in range(tb.config["node_radix"]):
+    for num in range(tb.config["node_radix"]):
       if num != 0:
         waiters = []
-        for i in range(tb.config["in_n"]):
+        for i in range(tb.config["node_radix"]):
           if i % num == 0:
-            waiters.append(cocotb.fork(test_input(tb, i, i)))
+            waiters.append(cocotb.start_soon(test_input(tb, i, i)))
           else:
-            waiters.append(cocotb.fork(test_input(tb, i, j)))
+            waiters.append(cocotb.start_soon(test_input(tb, i, j)))
         await Combine(*waiters)
         await ClockCycles(dut.clk_i, 10)
     await ClockCycles(dut.clk_i, 10)
@@ -201,7 +194,6 @@ async def multi_output_compete(dut, log_lvl=INFO, bp=False):
   raise TestSuccess("Sim finished sucessfully")
 
 
-@cocotb.test()
 async def random_single_input_at_a_time(dut, log_lvl=INFO, packet_n=30, packet_length=4, bp=False):
   tb = WormholeNodeTB(dut, log_lvl)
   tb.setup_dut(cycle_n=5, bp=bp)
@@ -209,20 +201,19 @@ async def random_single_input_at_a_time(dut, log_lvl=INFO, packet_n=30, packet_l
   populate_packets_to_send(tb, packet_n=packet_n, packet_length=packet_length)
 
   for packet in tb.packets_to_send:
-    driver_id = randint(0, tb.config["out_m"]-1)
+    driver_id = randint(0, tb.config["node_radix"]-1)
     await tb.drv.send_packet(packet["packet"], driver_id)
   await ClockCycles(dut.clk_i, 1000)
   tb.compare()
   raise TestSuccess("Sim finished sucessfully")
 
 
-@cocotb.test()
 async def random_multi_input_at_a_time(dut, log_lvl=INFO, packet_n=30, packet_length=4, bp=False):
   tb = WormholeNodeTB(dut, log_lvl)
   tb.setup_dut(cycle_n=5)
   await ClockCycles(dut.clk_i, 10)
 
-  in_n = tb.config["in_n"]
+  in_n = tb.config["node_radix"]
   populate_packets_to_send(tb, packet_n=packet_n*in_n, packet_length=packet_length)
 
   pckt_size = int(len(tb.packets_to_send)/in_n)
@@ -230,13 +221,13 @@ async def random_multi_input_at_a_time(dut, log_lvl=INFO, packet_n=30, packet_le
 
   if bp:
     bp = []
-    for i in range(tb.config["out_m"]):
-      bp.append(cocotb.fork(tb.backpressure_gen(i)))
+    for i in range(tb.config["node_radix"]):
+      bp.append(cocotb.start_soon(tb.backpressure_gen(i)))
 
   for packet in range(pckt_size):
     waiters = []
-    for i in range(tb.config["in_n"]):
-      waiters.append(cocotb.fork(tb.drv.send_packet(pckts[(packet*in_n)+i]["packet"], i)))
+    for i in range(tb.config["node_radix"]):
+      waiters.append(cocotb.start_soon(tb.drv.send_packet(pckts[(packet*in_n)+i]["packet"], i)))
     await Combine(*waiters)
   await ClockCycles(dut.clk_i, 1000)
   tb.compare()

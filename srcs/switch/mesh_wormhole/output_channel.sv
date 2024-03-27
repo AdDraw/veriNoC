@@ -15,7 +15,7 @@ module output_channel #(
   input  wire [IN_N-1:0] data_vld_i,
   input  wire [IN_N-1:0] flit_id_is_tail_i,
   input  wire oc_rdy_i,
-  input  wire oc_vld_o,
+  output wire oc_vld_o,
   input  wire [IN_N-1:0][DATA_W-1:0] ic_data_i,
   output wire [DATA_W-1:0] oc_data_o
 );
@@ -45,6 +45,7 @@ module output_channel #(
     .data_o(oc_data_o)
   );
 
+  assign grant_o = mux_sel;
 
 endmodule
 `default_nettype wire

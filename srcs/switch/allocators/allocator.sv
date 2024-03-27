@@ -74,7 +74,7 @@ module allocator #(
   reg  [IN_N-1:0] grant_d;
   wire [IN_N-1:0] grant_w;
   wire [IN_N-1:0] req_w;
-  assign req_w = req_i & data_vld_i & ~grant_d;
+  assign req_w = req_i & ~grant_d;
 
   always @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
@@ -120,7 +120,7 @@ module allocator #(
   endgenerate
 
   // Allocation of VC
-  assign sel_o    = grant_d;
-  assign oc_vld_o = &(grant_d & data_vld_i &{IN_N{oc_rdy_i}});
+  assign grant_o  = grant_d;
+  assign oc_vld_o = |(grant_d & data_vld_i &{IN_N{oc_rdy_i}});
 
 endmodule  // allocator

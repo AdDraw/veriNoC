@@ -63,11 +63,11 @@ module xy_router #(
 
 `ifdef LOG_DEBUG
   initial begin
-    $display("OUT_N_W %d", OUT_N_W);
-    $display("LEFT    %d", left_id);
-    $display("UP      %d", up_id);
-    $display("RIGHT   %d", right_id);
-    $display("DOWN    %d", down_id);
+    $display("OUT_M %d", OUT_M);
+    $display("LEFT    %d", LEFT);
+    $display("UP      %d", NORTH);
+    $display("RIGHT   %d", RIGHT);
+    $display("DOWN    %d", SOUTH);
   end
 `endif
 endmodule
