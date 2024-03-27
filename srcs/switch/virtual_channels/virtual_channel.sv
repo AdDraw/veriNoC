@@ -86,8 +86,6 @@ module virtual_channel #(
   wire                  underflow_w;
   reg                   rd_en_nxt;
   reg rd_en;
-  reg                   data_vld;
-  reg                   data_vld_nxt;
 
   // updater
   always_ff @(posedge clk_i or negedge rst_ni) begin : SYNC_UPDATE
@@ -96,13 +94,11 @@ module virtual_channel #(
       hdr_id       <= {FLIT_ID_W{1'b0}};
       hdr_col_addr <= {COL_ADDR_W{1'b0}};
       hdr_row_addr <= {ROW_ADDR_W{1'b0}};
-      data_vld     <= 0;
     end else begin
       fsm_state    <= fsm_state_nxt;
       hdr_id       <= hdr_id_nxt;
       hdr_col_addr <= hdr_col_addr_nxt;
       hdr_row_addr <= hdr_row_addr_nxt;
-      data_vld     <= data_vld_nxt;
       rd_en        <= rd_en_nxt;
     end
   end
@@ -123,7 +119,7 @@ module virtual_channel #(
     endcase
   end
 
-  // RD_EN, DATA_VLD & CURRENT_HEADER CONTROL
+  // RD_EN & CURRENT_HEADER CONTROL
   always @(*) begin
     rd_en_nxt        = 1'b0;
     hdr_id_nxt       = {FLIT_ID_W{1'b0}};
