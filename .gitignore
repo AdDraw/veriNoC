@@ -4,3 +4,6 @@
 *.out
 *__pycache__
 sim.log
+transcript
+.venv
+venv
